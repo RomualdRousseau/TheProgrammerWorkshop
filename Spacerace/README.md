@@ -36,17 +36,29 @@ Here's an overview of the project structure:
 ```
 spacerace/
 ├── README.md
+├── data
+│   ├── spaceship.png
+│   └── title.png
 ├── pyproject.toml
 ├── src
 │   └── spacerace
 │       ├── __init__.py
 │       ├── __main__.py
-│       └── scenes
-│           ├── __init__.py
-│           ├── game.py
-│           ├── game_over.py
-│           ├── intro.py
-│           └── scene_manager.py
+│       ├── entities
+│       │   ├── __init__.py
+│       │   ├── asteriod.py
+│       │   ├── entity.py
+│       │   └── player.py
+│       ├── scenes
+│       │   ├── __init__.py
+│       │   ├── context.py
+│       │   ├── game.py
+│       │   ├── game_over.py
+│       │   ├── scene_manager.py
+│       │   └── title.py
+│       └── utils
+│           ├── graphic.py
+│           └── resources.py
 ├── tests
 │   └── spacerace
 │       └── scenes
@@ -67,13 +79,19 @@ Follow the tutorial on YouTube to create the Space Race game step by step. Each 
 ## Running Tests
 To ensure your code is working correctly, run the tests using `pytest`:
 ```bash
-pytest
+uv run pytest
 ```
 
 ## Linting and Formatting
 Keep your code clean and consistent by using `ruff` for linting:
 ```bash
-ruff check src/
+uv run ruff check
+```
+
+## Running the game
+Run the game:
+```bash
+uv run spacerace
 ```
 
 ## Contributing
