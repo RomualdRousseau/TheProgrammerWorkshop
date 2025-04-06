@@ -28,7 +28,7 @@ To get started, clone the repository and install the required dependencies using
 ```bash
 git clone https://github.com/romualdrousseau/theprogrammerworkshop.git
 cd Spacerace
-uv install
+uv sync
 ```
 
 ## Project Structure
