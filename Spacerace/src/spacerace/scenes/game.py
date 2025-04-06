@@ -11,7 +11,7 @@ def init():
     pass
 
 
-def close():
+def release():
     Context.timer_in_s = 0.0
 
 

@@ -7,7 +7,7 @@ from spacerace.scenes import game, game_over, intro
 class Scene(Protocol):
     def init(self): ...
 
-    def close(self): ...
+    def release(self): ...
 
     def update(self, dt: float): ...
 
@@ -33,6 +33,6 @@ TRANSITION_TABLE: dict[tuple[Scene, str], Scene] = {
 def get_next_scene(scene: Scene, transition_table: dict[tuple[Scene, str], Scene] = TRANSITION_TABLE) -> Scene:
     next_scene = transition_table.get((scene, scene.get_action()), scene)
     if scene != next_scene:
-        scene.close()
+        scene.release()
         next_scene.init()
     return next_scene
