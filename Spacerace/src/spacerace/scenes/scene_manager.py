@@ -1,7 +1,7 @@
 from typing import Protocol
 
 from spacerace import ACTION_KEYPRESS, ACTION_NONE, ACTION_TIMEOUT
-from spacerace.scenes import game, game_over, intro
+from spacerace.scenes import game, game_over, title
 
 
 class Scene(Protocol):
@@ -16,9 +16,9 @@ class Scene(Protocol):
     def get_action(self) -> str: ...
 
 
-INITIAL_SCENE: Scene = intro
+INITIAL_SCENE: Scene = title
 
-SCENES: list[Scene] = [intro, game, game_over]
+SCENES: list[Scene] = [title, game, game_over]
 
 ACTIONS: list[str] = [ACTION_KEYPRESS, ACTION_TIMEOUT, ACTION_NONE]
 

@@ -1,11 +1,14 @@
 import pyray as pr
 
-from spacerace import APP_NAME, WINDOW_HEIGHT, WINDOW_WIDTH
+from spacerace import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from spacerace.scenes.scene_manager import INITIAL_SCENE, get_next_scene
 
 
 def main():
     pr.init_window(WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME)
+    pr.set_target_fps(FRAME_RATE)
+    pr.hide_cursor()
+    pr.init_audio_device()
 
     scene = INITIAL_SCENE
     scene.init()
