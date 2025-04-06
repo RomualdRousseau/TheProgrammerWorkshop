@@ -6,7 +6,9 @@ from spacerace.utils.resources import release_resources
 
 
 def main():
+    pr.set_config_flags(pr.ConfigFlags.FLAG_MSAA_4X_HINT)
     pr.init_window(WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME)
+    pr.clear_window_state(pr.ConfigFlags.FLAG_WINDOW_RESIZABLE)
     pr.set_target_fps(FRAME_RATE)
     pr.hide_cursor()
     pr.init_audio_device()
