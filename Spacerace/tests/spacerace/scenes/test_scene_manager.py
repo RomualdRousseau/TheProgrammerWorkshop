@@ -4,32 +4,32 @@ from spacerace.scenes.scene_manager import Scene, get_next_scene
 def test_get_next_scene():
     class SceneA:
         def init(self):
-            print("init")
+            pass
 
-        def close(self):
-            print("close")
+        def release(self):
+            pass
 
         def update(self, dt: float):
-            print("update")
+            pass
 
         def draw(self):
-            print("draw")
+            pass
 
         def get_action(self) -> str:
             return "a"
 
     class SceneB:
         def init(self):
-            print("init")
+            pass
 
-        def close(self):
-            print("close")
+        def release(self):
+            pass
 
         def update(self, dt: float):
-            print("update")
+            pass
 
         def draw(self):
-            print("draw")
+            pass
 
         def get_action(self) -> str:
             return "b"
@@ -54,4 +54,7 @@ def test_get_next_scene():
     scene = get_next_scene(scene, transition_table)
     assert scene == scenes[0]
 
-    scene.close()
+    scene = get_next_scene(scene, transition_table)
+    assert scene == scenes[1]
+
+    scene.release()

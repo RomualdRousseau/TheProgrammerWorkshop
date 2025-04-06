@@ -19,7 +19,7 @@ def main():
         scene.draw()
         pr.end_drawing()
 
-    scene.close()
+    scene.release()
 
     pr.close_window()
 

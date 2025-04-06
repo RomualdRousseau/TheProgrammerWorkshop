@@ -7,7 +7,7 @@ def init():
     pass
 
 
-def close():
+def release():
     pass
 
 
