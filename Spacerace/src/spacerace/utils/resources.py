@@ -10,7 +10,7 @@ class Resources:
     textures: dict[str, pr.Texture] = {}
 
 
-def close_resources():
+def release_resources():
     for name in Resources.textures.keys():
         pr.unload_texture(Resources.textures[name])
     Resources.textures = {}
