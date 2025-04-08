@@ -2,14 +2,13 @@ import pyray as pr
 
 from spacerace import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from spacerace.scenes.scene_manager import INITIAL_SCENE, get_next_scene
-from spacerace.utils.graphic import center_screen
+from spacerace.utils.graphic import begin_center_screen, end_center_screen
 from spacerace.utils.resources import release_resources
 
 
 def main():
     pr.set_config_flags(pr.ConfigFlags.FLAG_MSAA_4X_HINT)
     pr.init_window(WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME)
-    pr.clear_window_state(pr.ConfigFlags.FLAG_WINDOW_RESIZABLE)
     pr.set_target_fps(FRAME_RATE)
     pr.hide_cursor()
     pr.init_audio_device()
@@ -23,9 +22,9 @@ def main():
         scene.update(pr.get_frame_time())
 
         pr.begin_drawing()
-        center_screen()
+        begin_center_screen()
         scene.draw()
-        pr.end_scissor_mode()
+        end_center_screen()
         pr.end_drawing()
 
     scene.release()
