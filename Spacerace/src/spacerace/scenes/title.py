@@ -1,6 +1,6 @@
 import pyray as pr
 
-from spacerace import ACTION_KEYPRESS, ACTION_NONE
+from spacerace import ACTION_KEYPRESS, ACTION_NONE, START_CONTROL
 from spacerace.utils.resources import get_texture
 
 
@@ -22,7 +22,7 @@ def draw():
 
 
 def get_action() -> str:
-    if pr.get_key_pressed():
+    if pr.is_key_pressed(START_CONTROL):
         return ACTION_KEYPRESS
     else:
         return ACTION_NONE

@@ -9,6 +9,9 @@ from spacerace import (
     PLAYER1_RAIL,
     PLAYER2_RAIL,
     PLAYERS_START,
+    START_CONTROL,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
 )
 from spacerace.scenes.context import Context
 from spacerace.utils.graphic import draw_text_centered
@@ -41,17 +44,17 @@ def draw():
     draw_text_centered(f"{Context.score2}", PLAYER2_RAIL + 50, PLAYERS_START, 100)
 
     if Context.score1 > Context.score2:
-        draw_text_centered("Player 1 wins !", pr.get_screen_width() // 2, pr.get_screen_height() // 2, 20)
+        draw_text_centered("Player 1 wins !", WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, 20)
     elif Context.score2 > Context.score1:
-        draw_text_centered("Player 2 wins !", pr.get_screen_width() // 2, pr.get_screen_height() // 2, 20)
+        draw_text_centered("Player 2 wins !", WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, 20)
     else:
-        draw_text_centered("Players are even", pr.get_screen_width() // 2, pr.get_screen_height() // 2, 20)
+        draw_text_centered("Players are even", WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, 20)
 
 
 def get_action() -> str:
     if Context.timer == 0.0:
         return ACTION_TIMEOUT
-    elif Context.timer < GAME_OVER_TIMEOUT // 2 and pr.get_key_pressed():
+    elif Context.timer < GAME_OVER_TIMEOUT // 2 and pr.is_key_pressed(START_CONTROL):
         return ACTION_KEYPRESS
     else:
         return ACTION_NONE
