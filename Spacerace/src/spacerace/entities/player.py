@@ -30,9 +30,7 @@ class Player:
         if pr.is_key_down(self.keys[1]):
             speed = PLAYER_SPEED
 
-        self.y += speed * dt
-
-        self.y = min(max(PLAYER_MASS, self.y), WINDOW_HEIGHT - PLAYER_MASS)
+        self.y = min(max(PLAYER_MASS, self.y + speed * dt), WINDOW_HEIGHT - PLAYER_MASS)
 
     def draw(self):
         scale = self.image.width / PLAYER_MASS

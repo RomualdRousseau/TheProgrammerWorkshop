@@ -2,6 +2,7 @@ import pyray as pr
 
 from spacerace import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from spacerace.scenes.scene_manager import INITIAL_SCENE, get_next_scene
+from spacerace.utils.graphic import center_screen
 from spacerace.utils.resources import release_resources
 
 
@@ -22,7 +23,9 @@ def main():
         scene.update(pr.get_frame_time())
 
         pr.begin_drawing()
+        center_screen()
         scene.draw()
+        pr.end_scissor_mode()
         pr.end_drawing()
 
     scene.release()
