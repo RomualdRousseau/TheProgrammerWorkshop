@@ -1,0 +1,25 @@
+import pyray as pr
+
+from threebody.entities.entity import Entity
+
+G = 6.67e-8  # km3 Gt−1 s−2
+SOFT = 1e7
+
+
+def gravity_center(entities: list[Entity]) -> pr.Vector3:
+    sum = pr.vector3_zero()
+    for entity in entities:
+        sum = pr.vector3_add(sum, entity.pos)
+    return pr.vector3_scale(sum, 1.0 / len(entities))
+
+
+def gravity_force(e1: Entity, e2: Entity) -> tuple[pr.Vector3, pr.Vector3]:
+    v = pr.vector3_subtract(e1.pos, e2.pos)
+    d = pr.vector3_length(v)
+    n = pr.vector3_normalize(v)
+    f = pr.vector3_scale(n, -G * e1.mass * e2.mass / (d**2 + SOFT**2))
+    return f, pr.vector3_scale(f, -1)
+
+
+def euler_integrate(v: pr.Vector3, t: pr.Vector3, dt: float) -> pr.Vector3:
+    return pr.vector3_add(v, pr.vector3_scale(t, dt))

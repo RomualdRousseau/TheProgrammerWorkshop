@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "Romuald Rousseau", email = "romualdrousseau@gmail.com" }
+    { name = "Romuald Rousseau", email = "romuald.rousseau@servier.com" }
 ]
 requires-python = ">=3.11"
 dependencies = [
@@ -22,7 +22,7 @@ build-backend = "hatchling.build"
 dev = [
     "pyclean>=3.1.0",
     "pytest>=8.3.5",
-    "ruff>=0.11.6",
+    "ruff>=0.11.2",
 ]
 
 [tool.ruff]
@@ -61,4 +61,3 @@ convention = "google"
 testpaths = [
     "tests",
 ]
-
