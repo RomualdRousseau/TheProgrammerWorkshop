@@ -2,20 +2,22 @@ from __future__ import annotations
 
 import pyray as pr
 
-from threebody.utils.physic import euler_integrate
+from threebody.utils.physic import centrifuge_force_on_axis_y, euler_integrate
 from threebody.utils.sphere import Sphere
 
 STAR_DISTANCE_SCALE = 1e-7
 STAR_RADIUS_SCALE = 2e-18
 TRAIL_SIZE = 50
 
+ANGULAR_VELOCITY = 1.99  # rad s-1
+
 
 class Star:
     def __init__(self, pos: pr.Vector3, mass: float) -> None:
         self.mass = mass
-        self.force = pr.vector3_zero()
-        self.rho = pr.vector3_zero()
         self.pos = pos
+        self.force = pr.vector3_zero()
+        self.rho = centrifuge_force_on_axis_y(self, ANGULAR_VELOCITY)
         self.sphere = Sphere(TRAIL_SIZE)
 
     def update(self, dt: float) -> None:
