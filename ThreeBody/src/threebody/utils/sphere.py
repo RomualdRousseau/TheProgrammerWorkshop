@@ -1,7 +1,7 @@
 import pyray as pr
 
 TRAIL_RADIUS_SCALE = 0.5
-TRAIL_ALPHA = 0.3
+TRAIL_ALPHA = 0.5
 
 
 class Sphere:
@@ -15,6 +15,6 @@ class Sphere:
         self.trail.append(pos)
 
         for pos in self.trail:
-            pr.draw_sphere(pos, radius * TRAIL_RADIUS_SCALE, pr.color_alpha(color, TRAIL_ALPHA))
+            pr.draw_point_3d(pos, pr.color_alpha(color, TRAIL_ALPHA))
 
         pr.draw_sphere(self.trail[-1], radius, color)
