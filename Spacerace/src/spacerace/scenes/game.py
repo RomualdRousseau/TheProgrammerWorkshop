@@ -20,6 +20,7 @@ def update(dt: float):
 
 def draw():
     pr.clear_background(pr.BLUE)
+    pr.draw_text(f"{Context.timer:.0f}", 10, 10, 50, pr.RAYWHITE)
 
 
 def get_action() -> str:

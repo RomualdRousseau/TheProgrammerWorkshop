@@ -15,7 +15,7 @@ class Context:
 
 
 def init():
-   Context.timer = 0.0
+   Context.timer = GAME_OVER_TIMEOUT
 
 
 def release():
@@ -23,11 +23,12 @@ def release():
 
 
 def update(dt: float):
-    Context.timer += dt
+    Context.timer = max(0.0, Context.timer - dt)
 
 
 def draw():
     pr.clear_background(pr.RED)
+    pr.draw_text(f"{Context.timer:.0f}", 10, 10, 50, pr.RAYWHITE)
 
 
 def get_action() -> str:
