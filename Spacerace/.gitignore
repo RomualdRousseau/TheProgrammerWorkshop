@@ -13,5 +13,8 @@ wheels/
 # PyTest
 .pytest_cache
 
+# Ruff
+.ruff_cache
+
 # Visual Code
 .vscode
