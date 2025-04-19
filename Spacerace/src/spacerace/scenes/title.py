@@ -1,7 +1,7 @@
 import pyray as pr
 
 from spacerace import ACTION_KEYPRESS, ACTION_NONE, START_CONTROL
-from spacerace.utils.resources import get_texture
+from spacerace.utils.resources import get_texture, release_resources
 
 
 def init():
@@ -9,7 +9,7 @@ def init():
 
 
 def release():
-    pass
+    release_resources()
 
 
 def update(dt: float):

@@ -20,6 +20,7 @@ from spacerace.entities.entity import check_collisions
 from spacerace.entities.player import Player
 from spacerace.scenes.context import Context
 from spacerace.utils.graphic import draw_text_centered
+from spacerace.utils.resources import release_resources
 
 
 def init():
@@ -38,7 +39,7 @@ def init():
 
 
 def release():
-    pass
+    release_resources()
 
 
 def update(dt: float):
