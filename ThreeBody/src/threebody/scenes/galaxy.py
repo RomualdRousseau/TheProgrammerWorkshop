@@ -50,7 +50,7 @@ def draw():
     pr.begin_mode_3d(Context.camera)
     for star in Context.stars:
         star.draw()
-    pr.draw_sphere(Context.camera.target, 2, pr.YELLOW)
+    # pr.draw_sphere(Context.camera.target, 1, pr.YELLOW)
     pr.end_mode_3d()
 
     pr.draw_fps(0, 0)
