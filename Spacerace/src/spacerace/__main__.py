@@ -3,7 +3,6 @@ import pyray as pr
 from spacerace import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from spacerace.scenes.scene_manager import INITIAL_SCENE, get_next_scene
 from spacerace.utils.graphic import begin_center_screen, end_center_screen
-from spacerace.utils.resources import release_resources
 
 
 def main():
@@ -28,7 +27,6 @@ def main():
         pr.end_drawing()
 
     scene.release()
-    release_resources()
 
     pr.close_window()
 

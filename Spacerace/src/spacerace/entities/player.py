@@ -22,6 +22,7 @@ class Player:
 
     def reset(self):
         self.y = self.y_start
+        self.image = get_texture("spaceship")
 
     def update(self, dt: float):
         speed = 0.0
