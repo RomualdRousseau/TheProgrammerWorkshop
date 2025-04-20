@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Romuald Rousseau", email = "romuald.rousseau@servier.com" }
 ]
-requires-python = ">=3.11.9"
+requires-python = ">=3.11"
 dependencies = [
     "raylib>=5.5.0.2",
 ]
