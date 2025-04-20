@@ -1,7 +1,7 @@
 import pyray as pr
 
 from spacerace import PLAYER_MASS, PLAYER_SPEED, WINDOW_HEIGHT
-from spacerace.utils.resources import get_texture
+from spacerace.utils.resources import get_sound, get_texture
 
 
 class Player:
@@ -10,7 +10,6 @@ class Player:
         self.y = y
         self.keys = keys
         self.y_start = y
-        self.image = get_texture("spaceship")
 
     def get_collision_box(self) -> tuple[float, float, float, float]:
         return (
@@ -22,7 +21,6 @@ class Player:
 
     def reset(self):
         self.y = self.y_start
-        self.image = get_texture("spaceship")
 
     def update(self, dt: float):
         speed = 0.0
@@ -34,10 +32,12 @@ class Player:
         self.y = min(max(PLAYER_MASS, self.y + speed * dt), WINDOW_HEIGHT - PLAYER_MASS)
 
     def draw(self):
-        scale = self.image.width / PLAYER_MASS
+        image = get_texture("spaceship")
+        scale = image.width / PLAYER_MASS
         pos = pr.Vector2(self.x - PLAYER_MASS * scale, self.y - PLAYER_MASS * scale)
-        pr.draw_texture_ex(self.image, pos, 0, scale, pr.WHITE)
+        pr.draw_texture_ex(image, pos, 0, scale, pr.WHITE)
         # pr.draw_rectangle_rec(self.get_collision_box(), pr.BLUE)
 
     def collide(self):
+        pr.play_sound(get_sound("explosion"))
         self.reset()
