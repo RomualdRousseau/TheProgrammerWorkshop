@@ -191,5 +191,5 @@ requires-dist = [{ name = "raylib", specifier = ">=5.5.0.2" }]
 dev = [
     { name = "pyclean", specifier = ">=3.1.0" },
     { name = "pytest", specifier = ">=8.3.5" },
-    { name = "ruff", specifier = ">=0.11.6" },
+    { name = "ruff", specifier = ">=0.11.2" },
 ]
