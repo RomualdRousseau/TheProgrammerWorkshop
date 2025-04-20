@@ -1,0 +1,28 @@
+default:
+	just --list
+
+sync:
+	uv sync
+
+update:
+	uv lock --upgrade
+	uv sync
+
+clean:
+	uv run pyclean .
+	rm -rf dist
+
+test TEST:
+	uv run pytest {{TEST}}
+
+test-all:
+	uv run pytest
+
+build:
+	uv build
+
+publish:
+	uv publish
+
+run:
+	uv run spacerace
