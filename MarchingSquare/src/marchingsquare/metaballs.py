@@ -16,13 +16,6 @@ def create_metaballs(n: int) -> list[Metaball]:
     return [create_metaball() for _ in range(n)]
 
 
-def create_metaball() -> Metaball:
-    e_r = int(pr.lerp(METABALL_RADIUS, METABALL_RADIUS * 2, random()))
-    e_x, e_y = pr.lerp(e_r, FIELD_WIDTH - e_r, random()), pr.lerp(e_r, FIELD_HEIGHT - e_r, random())
-    e_vx, e_vy = pr.lerp(-METABALL_SPEED, METABALL_SPEED, random()), pr.lerp(-METABALL_SPEED, METABALL_SPEED, random())
-    return (e_x, e_y, e_r, e_vx, e_vy)
-
-
 def update_metaballs(metaballs: list[Metaball], dt: float) -> list[Metaball]:
     return [update_metaball_physic(metaball, dt) for metaball in metaballs]
 
@@ -32,9 +25,16 @@ def generate_metaballs(metaballs: list[Metaball], palette: np.ndarray) -> pr.Ima
     return pr.Image(pixels, FIELD_WIDTH, FIELD_HEIGHT, 1, pr.PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
 
 
+def create_metaball() -> Metaball:
+    e_r = int(pr.lerp(METABALL_RADIUS, METABALL_RADIUS * 2, random()))
+    e_x, e_y = pr.lerp(e_r, FIELD_WIDTH - e_r, random()), pr.lerp(e_r, FIELD_HEIGHT - e_r, random())
+    e_vx, e_vy = pr.lerp(-METABALL_SPEED, METABALL_SPEED, random()), pr.lerp(-METABALL_SPEED, METABALL_SPEED, random())
+    return (e_x, e_y, e_r, e_vx, e_vy)
+
+
 @njit
-def update_metaball_physic(metabball: Metaball, dt: float) -> Metaball:
-    e_x, e_y, e_r, e_vx, e_vy = metabball
+def update_metaball_physic(metaball: Metaball, dt: float) -> Metaball:
+    e_x, e_y, e_r, e_vx, e_vy = metaball
     if not (e_r < e_x < (FIELD_WIDTH - e_r)):
         e_vx = -e_vx
     if not (e_r < e_y < (FIELD_HEIGHT - e_r)):
