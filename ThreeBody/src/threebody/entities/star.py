@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pyray as pr
 
-from threebody.utils.physic import centrifuge_force_on_axis_y, euler_integrate
+from threebody.utils.physic import centrifuge_force_on_axis_y
 from threebody.utils.sphere import Sphere
 
 STAR_DISTANCE_SCALE = 1e-7
@@ -21,8 +21,8 @@ class Star:
         self.sphere = Sphere(TRAIL_SIZE)
 
     def update(self, dt: float) -> None:
-        self.rho = euler_integrate(self.rho, self.force, dt)
-        self.pos = euler_integrate(self.pos, pr.vector3_scale(self.rho, 1.0 / self.mass), dt)
+        self.rho = pr.vector3_add(self.rho, pr.vector3_scale(self.force, dt))
+        self.pos = pr.vector3_add(self.pos, pr.vector3_scale(self.rho, dt / self.mass))
         self.reset_force()
 
     def draw(self) -> None:

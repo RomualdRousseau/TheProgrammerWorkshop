@@ -9,7 +9,6 @@ def main():
     pr.init_window(WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME)
     pr.set_target_fps(FRAME_RATE)
     pr.hide_cursor()
-    pr.init_audio_device()
 
     scene = galaxy
     scene.init()
