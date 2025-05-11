@@ -1,4 +1,4 @@
-APP_NAME = "Tutorial3 - MarchingSquare"
+APP_NAME = "Tutorial4 - MarchingSquare"
 
 WINDOW_WIDTH = 1024  # px
 WINDOW_HEIGHT = 1024  # px
