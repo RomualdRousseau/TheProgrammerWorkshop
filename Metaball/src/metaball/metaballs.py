@@ -1,3 +1,4 @@
+from functools import cache
 from random import random
 
 import numpy as np
@@ -10,10 +11,9 @@ Metaball = tuple[float, float, int, float, float]
 
 
 @njit
-def field_func(metaball: Metaball, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-    e_x, e_y, e_r, _, _ = metaball
-    dist = (e_x - x) ** 2 + (e_y - y) ** 2
-    return e_r**2 / (dist + EPSILON)
+def compute_field(pos: np.ndarray, radius: np.ndarray, field: np.ndarray) -> np.ndarray:
+    values = radius**2 / (np.sum((pos - field) ** 2, axis=-1) + EPSILON**2)
+    return np.sum(values, axis=-1)
 
 
 def create_metaballs(n: int) -> list[Metaball]:
@@ -25,9 +25,10 @@ def update_metaballs(metaballs: list[Metaball], dt: float) -> list[Metaball]:
 
 
 def generate_metaballs(metaballs: list[Metaball], palette: np.ndarray) -> pr.Image:
-    field_x, field_y = np.indices((FIELD_HEIGHT, FIELD_WIDTH))
-    field = np.sum([field_func(metaball, field_x, field_y) for metaball in metaballs], axis=0)
-    hue = np.clip(255 * field, 0, 255).astype(np.uint8)
+    n = len(metaballs)
+    p = np.array([[x, y] for x, y, _, _, _ in metaballs])
+    r = np.array([r for _, _, r, _, _ in metaballs])
+    hue = np.clip(compute_field(p, r, generate_field(n)) * 255, 0, 255).astype(np.uint8)
     pixels = palette[hue]
     return pr.Image(pixels, FIELD_WIDTH, FIELD_HEIGHT, 1, pr.PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
 
@@ -48,3 +49,9 @@ def update_metaball_physic(metaball: Metaball, dt: float) -> Metaball:
     e_x, e_y = e_x + e_vx * dt, e_y + e_vy * dt
     e_x, e_y = min(max(e_x, e_r), FIELD_WIDTH - e_r), min(max(e_y, e_r), FIELD_HEIGHT - e_r)
     return (e_x, e_y, e_r, e_vx, e_vy)
+
+
+@cache
+def generate_field(n):
+    field_x, field_y = np.indices((FIELD_HEIGHT, FIELD_WIDTH))
+    return np.repeat(np.dstack((field_x, field_y)).reshape(-1, 2), n, axis=0).reshape(-1, n, 2)
