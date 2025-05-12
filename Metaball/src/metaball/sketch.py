@@ -3,7 +3,7 @@ import pyray as pr
 
 from metaball import METABALLS_COUNT, METABALLS_PALETTE, WINDOW_HEIGHT, WINDOW_WIDTH
 from metaball.metaballs import (
-    Metaball,
+    Metaballs,
     create_metaballs,
     generate_metaballs,
     update_metaballs,
@@ -11,7 +11,7 @@ from metaball.metaballs import (
 
 
 class Context:
-    metaballs: list[Metaball]
+    metaballs: Metaballs
     palette: np.ndarray
     texture: pr.Texture
 
