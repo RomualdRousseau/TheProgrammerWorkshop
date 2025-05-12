@@ -8,11 +8,11 @@ FRAME_RATE = 60  # fps
 
 EPSILON = 1e-5
 
-FIELD_WIDTH = 64  # unit
-FIELD_HEIGHT = 64  # unit
+FIELD_WIDTH = 64*8  # unit
+FIELD_HEIGHT = 64*8  # unit
 
 METABALLS_COUNT = 5
 METABALLS_PALETTE = generate_fire_palette  # or generate_hsv_palette
 
-METABALL_RADIUS = 4  # unit
-METABALL_SPEED = 50  # unit.s-1
+METABALL_RADIUS = 4*8  # unit
+METABALL_SPEED = 50*8  # unit.s-1
