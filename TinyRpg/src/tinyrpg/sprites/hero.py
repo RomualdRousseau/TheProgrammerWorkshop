@@ -1,6 +1,5 @@
 import pyray as pr
 
-from tinyrpg import EPSILON
 from tinyrpg.resources import load_resource
 from tinyrpg.sprites.animation import Animation
 from tinyrpg.sprites.sprite import AnimatedSprite
@@ -26,15 +25,14 @@ HERO_ANIMATIONS = {
 class Hero(AnimatedSprite):
     def __init__(self, pos: pr.Vector2) -> None:
         super().__init__(load_resource("hero"), pos, HERO_ANIMATIONS)
-        self.reset()
-
-    def reset(self):
-        self.vel = pr.vector2_zero()
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.attack = False
 
     def input(self) -> None:
+        self.dir = pr.vector2_zero()
+        self.speed = 0
+        self.attack = False
         if pr.is_key_down(pr.KeyboardKey.KEY_UP):
             self.dir.y = -1
             self.speed = HERO_SPEED
@@ -76,11 +74,8 @@ class Hero(AnimatedSprite):
                 self.set_animation("AttackDown")
 
     def update(self, dt: float):
-        friction = -self.speed * (dt - 1) / (dt + EPSILON)
-        force = pr.vector2_scale(self.dir, self.speed + friction)
-        self.reset()
         self.input()
-        self.move(force, 1, dt)
+        self.move(pr.vector2_scale(self.dir, self.speed), dt)
         self.constrain_to_world(HERO_WORD_BOUNDARY)
         super().update(dt)
 
