@@ -75,7 +75,7 @@ class Hero(AnimatedSprite):
 
     def update(self, dt: float):
         self.input()
-        self.move(pr.vector2_scale(self.dir, self.speed), dt)
+        self.moveConstant(pr.vector2_scale(self.dir, self.speed), dt)
         self.constrain_to_world(HERO_WORD_BOUNDARY)
         super().update(dt)
 

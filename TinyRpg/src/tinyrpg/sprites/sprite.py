@@ -12,9 +12,11 @@ class Sprite:
         self.pos = pos
         self.vel = pr.vector2_zero()
 
-    def move(self, speed: pr.Vector2, dt: float) -> None:
+    def moveConstant(self, speed: pr.Vector2, dt: float) -> None:
         mu = self.mass / (dt + EPSILON)
-        friction = pr.vector2_add(pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu))
+        friction = pr.vector2_add(
+            pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu)
+        )
         self.force = pr.vector2_add(self.force, pr.vector2_add(speed, friction))
 
     def constrain_to_world(self, boundary: pr.Rectangle):
