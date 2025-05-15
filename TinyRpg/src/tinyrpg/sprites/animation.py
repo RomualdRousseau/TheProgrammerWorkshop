@@ -15,19 +15,26 @@ class Animation:
         self.frame_per_second = frame_per_second
         self.frame = 0.0
 
-    def get_source(self) -> pr.Rectangle:
-        return pr.Rectangle(
-            (self.frame_start.x + int(self.frame)) * self.frame_size.x,
+        self.source = pr.Rectangle(
+            self.frame_start.x * self.frame_size.x,
             self.frame_start.y * self.frame_size.y,
             self.frame_size.x,
             self.frame_size.y,
         )
+        self.dest = pr.Rectangle(0, 0, self.frame_size.x, self.frame_size.y)
+        self.origin = pr.vector2_zero()
+
+    def get_source(self) -> pr.Rectangle:
+        self.source.x = (self.frame_start.x + int(self.frame)) * self.frame_size.x
+        return self.source
 
     def get_dest(self, x: float, y: float) -> pr.Rectangle:
-        return pr.Rectangle(x, y, self.frame_size.x, self.frame_size.y)
+        self.dest.x = x
+        self.dest.y = y
+        return self.dest
 
     def get_origin(self) -> pr.Vector2:
-        return pr.vector2_zero()
+        return self.origin
 
     def update(self, dt: float) -> None:
         self.frame += self.frame_per_second * dt

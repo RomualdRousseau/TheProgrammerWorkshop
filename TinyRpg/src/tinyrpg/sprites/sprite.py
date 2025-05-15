@@ -10,9 +10,14 @@ class Sprite:
         self.pos = pos
         self.vel = pr.vector2_zero()
 
-    def move(self, dir: pr.Vector2, speed: float, dt: float) -> None:
-        self.vel = pr.vector2_scale(pr.vector2_normalize(dir), speed)
+    def move(self, force: pr.Vector2, mass: float, dt: float) -> None:
+        acc = pr.vector2_scale(force, 1 / mass)
+        self.vel = pr.vector2_add(self.vel, pr.vector2_scale(acc, dt))
         self.pos = pr.vector2_add(self.pos, pr.vector2_scale(self.vel, dt))
+
+    def constrain_to_world(self, boundary: pr.Rectangle):
+        self.pos.x = max(boundary.x, min(self.pos.x, boundary.x + boundary.width))
+        self.pos.y = max(boundary.y, min(self.pos.y, boundary.y + boundary.height))
 
     def update(self, dt: float) -> None:
         pass
@@ -23,13 +28,21 @@ class Sprite:
 
 class AnimatedSprite(Sprite):
     def __init__(
-        self, texture: pr.Texture, pos: pr.Vector2, animation: Animation
+        self,
+        texture: pr.Texture,
+        pos: pr.Vector2,
+        animations: dict[str, Animation],
+        default_name: str = "Idle",
     ) -> None:
         super().__init__(texture, pos)
-        self.animation = animation
+        self.animations = animations
+        self.animation = animations[default_name]
 
-    def set_animation(self, animation: Animation) -> None:
-        self.animation = animation
+    def set_animation(self, name: str) -> None:
+        new_animation = self.animations[name]
+        if self.animation != new_animation:
+            self.animation = new_animation
+            self.frame = 0
 
     def update(self, dt: float) -> None:
         super().update(dt)
