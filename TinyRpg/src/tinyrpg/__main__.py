@@ -7,7 +7,8 @@ from tinyrpg.scenes import game
 def main():
     pr.init_window(WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME)
     pr.set_target_fps(FRAME_RATE)
-
+    pr.init_audio_device()
+    
     scene = game
     scene.init()
 
@@ -20,6 +21,7 @@ def main():
 
     scene.release()
 
+    pr.close_audio_device()
     pr.close_window()
 
 

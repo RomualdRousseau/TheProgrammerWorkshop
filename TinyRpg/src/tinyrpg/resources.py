@@ -1,16 +1,27 @@
+from typing import Any
 import pyray as pr
 
 
 RESOURCES = {
-    "hero": (lambda: pr.load_texture("data/textures/hero.png"), pr.unload_texture)
+    "hero": (lambda: pr.load_texture("data/textures/hero.png"), pr.unload_texture),
+    "chop": (lambda: pr.load_sound("data/sounds/chop.wav"), pr.unload_sound),
 }
 
 
 class Resources:
-    cache: dict[str, pr.Texture] = {}
+    cache: dict[str, Any] = {}
 
 
-def load_resource(name: str) -> pr.Texture:
+def load_texture(name: str) -> pr.Texture:
+    value = Resources.cache.get(name)
+    if not value:
+        load_func, _ = RESOURCES[name]
+        value = load_func()
+        Resources.cache[name] = value
+    return value
+
+
+def load_sound(name: str) -> pr.Sound:
     value = Resources.cache.get(name)
     if not value:
         load_func, _ = RESOURCES[name]

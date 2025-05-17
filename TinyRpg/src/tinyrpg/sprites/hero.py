@@ -1,6 +1,6 @@
 import pyray as pr
 
-from tinyrpg.resources import load_resource
+from tinyrpg.resources import load_sound, load_texture
 from tinyrpg.sprites.animation import Animation
 from tinyrpg.sprites.sprite import AnimatedSprite
 
@@ -15,19 +15,20 @@ HERO_ANIMATIONS = {
     "WalkDown": Animation(pr.Vector2(2, 0), HERO_SIZE, 2, 5),
     "WalkLeft": Animation(pr.Vector2(2, 2), HERO_SIZE, 2, 5),
     "WalkRight": Animation(pr.Vector2(2, 3), HERO_SIZE, 2, 5),
-    "AttackUp": Animation(pr.Vector2(6, 1), HERO_SIZE, 2, 5),
-    "AttackDown": Animation(pr.Vector2(6, 0), HERO_SIZE, 2, 5),
-    "AttackLeft": Animation(pr.Vector2(6, 2), HERO_SIZE, 2, 5),
-    "AttackRight": Animation(pr.Vector2(6, 3), HERO_SIZE, 2, 5),
+    "AttackUp": Animation(pr.Vector2(6, 1), HERO_SIZE, 2, 2),
+    "AttackDown": Animation(pr.Vector2(6, 0), HERO_SIZE, 2, 2),
+    "AttackLeft": Animation(pr.Vector2(6, 2), HERO_SIZE, 2, 2),
+    "AttackRight": Animation(pr.Vector2(6, 3), HERO_SIZE, 2, 2),
 }
 
 
 class Hero(AnimatedSprite):
     def __init__(self, pos: pr.Vector2) -> None:
-        super().__init__(load_resource("hero"), pos, HERO_ANIMATIONS)
+        super().__init__(load_texture("hero"), pos, HERO_ANIMATIONS)
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.attack = False
+        self.chop_sfx = load_sound("chop")
 
     def input(self) -> None:
         self.dir = pr.vector2_zero()
@@ -48,6 +49,8 @@ class Hero(AnimatedSprite):
         if pr.is_key_down(pr.KeyboardKey.KEY_SPACE):
             self.attack = True
             self.speed = 0
+            # if not pr.is_sound_playing(self.chop_sfx):
+            #     pr.play_sound(self.chop_sfx)
 
     def animate(self) -> None:
         if not self.attack:
@@ -72,6 +75,10 @@ class Hero(AnimatedSprite):
                 self.set_animation("AttackDown")
             else:
                 self.set_animation("AttackDown")
+            if int(self.animation.frame) == 1 and not pr.is_sound_playing(
+                self.chop_sfx
+            ):
+                pr.play_sound(self.chop_sfx)
 
     def update(self, dt: float):
         self.input()
