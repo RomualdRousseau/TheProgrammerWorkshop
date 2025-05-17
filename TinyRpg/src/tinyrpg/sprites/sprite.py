@@ -49,7 +49,7 @@ class AnimatedSprite(Sprite):
         new_animation = self.animations[name]
         if self.animation != new_animation:
             self.animation = new_animation
-            self.frame = 0
+            self.animation.frame = 0.0
 
     def update(self, dt: float) -> None:
         super().update(dt)
