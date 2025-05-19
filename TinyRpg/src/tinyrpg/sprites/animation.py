@@ -1,5 +1,13 @@
 import pyray as pr
 
+from enum import IntFlag
+
+
+class AnimationFlag(IntFlag):
+    NONE = 0
+    MIRROR_X = 1
+    MIRROR_Y = 2
+
 
 class Animation:
     def __init__(
@@ -8,6 +16,7 @@ class Animation:
         frame_size: pr.Vector2,
         frame_count: int,
         frame_per_second: float,
+        flags=AnimationFlag.NONE,
     ) -> None:
         self.frame_start = frame_start
         self.frame_count = frame_count
@@ -18,8 +27,8 @@ class Animation:
         self.source = pr.Rectangle(
             self.frame_start.x * self.frame_size.x,
             self.frame_start.y * self.frame_size.y,
-            self.frame_size.x,
-            self.frame_size.y,
+            self.frame_size.x * (-1 if AnimationFlag.MIRROR_X in flags else 1),
+            self.frame_size.y * (-1 if AnimationFlag.MIRROR_Y in flags else 1),
         )
         self.dest = pr.Rectangle(0, 0, self.frame_size.x, self.frame_size.y)
         self.origin = pr.vector2_zero()
