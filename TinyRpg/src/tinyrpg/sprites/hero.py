@@ -5,7 +5,7 @@ from tinyrpg.sprites.animation import Animation, AnimationFlag
 from tinyrpg.sprites.sprite import AnimatedSprite
 
 
-HERO_WORD_BOUNDARY = pr.Rectangle(-160 - 8, -160 - 8, 320 - 32, 320 - 32)  # pixels
+HERO_WORD_BOUNDARY = pr.Rectangle(-160 - 8, -160 - 16, 320 - 16, 320 - 16)  # pixels
 HERO_SPEED = 16  # pixel * s-1
 HERO_SIZE = pr.Vector2(32, 32)  # pixels
 
@@ -50,42 +50,42 @@ class Hero(AnimatedSprite):
             self.speed = 0
 
     def sound_effect(self) -> None:
-        if not self.attacking:
-            if (
+        match self.attacking:
+            case False if (
                 self.speed > 0
                 and int(self.animation.frame) in (1, 4)
                 and not pr.is_sound_playing(load_sound("step"))
             ):
                 pr.play_sound(load_sound("step"))
-        else:
-            if int(self.animation.frame) in (0, 1) and not pr.is_sound_playing(
-                load_sound("chop")
+            case True if (
+                self.speed == 0
+                and int(self.animation.frame) in (0, 1)
+                and not pr.is_sound_playing(load_sound("chop"))
             ):
                 pr.play_sound(load_sound("chop"))
 
     def anim_effect(self) -> None:
-        if not self.attacking:
-            if self.dir.x < 0:
+        match self.attacking:
+            case False if self.dir.x < 0:
                 self.set_animation("WalkLeft")
-            elif self.dir.x > 0:
+            case False if self.dir.x > 0:
                 self.set_animation("WalkRight")
-            elif self.dir.y < 0:
+            case False if self.dir.y < 0:
                 self.set_animation("WalkUp")
-            elif self.dir.y > 0:
+            case False if self.dir.y > 0:
                 self.set_animation("WalkDown")
-            else:
-                self.set_animation("Idle")
-        else:
-            if self.dir.x < 0:
+            case True if self.dir.x < 0:
                 self.set_animation("AttackLeft")
-            elif self.dir.x > 0:
+            case True if self.dir.x > 0:
                 self.set_animation("AttackRight")
-            elif self.dir.y < 0:
+            case True if self.dir.y < 0:
                 self.set_animation("AttackUp")
-            elif self.dir.y > 0:
+            case True if self.dir.y > 0:
                 self.set_animation("AttackDown")
-            else:
+            case True:
                 self.set_animation("AttackDown")
+            case _:
+                self.set_animation("Idle")
 
     def update(self, dt: float):
         self.input()
