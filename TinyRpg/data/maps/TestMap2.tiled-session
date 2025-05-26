@@ -3,11 +3,13 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Tilesets/Wooden_House_Walls.tsx",
+    "activeFile": "tilesets/Wooden_House_Walls.tsx",
     "expandedProjectPaths": [
+        "Levels",
         ".",
-        "Tilesets",
-        "Levels"
+        "tilesets",
+        "levels",
+        "Tilesets"
     ],
     "fileStates": {
         "Basic_Furniture.tsx": {
@@ -148,40 +150,80 @@
                 "x": 160,
                 "y": 153.33333333333331
             }
+        },
+        "levels/level1.tmx": {
+            "scale": 2.96875,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 160,
+                "y": 160.00000000000003
+            }
+        },
+        "tilesets/Basic_Furniture.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/Basic_Grass.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/Dirt.tsx": {
+            "scaleInDock": 1
+        },
+        "tilesets/Dirt_Wide.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/Doors.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/Fences.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/Grass.tsx": {
+            "scaleInDock": 1
+        },
+        "tilesets/Hills.tsx": {
+            "scaleInDock": 1
+        },
+        "tilesets/Water.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/Wood_Bridge.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tilesets/Wooden_House_Walls.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         }
     },
-    "last.externalTilesetPath": "/home/romuald/Projects/TestMap2/Tilesets",
-    "last.imagePath": "/home/romuald/Downloads/Sprout Lands - Sprites - Basic pack/Objects",
+    "last.externalTilesetPath": "./tilesets",
+    "last.imagePath": "./textures",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "map.width": 20,
     "openFiles": [
-        "Levels/level1.tmx",
-        "Tilesets/Basic_Furniture.tsx",
-        "Tilesets/Basic_Grass.tsx",
-        "Tilesets/Dirt_Wide.tsx",
-        "Tilesets/Dirt.tsx",
-        "Tilesets/Fences.tsx",
-        "Tilesets/Grass.tsx",
-        "Tilesets/Water.tsx",
-        "Tilesets/Wood_Bridge.tsx",
-        "Tilesets/Wooden_House_Walls.tsx"
+        "tilesets/Wooden_House_Walls.tsx"
     ],
     "project": "TestMap2.tiled-project",
     "recentFiles": [
+        "tilesets/Wooden_House_Walls.tsx",
+        "levels/level1.tmx",
+        "tilesets/Basic_Furniture.tsx",
+        "tilesets/Basic_Grass.tsx",
+        "tilesets/Dirt_Wide.tsx",
+        "tilesets/Doors.tsx",
+        "tilesets/Fences.tsx",
+        "tilesets/Water.tsx",
+        "tilesets/Wood_Bridge.tsx",
         "Levels/level1.tmx",
         "Tilesets/Basic_Furniture.tsx",
-        "Tilesets/Basic_Grass.tsx",
-        "Tilesets/Dirt_Wide.tsx",
-        "Tilesets/Dirt.tsx",
-        "Tilesets/Fences.tsx",
-        "Tilesets/Grass.tsx",
-        "Tilesets/Water.tsx",
-        "Tilesets/Wood_Bridge.tsx",
-        "Tilesets/Wooden_House_Walls.tsx",
-        "Basic_Furniture.tsx",
-        "level1.tmx"
+        "Tilesets/Basic_Grass.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

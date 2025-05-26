@@ -1,6 +1,6 @@
-import pyray as pr
-
 from enum import IntFlag
+
+import pyray as pr
 
 
 class AnimationFlag(IntFlag):
