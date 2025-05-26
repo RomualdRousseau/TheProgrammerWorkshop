@@ -2,6 +2,7 @@ import pyray as pr
 
 from tinyrpg import EPSILON
 from tinyrpg.sprites.animation import Animation
+from tinyrpg.utils.pyray_util import SpriteCommand, put_sprite_queue
 
 
 class Sprite:
@@ -12,11 +13,9 @@ class Sprite:
         self.pos = pos
         self.vel = pr.vector2_zero()
 
-    def moveConstant(self, speed: pr.Vector2, dt: float) -> None:
+    def move_constant(self, speed: pr.Vector2, dt: float) -> None:
         mu = self.mass / (dt + EPSILON)
-        friction = pr.vector2_add(
-            pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu)
-        )
+        friction = pr.vector2_add(pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu))
         self.force = pr.vector2_add(self.force, pr.vector2_add(speed, friction))
 
     def constrain_to_world(self, boundary: pr.Rectangle):
@@ -30,7 +29,19 @@ class Sprite:
         self.force = pr.vector2_zero()
 
     def draw(self) -> None:
-        pr.draw_texture_v(self.texture, self.pos, pr.WHITE)
+        source = pr.Rectangle(0, 0, self.texture.width, self.texture.height)
+        dest = pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height)
+        put_sprite_queue(
+            SpriteCommand(
+                5,
+                0.8,
+                self.texture,
+                source,
+                dest,
+                pr.vector2_zero(),
+                0.0,
+            )
+        )
 
 
 class AnimatedSprite(Sprite):
@@ -56,11 +67,14 @@ class AnimatedSprite(Sprite):
         self.animation.update(dt)
 
     def draw(self) -> None:
-        pr.draw_texture_pro(
-            self.texture,
-            self.animation.get_source(),
-            self.animation.get_dest(self.pos.x, self.pos.y),
-            self.animation.get_origin(),
-            0,
-            pr.WHITE,
+        put_sprite_queue(
+            SpriteCommand(
+                4,
+                0.8,
+                self.texture,
+                self.animation.get_source(),
+                self.animation.get_dest(self.pos.x, self.pos.y),
+                self.animation.get_origin(),
+                0.0,
+            )
         )

@@ -1,9 +1,8 @@
 import pyray as pr
 
-from tinyrpg.utils.resources import load_sound, load_texture
 from tinyrpg.sprites.animation import Animation, AnimationFlag
 from tinyrpg.sprites.sprite import AnimatedSprite
-
+from tinyrpg.utils.resources import load_sound, load_texture
 
 HERO_WORD_BOUNDARY = pr.Rectangle(-160 - 8, -160 - 16, 320 - 16, 320 - 16)  # pixels
 HERO_SPEED = 16  # pixel * s-1
@@ -52,15 +51,11 @@ class Hero(AnimatedSprite):
     def sound_effect(self) -> None:
         match self.attacking:
             case False if (
-                self.speed > 0
-                and int(self.animation.frame) in (1, 4)
-                and not pr.is_sound_playing(load_sound("step"))
+                self.speed > 0 and int(self.animation.frame) in (1, 4) and not pr.is_sound_playing(load_sound("step"))
             ):
                 pr.play_sound(load_sound("step"))
             case True if (
-                self.speed == 0
-                and int(self.animation.frame) in (0, 1)
-                and not pr.is_sound_playing(load_sound("chop"))
+                self.speed == 0 and int(self.animation.frame) in (0, 1) and not pr.is_sound_playing(load_sound("chop"))
             ):
                 pr.play_sound(load_sound("chop"))
 
@@ -89,7 +84,7 @@ class Hero(AnimatedSprite):
 
     def update(self, dt: float):
         self.input()
-        self.moveConstant(pr.vector2_scale(self.dir, self.speed), dt)
+        self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
         self.constrain_to_world(HERO_WORD_BOUNDARY)
         super().update(dt)
 
