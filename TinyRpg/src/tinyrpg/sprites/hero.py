@@ -1,8 +1,8 @@
 import pyray as pr
 
-from tinyrpg.sprites.animation import Animation, AnimationFlag
-from tinyrpg.sprites.sprite import AnimatedSprite
-from tinyrpg.utils.resources import load_sound, load_texture
+from tinyrpg.resources import load_sound, load_texture
+from tinyrpg.utils.animation import Animation, AnimationFlag
+from tinyrpg.utils.sprite import AnimatedSprite
 
 HERO_WORD_BOUNDARY = pr.Rectangle(-160 - 8, -160 - 16, 320 - 16, 320 - 16)  # pixels
 HERO_SPEED = 16  # pixel * s-1

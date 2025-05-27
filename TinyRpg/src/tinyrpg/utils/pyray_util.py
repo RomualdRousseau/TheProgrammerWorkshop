@@ -4,7 +4,22 @@ import pyray as pr
 from pytmx import TiledMap
 
 
-class SpriteCommand:
+class DrawCommand:
+    def __init__(self, layer: int, depth: float):
+        self.layer = layer
+        self.depth = depth
+
+    def __call__(self):
+        pass
+
+    def __lt__(self, other):
+        return self._cmp(other) < 0
+
+    def _cmp(self, other) -> int:
+        return int(self.depth - other.depth) if other.layer == self.layer else (self.layer - other.layer)
+
+
+class DrawTextureCommand(DrawCommand):
     def __init__(
         self,
         layer: int,
@@ -15,26 +30,26 @@ class SpriteCommand:
         origin: pr.Vector2,
         rotation: float,
     ):
-        self.layer = layer
-        self.pos_y = dest.y + dest.height * ratioz
-        self.call = lambda: pr.draw_texture_pro(
-            texture,
-            source,
-            dest,
-            origin,
-            rotation,
+        super().__init__(layer, dest.y + dest.height * ratioz)
+        self.texture = texture
+        self.source = source
+        self.dest = dest
+        self.origin = origin
+        self.rotation = rotation
+
+    def __call__(self):
+        pr.draw_texture_pro(
+            self.texture,
+            self.source,
+            self.dest,
+            self.origin,
+            self.rotation,
             pr.WHITE,
         )
 
-    def _cmp(self, other) -> int:
-        return int(self.pos_y - other.pos_y) if other.layer == self.layer else (self.layer - other.layer)
 
-    def __lt__(self, other):
-        return self._cmp(other) < 0
-
-
-class SpriteHeap:
-    queue: list[SpriteCommand] = []
+class DrawHeap:
+    queue: list[DrawCommand] = []
 
 
 class CachedImages:
@@ -42,6 +57,18 @@ class CachedImages:
 
 
 def load_tiledmap(filename: str) -> TiledMap:
+    def _pyray_loader(filename, colorkey, **kwargs):
+        texture = CachedImages.textures.get(filename)
+        if not texture:
+            texture = pr.load_texture(filename)
+            CachedImages.textures[filename] = texture
+
+        def extract_image(rect, flags):
+            x, y, width, height = rect
+            return (texture, pr.Rectangle(x, y, width, height), flags)
+
+        return extract_image
+
     return TiledMap(filename, image_loader=_pyray_loader)
 
 
@@ -55,30 +82,17 @@ def draw_tiledmap(tiledmap: TiledMap, pos: pr.Vector2, size: pr.Vector2) -> None
     for i_layer, layer in enumerate(tiledmap.layers):
         for x, y, (texture, source, _) in layer.tiles():
             dest = pr.Rectangle((pos.x + x) * size.x, (pos.y + y) * size.y, size.x, size.y)
-            put_sprite_queue(SpriteCommand(i_layer, 1.0, texture, source, dest, origin, 0.0))
+            emit_draw_command(DrawTextureCommand(i_layer, 1.0, texture, source, dest, origin, 0.0))
 
 
-def begin_sprite_queue() -> None:
-    SpriteHeap.queue = []
+def begin_draw_queue() -> None:
+    DrawHeap.queue = []
 
 
-def put_sprite_queue(command: SpriteCommand) -> None:
-    heapq.heappush(SpriteHeap.queue, command)
+def emit_draw_command(command: DrawTextureCommand) -> None:
+    heapq.heappush(DrawHeap.queue, command)
 
 
-def end_sprite_queue() -> None:
-    while SpriteHeap.queue:
-        heapq.heappop(SpriteHeap.queue).call()
-
-
-def _pyray_loader(filename, colorkey, **kwargs):
-    texture = CachedImages.textures.get(filename)
-    if not texture:
-        texture = pr.load_texture(filename)
-        CachedImages.textures[filename] = texture
-
-    def extract_image(rect, flags):
-        x, y, width, height = rect
-        return (texture, pr.Rectangle(x, y, width, height), flags)
-
-    return extract_image
+def end_draw_queue() -> None:
+    while DrawHeap.queue:
+        heapq.heappop(DrawHeap.queue)()
