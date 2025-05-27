@@ -1,8 +1,8 @@
 import pyray as pr
 
 from tinyrpg import EPSILON
-from tinyrpg.sprites.animation import Animation
-from tinyrpg.utils.pyray_util import SpriteCommand, put_sprite_queue
+from tinyrpg.utils.animation import Animation
+from tinyrpg.utils.pyray_util import DrawTextureCommand, emit_draw_command
 
 
 class Sprite:
@@ -31,8 +31,8 @@ class Sprite:
     def draw(self) -> None:
         source = pr.Rectangle(0, 0, self.texture.width, self.texture.height)
         dest = pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height)
-        put_sprite_queue(
-            SpriteCommand(
+        emit_draw_command(
+            DrawTextureCommand(
                 5,
                 0.8,
                 self.texture,
@@ -67,8 +67,8 @@ class AnimatedSprite(Sprite):
         self.animation.update(dt)
 
     def draw(self) -> None:
-        put_sprite_queue(
-            SpriteCommand(
+        emit_draw_command(
+            DrawTextureCommand(
                 4,
                 0.8,
                 self.texture,
