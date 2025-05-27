@@ -1,6 +1,6 @@
 import pyray as pr
 
-from tinyrpg import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
+from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from tinyrpg.scenes import game
 
 

@@ -1,6 +1,6 @@
 import pyray as pr
 
-from tinyrpg import EPSILON
+from tinyrpg.constants import EPSILON
 from tinyrpg.utils.animation import Animation
 from tinyrpg.utils.pyray_util import DrawTextureCommand, emit_draw_command
 
