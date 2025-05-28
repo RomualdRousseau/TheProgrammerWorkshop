@@ -9,8 +9,12 @@ update:
 	uv sync
 
 clean:
-	uv run pyclean .
+	uvx pyclean .
 	rm -rf dist
+
+check:
+	uvx ruff check
+	uvx ty check
 
 test TEST:
 	uv run pytest {{TEST}}
@@ -18,7 +22,7 @@ test TEST:
 test-all:
 	uv run pytest
 
-build:
+build: check
 	uv build
 
 publish:
