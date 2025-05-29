@@ -12,10 +12,10 @@ class DrawCommand:
         pass
 
     def __lt__(self, other):
-        return self._cmp(other) < 0
+        return self._cmp_depth(other) < 0
 
-    def _cmp(self, other) -> int:
-        return int(self.depth - other.depth) if other.layer == self.layer else (self.layer - other.layer)
+    def _cmp_depth(self, other) -> float:
+        return (self.depth - other.depth) if other.layer == self.layer else (self.layer - other.layer)
 
 
 class DrawTextureCommand(DrawCommand):
@@ -60,5 +60,4 @@ def emit_draw_command(command: DrawTextureCommand) -> None:
 
 
 def end_draw() -> None:
-    while DrawHeap.queue:
-        heapq.heappop(DrawHeap.queue)()
+    [draw() for draw in sorted(DrawHeap.queue)]

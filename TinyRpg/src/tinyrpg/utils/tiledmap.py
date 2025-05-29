@@ -1,38 +1,42 @@
+from dataclasses import dataclass
+
 import pyray as pr
 from pytmx import TiledMap
 
+from tinyrpg.resources import RESOURCES, load_tile_texture
 from tinyrpg.utils.draw import DrawTextureCommand, emit_draw_command
 
 
-class CachedTextures:
-    textures: dict[str, pr.Texture] = {}
+@dataclass
+class CachedTile:
+    texture: pr.Texture
+    source: pr.Rectangle
+    ratioz: float
 
 
-def load_tiledmap(filename: str) -> TiledMap:
-    def _pyray_loader(filename, colorkey, **kwargs):
-        texture = CachedTextures.textures.get(filename)
-        if not texture:
-            texture = pr.load_texture(filename)
-            CachedTextures.textures[filename] = texture
+def load_tiledmap(name: str) -> TiledMap:
+    def image_loader(filename, colorkey, **kwargs):
+        tile_texture = load_tile_texture(filename)
 
         def extract_image(rect, flags):
-            x, y, width, height = rect
-            return (texture, pr.Rectangle(x, y, width, height), flags)
+            return CachedTile(tile_texture, pr.Rectangle(*rect), 1.0)
 
         return extract_image
 
-    return TiledMap(filename, image_loader=_pyray_loader)
+    tiledmap = TiledMap(RESOURCES[name], image_loader=image_loader)
+    for layer_i, layer in enumerate(tiledmap.layers):
+        for x, y, tile in layer.tiles():
+            prop = tiledmap.get_tile_properties(x, y, layer_i)
+            if prop:
+                tile.ratioz = prop.get("depth", 1.0)
+
+    return tiledmap
 
 
-def unload_tiledmap(tiledmap: TiledMap) -> None:
-    for texture in CachedTextures.textures.values():
-        pr.unload_texture(texture)
-    CachedTextures.textures.clear()
-
-
-def draw_tiledmap(tiledmap: TiledMap, pos: pr.Vector2, size: pr.Vector2) -> None:
+def draw_tiledmap(tiledmap: TiledMap, pos: pr.Vector2) -> None:
     origin = pr.vector2_zero()
-    for i_layer, layer in enumerate(tiledmap.layers):
-        for x, y, (texture, source, _) in layer.tiles():
-            dest = pr.Rectangle((pos.x + x) * size.x, (pos.y + y) * size.y, size.x, size.y)
-            emit_draw_command(DrawTextureCommand(i_layer, 1.0, texture, source, dest, origin, 0.0))
+    for layer_i, layer in enumerate(tiledmap.layers):
+        for x, y, tile in layer.tiles():
+            size_x, size_y = tile.source.width, tile.source.height
+            dest = pr.Rectangle((pos.x + x) * size_x, (pos.y + y) * size_y, size_x, size_y)
+            emit_draw_command(DrawTextureCommand(layer_i, tile.ratioz, tile.texture, tile.source, dest, origin, 0.0))

@@ -153,7 +153,7 @@
         },
         "levels/level1.tmx": {
             "scale": 2.96875,
-            "selectedLayer": 3,
+            "selectedLayer": 5,
             "viewCenter": {
                 "x": 160,
                 "y": 160.00000000000003
@@ -165,10 +165,11 @@
         },
         "tilesets/Basic_Grass.tsx": {
             "scaleInDock": 1,
-            "scaleInEditor": 1
+            "scaleInEditor": 4
         },
         "tilesets/Dirt.tsx": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "tilesets/Dirt_Wide.tsx": {
             "scaleInDock": 1,
@@ -211,19 +212,20 @@
         "tilesets/Wooden_House_Walls.tsx"
     ],
     "project": "TestMap2.tiled-project",
+    "property.type": "float",
     "recentFiles": [
-        "tilesets/Wooden_House_Walls.tsx",
+        "tilesets/Basic_Grass.tsx",
         "levels/level1.tmx",
         "tilesets/Basic_Furniture.tsx",
-        "tilesets/Basic_Grass.tsx",
         "tilesets/Dirt_Wide.tsx",
+        "tilesets/Wooden_House_Walls.tsx",
+        "tilesets/Dirt.tsx",
         "tilesets/Doors.tsx",
         "tilesets/Fences.tsx",
         "tilesets/Water.tsx",
         "tilesets/Wood_Bridge.tsx",
         "Levels/level1.tmx",
-        "Tilesets/Basic_Furniture.tsx",
-        "Tilesets/Basic_Grass.tsx"
+        "Tilesets/Basic_Furniture.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
