@@ -214,9 +214,9 @@
     "project": "TestMap2.tiled-project",
     "property.type": "float",
     "recentFiles": [
+        "tilesets/Basic_Furniture.tsx",
         "tilesets/Basic_Grass.tsx",
         "levels/level1.tmx",
-        "tilesets/Basic_Furniture.tsx",
         "tilesets/Dirt_Wide.tsx",
         "tilesets/Wooden_House_Walls.tsx",
         "tilesets/Dirt.tsx",
