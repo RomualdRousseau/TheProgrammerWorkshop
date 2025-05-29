@@ -4,10 +4,10 @@ from functools import cache
 import pyray as pr
 from pytmx import TiledMap
 
-from tinyrpg.resources import load_map, unload_resources
+from tinyrpg.resources import unload_resources
 from tinyrpg.sprites.hero import Hero
 from tinyrpg.utils.draw import begin_draw, end_draw
-from tinyrpg.utils.tiledmap import draw_tiledmap
+from tinyrpg.utils.tiledmap import draw_tiledmap, load_tiledmap
 
 
 @dataclass
@@ -25,7 +25,7 @@ class Game:
         pr.begin_mode_2d(self.camera)
 
         begin_draw()
-        draw_tiledmap(self.map, pr.Vector2(-10, -10), pr.Vector2(16, 16))
+        draw_tiledmap(self.map, pr.Vector2(-10, -10))
         self.hero.draw()
         end_draw()
 
@@ -37,7 +37,7 @@ class Game:
 def get_game(level_name: str) -> Game:
     return Game(
         pr.Camera2D((512, 512), (0, 0), 0, 4),
-        load_map(level_name),
+        load_tiledmap(level_name),
         Hero(pr.Vector2(-24, -24)),
     )
 
