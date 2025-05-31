@@ -18,6 +18,26 @@ class DrawCommand:
         return (self.depth - other.depth) if other.layer == self.layer else (self.layer - other.layer)
 
 
+class DrawRectangle(DrawCommand):
+    def __init__(self, layer: int, ratioz: float, rect: pr.Rectangle, color: pr.Color):
+        super().__init__(layer, rect.y + rect.height * ratioz)
+        self.rect = rect
+        self.color = color
+
+    def __call__(self):
+        pr.draw_rectangle_rec(self.rect, self.color)
+
+
+class DrawBoundingBox(DrawCommand):
+    def __init__(self, bbox: pr.BoundingBox, color: pr.Color):
+        super().__init__(99, 0)
+        self.bbox = bbox
+        self.color = color
+
+    def __call__(self):
+        pr.draw_bounding_box(self.bbox, self.color)
+
+
 class DrawTextureCommand(DrawCommand):
     def __init__(
         self,
@@ -55,7 +75,7 @@ def begin_draw() -> None:
     DrawHeap.queue.clear()
 
 
-def emit_draw_command(command: DrawTextureCommand) -> None:
+def emit_draw_command(command: DrawCommand) -> None:
     heapq.heappush(DrawHeap.queue, command)
 
 

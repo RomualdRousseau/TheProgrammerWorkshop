@@ -1,0 +1,32 @@
+default:
+	just --list
+
+sync:
+	uv sync
+
+update:
+	uv lock --upgrade
+	uv sync
+
+clean:
+	uvx pyclean .
+	rm -rf dist
+
+check:
+	uvx ruff check
+	uvx ty check
+
+test TEST:
+	uv run pytest {{TEST}}
+
+test-all:
+	uv run pytest
+
+build: check
+	uv build
+
+publish:
+	uv publish
+
+run:
+	uv run autoproof
