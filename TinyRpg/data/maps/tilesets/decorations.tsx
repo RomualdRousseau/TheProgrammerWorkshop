@@ -219,7 +219,7 @@
  <tile id="39">
   <properties>
    <property name="depth" type="float" value="5"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="40">
@@ -243,7 +243,7 @@
  <tile id="43">
   <properties>
    <property name="depth" type="float" value="5"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="44">
@@ -306,7 +306,7 @@
  <tile id="55">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="56">
@@ -330,7 +330,7 @@
  <tile id="59">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="60">
@@ -392,7 +392,7 @@
  <tile id="71">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="72">
@@ -416,7 +416,7 @@
  <tile id="75">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="76">
@@ -478,7 +478,7 @@
  <tile id="87">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="88">
@@ -502,7 +502,7 @@
  <tile id="91">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="92">
@@ -564,7 +564,7 @@
  <tile id="103">
   <properties>
    <property name="depth" type="float" value="1"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="104">
@@ -588,7 +588,7 @@
  <tile id="107">
   <properties>
    <property name="depth" type="float" value="1"/>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="108">
