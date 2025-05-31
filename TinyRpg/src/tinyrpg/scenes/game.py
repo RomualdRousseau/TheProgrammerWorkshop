@@ -40,7 +40,7 @@ def get_game(level_name: str) -> Game:
     return Game(
         pr.Camera2D((512, 512), (0, 0), 0, 4),
         load_tiledmap(level_name),
-        Hero(pr.Vector2(-24, -24)),
+        Hero(pr.Vector2(0, -24)),
     )
 
 
