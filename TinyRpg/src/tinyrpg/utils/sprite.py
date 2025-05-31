@@ -30,6 +30,10 @@ class Sprite:
         self.pos.x = max(boundary.x, min(self.pos.x, boundary.x + boundary.width))
         self.pos.y = max(boundary.y, min(self.pos.y, boundary.y + boundary.height))
 
+    def collide(self, collision_vector: pr.Vector2, dt: float):
+        col = pr.vector2_scale(collision_vector, pr.vector2_length(self.vel) * dt * 1.2)
+        self.pos = pr.vector2_add(self.pos, col)
+
     def update(self, dt: float) -> None:
         acc = pr.vector2_scale(self.force, 1 / self.mass)
         self.vel = pr.vector2_add(self.vel, pr.vector2_scale(acc, dt))
@@ -50,6 +54,12 @@ class Sprite:
                 0.0,
             )
         )
+
+    def get_bbox(self) -> pr.BoundingBox:
+        dest = pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height)
+        min = pr.Vector3(dest.x, dest.y, 0)
+        max = pr.Vector3(dest.x + dest.width - 1, dest.y + dest.height - 1, 0)
+        return pr.BoundingBox(min, max)
 
 
 class AnimatedSprite(Sprite):
@@ -77,7 +87,7 @@ class AnimatedSprite(Sprite):
     def draw(self) -> None:
         emit_draw_command(
             DrawTextureCommand(
-                4,
+                1,
                 0.8,
                 self.texture,
                 self.animation.get_source(),
@@ -86,3 +96,16 @@ class AnimatedSprite(Sprite):
                 0.0,
             )
         )
+
+        # emit_draw_command(
+        #     DrawBoundingBox(
+        #         self.get_bbox(),
+        #         pr.color_alpha(pr.BLUE, 0.5),
+        #     )
+        # )
+
+    def get_bbox(self) -> pr.BoundingBox:
+        dest = self.animation.get_dest(self.pos.x, self.pos.y)
+        min = pr.Vector3(dest.x + 10, dest.y + 10, 0)
+        max = pr.Vector3(dest.x + dest.width - 10 - 1, dest.y + dest.height - 10 - 1, 0)
+        return pr.BoundingBox(min, max)
