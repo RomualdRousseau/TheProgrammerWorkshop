@@ -56,8 +56,8 @@ def load_tiledmap(name: str) -> CachedTiledMap:
     return tiledmap
 
 
-def collide_tiledmap(
-    bbox1: pr.BoundingBox, tiledmap: CachedTiledMap, pos: pr.Vector2, collision_vector: pr.Vector2
+def collide_tiledmap_bbox(
+    tiledmap: CachedTiledMap, pos: pr.Vector2, bbox1: pr.BoundingBox, collision_vector: pr.Vector2
 ) -> pr.Vector2:
     sum = pr.vector3_zero()
     for bbox2 in (get_bbox(*x, pos) for x in tiledmap.bboxes):

@@ -6,7 +6,7 @@ import pyray as pr
 from tinyrpg.resources import unload_resources
 from tinyrpg.sprites.hero import Hero
 from tinyrpg.utils.draw import begin_draw, end_draw
-from tinyrpg.utils.tiledmap import CachedTiledMap, collide_tiledmap, draw_tiledmap, load_tiledmap
+from tinyrpg.utils.tiledmap import CachedTiledMap, collide_tiledmap_bbox, draw_tiledmap, load_tiledmap
 
 
 @dataclass
@@ -17,8 +17,9 @@ class Game:
 
     def update(self, dt: float):
         self.hero.update(dt)
+
         collision_vector = pr.vector2_zero()
-        collision_vector = collide_tiledmap(self.hero.get_bbox(), self.map, pr.Vector2(-10, -10), collision_vector)
+        collision_vector = collide_tiledmap_bbox(self.map, pr.Vector2(-10, -10), self.hero.get_bbox(), collision_vector)
         self.hero.collide(collision_vector, dt)
 
     def draw(self):
