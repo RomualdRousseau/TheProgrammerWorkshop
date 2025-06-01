@@ -3,6 +3,9 @@
   "[python]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "always"
+    }
   },
   "python.analysis.autoImportCompletions": true,
   "python.analysis.typeCheckingMode": "standard",

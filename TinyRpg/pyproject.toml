@@ -41,7 +41,6 @@ select = [
 ]
 ignore = [
     "C901",  # Too complex
-    "W191",  # Indentation contains tabs
     "D401",  # Imperative mood
     "D100",  # Missing docstring in public module
     "D101",  # Missing docstring in public class
@@ -51,8 +50,9 @@ ignore = [
     "D105",  # Missing docstring in magic method
     "D106",  # Missing docstring in public nested class
     "D107",  # Missing docstring in `__init__`
-    "E731"   # Lambda-assignment
+    "E731"  # Lambda-assignment
 ]
+
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
