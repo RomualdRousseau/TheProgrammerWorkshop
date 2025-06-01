@@ -15,14 +15,20 @@ class ActionSprite(Enum):
 
 
 class Sprite:
-    def __init__(self, texture: pr.Texture, pos: pr.Vector2) -> None:
+    def __init__(self, texture: pr.Texture, pos: pr.Vector2):
         self.texture = texture
         self.mass = 1.0
         self.force = pr.vector2_zero()
         self.pos = pos
         self.vel = pr.vector2_zero()
 
-    def move_constant(self, speed: pr.Vector2, dt: float) -> None:
+    def get_bbox(self) -> pr.BoundingBox:
+        dest = pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height)
+        min = pr.Vector3(dest.x, dest.y, 0)
+        max = pr.Vector3(dest.x + dest.width - 1, dest.y + dest.height - 1, 0)
+        return pr.BoundingBox(min, max)
+
+    def move_constant(self, speed: pr.Vector2, dt: float):
         mu = self.mass / (dt + EPSILON)
         friction = pr.vector2_add(pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu))
         self.force = pr.vector2_add(self.force, pr.vector2_add(speed, friction))
@@ -35,13 +41,13 @@ class Sprite:
         col = pr.vector2_scale(collision_vector, pr.vector2_length(self.vel) * dt * 1.2)
         self.pos = pr.vector2_add(self.pos, col)
 
-    def update(self, dt: float) -> None:
+    def update(self, dt: float):
         acc = pr.vector2_scale(self.force, 1 / self.mass)
         self.vel = pr.vector2_add(self.vel, pr.vector2_scale(acc, dt))
         self.pos = pr.vector2_add(self.pos, pr.vector2_scale(self.vel, dt))
         self.force = pr.vector2_zero()
 
-    def draw(self) -> None:
+    def draw(self):
         source = pr.Rectangle(0, 0, self.texture.width, self.texture.height)
         dest = pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height)
         emit_draw_command(
@@ -56,12 +62,6 @@ class Sprite:
             )
         )
 
-    def get_bbox(self) -> pr.BoundingBox:
-        dest = pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height)
-        min = pr.Vector3(dest.x, dest.y, 0)
-        max = pr.Vector3(dest.x + dest.width - 1, dest.y + dest.height - 1, 0)
-        return pr.BoundingBox(min, max)
-
 
 class AnimatedSprite(Sprite):
     def __init__(
@@ -70,22 +70,28 @@ class AnimatedSprite(Sprite):
         pos: pr.Vector2,
         animations: dict[str, Animation],
         default_name: str = "Idle",
-    ) -> None:
+    ):
         super().__init__(texture, pos)
         self.animations = animations
         self.animation = animations[default_name]
 
-    def set_animation(self, name: str) -> None:
+    def get_bbox(self) -> pr.BoundingBox:
+        dest = self.animation.get_dest(self.pos.x, self.pos.y)
+        min = pr.Vector3(dest.x + 10, dest.y + 10, 0)
+        max = pr.Vector3(dest.x + dest.width - 10 - 1, dest.y + dest.height - 10 - 1, 0)
+        return pr.BoundingBox(min, max)
+
+    def set_animation(self, name: str):
         new_animation = self.animations[name]
         if self.animation != new_animation:
             self.animation = new_animation
             self.animation.frame = 0.0
 
-    def update(self, dt: float) -> None:
+    def update(self, dt: float):
         super().update(dt)
         self.animation.update(dt)
 
-    def draw(self) -> None:
+    def draw(self):
         emit_draw_command(
             DrawTextureCommand(
                 1,
@@ -97,16 +103,3 @@ class AnimatedSprite(Sprite):
                 0.0,
             )
         )
-
-        # emit_draw_command(
-        #     DrawBoundingBox(
-        #         self.get_bbox(),
-        #         pr.color_alpha(pr.BLUE, 0.5),
-        #     )
-        # )
-
-    def get_bbox(self) -> pr.BoundingBox:
-        dest = self.animation.get_dest(self.pos.x, self.pos.y)
-        min = pr.Vector3(dest.x + 10, dest.y + 10, 0)
-        max = pr.Vector3(dest.x + dest.width - 10 - 1, dest.y + dest.height - 10 - 1, 0)
-        return pr.BoundingBox(min, max)
