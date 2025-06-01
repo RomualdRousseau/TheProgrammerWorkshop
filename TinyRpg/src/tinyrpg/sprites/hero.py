@@ -1,8 +1,8 @@
 import pyray as pr
 
+from tinyrpg.engine.animation import Animation, AnimationFlag
+from tinyrpg.engine.sprite import ActionSprite, AnimatedSprite
 from tinyrpg.resources import load_sound, load_texture
-from tinyrpg.utils.animation import Animation, AnimationFlag
-from tinyrpg.utils.sprite import ActionSprite, AnimatedSprite
 
 HERO_WORD_BOUNDARY = pr.Rectangle(-160 - 8, -160 - 16, 320 - 16, 320 - 16)  # pixels
 HERO_SPEED = 16  # pixel * s-1
@@ -60,16 +60,19 @@ class Hero(AnimatedSprite):
             case ActionSprite.ATTACKING if int(self.animation.frame) in (0, 1):
                 if not pr.is_sound_playing(load_sound("chop")):
                     pr.play_sound(load_sound("chop"))
+            # case ActionSprite.COLLIDING:
+            #     if not pr.is_sound_playing(load_sound("hurt")):
+            #         pr.play_sound(load_sound("hurt"))
 
     def set_animation_effect(self) -> None:
         match self.action:
-            case ActionSprite.WALKING if self.dir.x < 0:
+            case ActionSprite.WALKING | ActionSprite.COLLIDING if self.dir.x < 0:
                 self.set_animation("WalkLeft")
-            case ActionSprite.WALKING if self.dir.x > 0:
+            case ActionSprite.WALKING | ActionSprite.COLLIDING if self.dir.x > 0:
                 self.set_animation("WalkRight")
-            case ActionSprite.WALKING if self.dir.y < 0:
+            case ActionSprite.WALKING | ActionSprite.COLLIDING if self.dir.y < 0:
                 self.set_animation("WalkUp")
-            case ActionSprite.WALKING if self.dir.y > 0:
+            case ActionSprite.WALKING | ActionSprite.COLLIDING if self.dir.y > 0:
                 self.set_animation("WalkDown")
             case ActionSprite.ATTACKING if self.dir.x < 0:
                 self.set_animation("AttackLeft")
@@ -83,6 +86,10 @@ class Hero(AnimatedSprite):
                 self.set_animation("AttackDown")
             case _:
                 self.set_animation("Idle")
+
+    def collide(self, collision_vector: pr.Vector2, dt: float):
+        self.action = ActionSprite.COLLIDING
+        super().collide(collision_vector, dt)
 
     def update(self, dt: float):
         self.handle_input()

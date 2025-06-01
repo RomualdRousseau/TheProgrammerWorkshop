@@ -1,4 +1,4 @@
-import heapq
+from contextlib import contextmanager
 
 import pyray as pr
 
@@ -19,8 +19,8 @@ class DrawCommand:
 
 
 class DrawRectangle(DrawCommand):
-    def __init__(self, layer: int, ratioz: float, rect: pr.Rectangle, color: pr.Color):
-        super().__init__(layer, rect.y + rect.height * ratioz)
+    def __init__(self, layer: int, depth_ratio: float, rect: pr.Rectangle, color: pr.Color):
+        super().__init__(layer, rect.y + rect.height * depth_ratio)
         self.rect = rect
         self.color = color
 
@@ -42,14 +42,14 @@ class DrawTextureCommand(DrawCommand):
     def __init__(
         self,
         layer: int,
-        ratioz: float,
+        depth_ratio: float,
         texture: pr.Texture,
         source: pr.Rectangle,
         dest: pr.Rectangle,
         origin: pr.Vector2,
         rotation: float,
     ):
-        super().__init__(layer, dest.y + dest.height * ratioz)
+        super().__init__(layer, dest.y + dest.height * depth_ratio)
         self.texture = texture
         self.source = source
         self.dest = dest
@@ -71,13 +71,17 @@ class DrawHeap:
     queue: list[DrawCommand] = []
 
 
-def begin_draw() -> None:
+@contextmanager
+def begin_draw(camera: pr.Camera2D):
+    pr.begin_mode_2d(camera)
+
+    yield None
+
+    for draw in sorted(DrawHeap.queue):
+        draw()
     DrawHeap.queue.clear()
+    pr.end_mode_2d()
 
 
-def emit_draw_command(command: DrawCommand) -> None:
-    heapq.heappush(DrawHeap.queue, command)
-
-
-def end_draw() -> None:
-    [draw() for draw in sorted(DrawHeap.queue)]
+def emit_draw_command(command: DrawCommand):
+    DrawHeap.queue.append(command)

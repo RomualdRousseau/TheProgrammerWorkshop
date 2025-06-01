@@ -3,14 +3,15 @@ from enum import Enum
 import pyray as pr
 
 from tinyrpg.constants import EPSILON
-from tinyrpg.utils.animation import Animation
-from tinyrpg.utils.draw import DrawTextureCommand, emit_draw_command
+from tinyrpg.engine.animation import Animation
+from tinyrpg.utils.draw_manager import DrawTextureCommand, emit_draw_command
 
 
 class ActionSprite(Enum):
-    IDLING = (0,)
-    WALKING = (1,)
+    IDLING = 0
+    WALKING = 1
     ATTACKING = 2
+    COLLIDING = 3
 
 
 class Sprite:
