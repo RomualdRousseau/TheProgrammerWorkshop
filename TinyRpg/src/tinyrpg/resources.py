@@ -7,6 +7,7 @@ RESOURCES = {
     "level1_map": "data/maps/levels/level1.tmx",
     "level1_music": "data/maps/musics/level1.wav",
     "player": "data/textures/player.png",
+    "bubble": "data/textures/bubble.png",
     "chop": "data/sounds/chop.wav",
     "step": "data/sounds/step.wav",
     "hurt": "data/sounds/hurt.wav",
