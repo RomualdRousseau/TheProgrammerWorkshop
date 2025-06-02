@@ -1,10 +1,12 @@
+from enum import Flag
+
 import pyray as pr
 
 from tinyrpg.engine.animation import Animation, AnimationFlag
-from tinyrpg.engine.sprite import ActionSprite, AnimatedSprite
+from tinyrpg.engine.sprite import AnimatedSprite
 from tinyrpg.resources import load_sound, load_texture
 
-HERO_WORD_BOUNDARY = pr.Rectangle(-160 - 8, -160 - 16, 320 - 16, 320 - 16)  # pixels
+HERO_WORLD_BOUNDARY = pr.BoundingBox((-160 - 8, -160 - 16), (160 - 24, 160 - 24))  # pixels
 HERO_SPEED = 16  # pixel * s-1
 HERO_SIZE = pr.Vector2(32, 32)  # pixels
 
@@ -19,6 +21,13 @@ HERO_ANIMATIONS = {
     "AttackLeft": Animation(pr.Vector2(0, 7), HERO_SIZE, 4, 5, AnimationFlag.MIRROR_X),
     "AttackRight": Animation(pr.Vector2(0, 7), HERO_SIZE, 4, 5),
 }
+
+
+class ActionSprite(Flag):
+    IDLING = 0
+    WALKING = 1
+    ATTACKING = 2
+    COLLIDING = 3
 
 
 class Hero(AnimatedSprite):
@@ -66,13 +75,13 @@ class Hero(AnimatedSprite):
 
     def set_animation_effect(self) -> None:
         match self.action:
-            case ActionSprite.WALKING | ActionSprite.COLLIDING if self.dir.x < 0:
+            case ActionSprite.WALKING if self.dir.x < 0:
                 self.set_animation("WalkLeft")
-            case ActionSprite.WALKING | ActionSprite.COLLIDING if self.dir.x > 0:
+            case ActionSprite.WALKING if self.dir.x > 0:
                 self.set_animation("WalkRight")
-            case ActionSprite.WALKING | ActionSprite.COLLIDING if self.dir.y < 0:
+            case ActionSprite.WALKING if self.dir.y < 0:
                 self.set_animation("WalkUp")
-            case ActionSprite.WALKING | ActionSprite.COLLIDING if self.dir.y > 0:
+            case ActionSprite.WALKING if self.dir.y > 0:
                 self.set_animation("WalkDown")
             case ActionSprite.ATTACKING if self.dir.x < 0:
                 self.set_animation("AttackLeft")
@@ -88,13 +97,13 @@ class Hero(AnimatedSprite):
                 self.set_animation("Idle")
 
     def collide(self, collision_vector: pr.Vector2, dt: float):
-        self.action = ActionSprite.COLLIDING
+        self.action |= ActionSprite.COLLIDING
         super().collide(collision_vector, dt)
 
     def update(self, dt: float):
         self.handle_input()
         self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
-        self.constrain_to_world(HERO_WORD_BOUNDARY)
+        self.constrain_to_world(HERO_WORLD_BOUNDARY)
         super().update(dt)
 
     def draw(self):

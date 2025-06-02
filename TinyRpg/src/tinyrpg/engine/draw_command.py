@@ -1,21 +1,21 @@
-from contextlib import contextmanager
-
 import pyray as pr
 
+from tinyrpg.constants import DIR8
+from tinyrpg.engine.draw_manager import DrawCommand
 
-class DrawCommand:
-    def __init__(self, layer: int, depth: float):
-        self.layer = layer
-        self.depth = depth
+
+class DrawText(DrawCommand):
+    def __init__(self, layer: int, text: str, pos: pr.Vector2, fg_color: pr.Color, bg_color: pr.Color):
+        super().__init__(layer, pos.y + 10)
+        self.pos = pos
+        self.text = text
+        self.fg_color = fg_color
+        self.bg_color = bg_color
 
     def __call__(self):
-        pass
-
-    def __lt__(self, other):
-        return self._cmp_depth(other) < 0
-
-    def _cmp_depth(self, other) -> float:
-        return (self.depth - other.depth) if other.layer == self.layer else (self.layer - other.layer)
+        for dir in DIR8:
+            pr.draw_text(self.text, int(self.pos.x + dir[0]), int(self.pos.y + dir[1]), 10, self.bg_color)
+        pr.draw_text(self.text, int(self.pos.x), int(self.pos.y), 10, self.fg_color)
 
 
 class DrawRectangle(DrawCommand):
@@ -65,23 +65,3 @@ class DrawTextureCommand(DrawCommand):
             self.rotation,
             pr.WHITE,
         )
-
-
-class DrawHeap:
-    queue: list[DrawCommand] = []
-
-
-@contextmanager
-def begin_draw(camera: pr.Camera2D):
-    pr.begin_mode_2d(camera)
-
-    yield None
-
-    for draw in sorted(DrawHeap.queue):
-        draw()
-    DrawHeap.queue.clear()
-    pr.end_mode_2d()
-
-
-def emit_draw_command(command: DrawCommand):
-    DrawHeap.queue.append(command)
