@@ -5,9 +5,9 @@
     },
     "activeFile": "",
     "expandedProjectPaths": [
-        "levels",
         ".",
-        "tilesets"
+        "tilesets",
+        "levels"
     ],
     "fileStates": {
         "levels/level1.tmx": {
