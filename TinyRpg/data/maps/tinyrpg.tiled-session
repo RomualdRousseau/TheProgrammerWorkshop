@@ -87,10 +87,11 @@
     "openFiles": [
     ],
     "project": "tinyrpg.tiled-project",
-    "property.type": "float",
+    "property.type": "int",
     "recentFiles": [
         "levels/level1.tmx",
         "tilesets/decorations.tsx",
+        "tilesets/tilesets.tsx",
         "levels/level2.tmx",
         "tilesets/Basic_Furniture.tsx",
         "tilesets/Basic_Grass.tsx",
@@ -99,8 +100,7 @@
         "tilesets/Doors.tsx",
         "tilesets/Fences.tsx",
         "tilesets/Grass.tsx",
-        "tilesets/Hills.tsx",
-        "tilesets/tilesets.tsx"
+        "tilesets/Hills.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

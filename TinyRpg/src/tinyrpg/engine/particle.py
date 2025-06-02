@@ -1,11 +1,11 @@
 import pyray as pr
 
-from tinyrpg.engine.sprite import Sprite
+from tinyrpg.engine.entity import Entity
 
 
-class Particle(Sprite):
-    def __init__(self, texture: pr.Texture, pos: pr.Vector2):
-        super().__init__(texture, pos)
+class Particle(Entity):
+    def __init__(self, pos: pr.Vector2):
+        super().__init__(pos)
         self.life = 100
 
     def is_alive(self) -> bool:

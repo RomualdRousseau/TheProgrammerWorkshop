@@ -3,8 +3,9 @@ from dataclasses import dataclass
 import pyray as pr
 from pytmx import TiledMap
 
-from tinyrpg.utils.bbox import get_bbox_center
-from tinyrpg.utils.draw_manager import DrawTextureCommand, emit_draw_command
+from tinyrpg.engine.draw_command import DrawTextureCommand
+from tinyrpg.engine.draw_manager import emit_draw_command
+from tinyrpg.utils.bbox import get_bbox_center, get_bbox_from_rect
 from tinyrpg.utils.quad_tree import QuadTreeBuilder
 
 MAP_BBOX = pr.BoundingBox((2, 2, 0), (-2, -2, 0))
@@ -14,8 +15,8 @@ MAP_BBOX = pr.BoundingBox((2, 2, 0), (-2, -2, 0))
 class MapTile:
     texture: pr.Texture
     source: pr.Rectangle
-    depth_ratio: float
-    walkable: bool
+    depth_ratio: float = 1.0
+    walkable: bool = False
 
 
 MapBoundingBox = tuple[pr.BoundingBox, MapTile]
@@ -27,17 +28,33 @@ class Map:
         self.origin = pr.Vector2(-tiledmap.width // 2, -tiledmap.height // 2)
         self.bboxes = QuadTreeBuilder[MapBoundingBox](tiledmap.width, tiledmap.tilewidth).build()
 
+        if self.tiledmap.background_color:
+            r, g, b = [int(self.tiledmap.background_color[i : i + 2], 16) for i in (1, 3, 5)]
+            self.background_color = pr.Color(r, g, b, 255)
+        else:
+            self.background_color = pr.RAYWHITE
+
         for layer_i, layer in enumerate(tiledmap.layers):
             for x, y, tile in layer.tiles():
                 prop = tiledmap.get_tile_properties(x, y, layer_i)
                 if not prop:
                     continue
 
-                tile.depth_ratio = prop.get("depth", 1.0)
+                tile.depth_ratio = prop.get("depth_ratio", prop.get("depth", 1.0))
 
                 tile.walkable = prop.get("walkable", True)
                 if not tile.walkable:
-                    self.bboxes.append(self._get_map_to_world(x, y), (self._get_bbox(x, y), tile))
+                    self.bboxes.append(self.get_tilemap_to_world(x, y), (self.get_bbox(x, y), tile))
+
+    def get_background_color(self):
+        return self.background_color
+
+    def get_bbox(self, x: float, y: float) -> pr.BoundingBox:
+        return get_bbox_from_rect(self._get_dest(x, y))
+
+    def get_tilemap_to_world(self, x: float, y: float) -> pr.Vector2:
+        size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
+        return pr.Vector2((x + self.origin.x) * size_x, (y + self.origin.y) * size_y)
 
     def check_collide_bbox(self, bbox: pr.BoundingBox, collision_vector: pr.Vector2) -> tuple[bool, pr.Vector2]:
         has_collision = False
@@ -65,16 +82,6 @@ class Map:
     # Private helpers
     #
 
-    def _get_bbox(self, x: float, y: float) -> pr.BoundingBox:
-        rect = self._get_dest(x, y)
-        min = pr.Vector3(rect.x + MAP_BBOX.min.x, rect.y + MAP_BBOX.min.y, 0)
-        max = pr.Vector3(min.x + rect.width + MAP_BBOX.max.x * 2 - 1, min.y + rect.height + MAP_BBOX.max.y * 2 - 1, 0)
-        return pr.BoundingBox(min, max)
-
     def _get_dest(self, x: float, y: float) -> pr.Rectangle:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
         return pr.Rectangle((x + self.origin.x) * size_x, (y + self.origin.y) * size_y, size_x, size_y)
-
-    def _get_map_to_world(self, x: float, y: float) -> pr.Vector2:
-        size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
-        return pr.Vector2((x + self.origin.x) * size_x, (y + self.origin.y) * size_y)

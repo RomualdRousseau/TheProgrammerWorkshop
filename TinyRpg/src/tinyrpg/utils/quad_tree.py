@@ -52,12 +52,14 @@ class QuadTree(Generic[T]):
         nodes = self.walk_tree(partial(pr.check_collision_boxes, bbox))
         return reduce(lambda x, y: x + y.entities, nodes, [])
 
-    def append(self, point: pr.Vector2, entity: T):
+    def append(self, point: pr.Vector2, entity: T) -> Optional[QuadTree[T]]:
         node = next(self.walk_tree(partial(check_collision_bbox_point, point=point)), None)
         if node:
             node.entities.append(entity)
+        return node
 
-    def remove(self, point: pr.Vector2, entity: T):
+    def remove(self, point: pr.Vector2, entity: T) -> Optional[QuadTree[T]]:
         node = next(self.walk_tree(partial(check_collision_bbox_point, point=point)), None)
         if node:
             node.entities.remove(entity)
+        return node

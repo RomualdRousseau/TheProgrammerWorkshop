@@ -3,6 +3,12 @@ from typing import Iterable
 import pyray as pr
 
 
+def get_bbox_from_rect(rect: pr.Rectangle) -> pr.BoundingBox:
+    min = pr.Vector3(rect.x, rect.y, 0)
+    max = pr.Vector3(rect.x + rect.width - 1, rect.y + rect.height - 1, 0)
+    return pr.BoundingBox(min, max)
+
+
 def get_bbox_center(bbox: pr.BoundingBox) -> pr.Vector3:
     return pr.vector3_scale(pr.vector3_add(bbox.min, bbox.max), 0.5)
 

@@ -26,7 +26,7 @@ def load_map(name: str) -> Map:
         tile_texture = load_tile_texture(filename)
 
         def extract_image(rect, flags):
-            return MapTile(tile_texture, pr.Rectangle(*rect), 1.0, True)
+            return MapTile(tile_texture, pr.Rectangle(*rect))
 
         return extract_image
 
