@@ -46,7 +46,6 @@ def release() -> None:
 
 def update(dt: float) -> None:
     game = get_game("level1")
-    pr.update_music_stream(game.music)
 
     # Physic updates
 
@@ -75,6 +74,7 @@ def update(dt: float) -> None:
 
 def draw() -> None:
     game = get_game("level1")
+    pr.update_music_stream(game.music)
 
     # Setup camera
 
