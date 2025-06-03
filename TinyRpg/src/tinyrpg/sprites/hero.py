@@ -1,4 +1,4 @@
-from enum import Flag
+from enum import Flag, auto
 
 import pyray as pr
 
@@ -24,10 +24,10 @@ HERO_ANIMATIONS = {
 
 
 class ActionSprite(Flag):
-    IDLING = 0
-    WALKING = 1
-    ATTACKING = 2
-    COLLIDING = 3
+    IDLING = auto()
+    WALKING = auto()
+    ATTACKING = auto()
+    COLLIDING = auto()
 
 
 class Hero(AnimatedSprite):
@@ -69,19 +69,16 @@ class Hero(AnimatedSprite):
             case ActionSprite.ATTACKING if int(self.animation.frame) in (0, 1):
                 if not pr.is_sound_playing(load_sound("chop")):
                     pr.play_sound(load_sound("chop"))
-            # case ActionSprite.COLLIDING:
-            #     if not pr.is_sound_playing(load_sound("hurt")):
-            #         pr.play_sound(load_sound("hurt"))
 
     def set_animation_effect(self) -> None:
         match self.action:
-            case ActionSprite.WALKING if self.dir.x < 0:
+            case a if ActionSprite.WALKING in a and self.dir.x < 0:
                 self.set_animation("WalkLeft")
-            case ActionSprite.WALKING if self.dir.x > 0:
+            case a if ActionSprite.WALKING in a and self.dir.x > 0:
                 self.set_animation("WalkRight")
-            case ActionSprite.WALKING if self.dir.y < 0:
+            case a if ActionSprite.WALKING in a and self.dir.y < 0:
                 self.set_animation("WalkUp")
-            case ActionSprite.WALKING if self.dir.y > 0:
+            case a if ActionSprite.WALKING in a and self.dir.y > 0:
                 self.set_animation("WalkDown")
             case ActionSprite.ATTACKING if self.dir.x < 0:
                 self.set_animation("AttackLeft")

@@ -26,7 +26,7 @@ class Entity:
         self.pos.y = max(boundary.min.y, min(self.pos.y, boundary.max.y))
 
     def collide(self, collision_vector: pr.Vector2, dt: float):
-        col = pr.vector2_scale(collision_vector, pr.vector2_length(self.vel) * dt * (1 + EPSILON))
+        col = pr.vector2_scale(collision_vector, pr.vector2_length(self.vel) * dt)
         self.pos = pr.vector2_add(self.pos, col)
 
     def update(self, dt: float):
