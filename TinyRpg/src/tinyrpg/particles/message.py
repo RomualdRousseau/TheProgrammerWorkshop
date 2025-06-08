@@ -1,22 +1,31 @@
 import pyray as pr
 
-from tinyrpg.constants import WINDOW_HEIGHT, WINDOW_WIDTH
-from tinyrpg.engine.particle import Particle
-from tinyrpg.engine.renderer import renderer_unsorted_draw
+from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
+from tinyrpg.engine.renderer import renderer_unsorted
+from tinyrpg.engine.widget import Widget
 
-MESSAGE_HEIGHT = 200  # pixels
-MESSAGE_BORDER = 20  # pixels
-MESSAGE_FONT_SIZE = 40  # pixels
-MESSAGE_FADE_SPEED = 4  # pixels.s-1
+MESSAGE_HEIGHT = 50  # px
+MESSAGE_BORDER = 1  # px
+MESSAGE_MARGIN = 5  # px
+MESSAGE_PADDING = 2  # px
+MESSAGE_FONT_SIZE = 10  # px
+MESSAGE_FONT_SPACE = 2  # px
+MESSAGE_FADE_SPEED = 8  # px.s-1
+MESSAGE_STROKE_SPEED = 45  # ch.s-1
 
 
-class Message(Particle):
-    def __init__(self, greeting: str, camera: pr.Camera2D):
-        super().__init__(pr.Vector2(MESSAGE_BORDER, WINDOW_HEIGHT - MESSAGE_HEIGHT - MESSAGE_BORDER))
-        self.greeting = greeting
+class Message(Widget):
+    def __init__(self, name: str, text: str, camera: pr.Camera2D):
+        pos = pr.Vector2(MESSAGE_MARGIN, WORLD_HEIGHT - MESSAGE_HEIGHT - MESSAGE_MARGIN)
+        size = pr.Vector2(WORLD_WIDTH - MESSAGE_MARGIN * 2, MESSAGE_HEIGHT)
+        super().__init__(pos, size)
+
+        self.name = name
+        self.text = text
         self.camera = camera
         self.state = 0
         self.fade_time = 0
+        self.stroke_time = 0
 
     def handle_input(self):
         if pr.is_key_pressed(pr.KeyboardKey.KEY_SPACE):
@@ -25,30 +34,39 @@ class Message(Particle):
     def update(self, dt: float):
         match self.state:
             case 0:
-                self.life = 100
                 self.fade_time += MESSAGE_FADE_SPEED * dt
                 if self.fade_time >= 1:
                     self.fade_time = 1
                     self.state = 1
             case 1:
-                self.life = 100
                 self.handle_input()
+                self.stroke_time = min(self.stroke_time + MESSAGE_STROKE_SPEED * dt, len(self.text))
             case 2:
-                self.life = 100
                 self.fade_time -= MESSAGE_FADE_SPEED * dt
                 if self.fade_time <= 0:
-                    self.life = 0
+                    self.fade_time = 0
                     self.state = 3
+            case 3:
+                self.close()
         super().update(dt)
 
-    @renderer_unsorted_draw
+    @renderer_unsorted
     def draw(self):
-        pos = pr.get_screen_to_world_2d(self.pos, self.camera)
-        size = pr.Vector2((WINDOW_WIDTH - MESSAGE_BORDER * 2) / self.camera.zoom, MESSAGE_HEIGHT / self.camera.zoom)
-        off_y, size_y = size.y * (1 - self.fade_time) // 2, size.y * self.fade_time
-        rect = pr.Rectangle(pos.x, pos.y + off_y, size.x, size_y)
+        rect = self.get_rect_2d(self.camera)
+        rect.y += rect.height * (1 - self.fade_time) // 2
+        rect.height = rect.height * self.fade_time
+
         pr.draw_rectangle_rec(rect, pr.color_alpha(pr.BLUE, 0.8))
-        pr.draw_rectangle_lines_ex(rect, 1, pr.RAYWHITE)
+        pr.draw_rectangle_lines_ex(rect, MESSAGE_BORDER, pr.RAYWHITE)
+
         if self.state == 1:
-            font_size = int(MESSAGE_FONT_SIZE / self.camera.zoom)
-            pr.draw_text(self.greeting, int(pos.x + 2), int(pos.y + 2), font_size, pr.RAYWHITE)
+            pr.draw_text(
+                self.name, int(rect.x + MESSAGE_PADDING), int(rect.y + MESSAGE_PADDING), MESSAGE_FONT_SIZE, pr.RAYWHITE
+            )
+            pr.draw_text(
+                self.text[: int(self.stroke_time)],
+                int(rect.x + MESSAGE_PADDING),
+                int(rect.y + MESSAGE_FONT_SIZE + MESSAGE_PADDING + MESSAGE_FONT_SPACE),
+                MESSAGE_FONT_SIZE,
+                pr.RAYWHITE,
+            )
