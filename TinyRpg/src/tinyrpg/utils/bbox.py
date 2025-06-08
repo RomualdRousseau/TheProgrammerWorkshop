@@ -23,3 +23,8 @@ def subdivide_bbox(bbox: pr.BoundingBox) -> Iterable[pr.BoundingBox]:
 
 def check_collision_bbox_point(bbox: pr.BoundingBox, point: pr.Vector2) -> bool:
     return bbox.min.x <= point.x < bbox.max.x and bbox.min.y <= point.y < bbox.max.y
+
+
+def check_collision_bbox_ray(bbox: pr.BoundingBox, ray: pr.Ray) -> bool:
+    col = pr.get_ray_collision_box(ray, bbox)
+    return col.hit

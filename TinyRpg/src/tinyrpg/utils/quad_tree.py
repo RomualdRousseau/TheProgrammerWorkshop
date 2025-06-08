@@ -6,7 +6,7 @@ from typing import Callable, Generator, Generic, Optional, TypeVar
 
 import pyray as pr
 
-from tinyrpg.utils.bbox import check_collision_bbox_point, subdivide_bbox
+from tinyrpg.utils.bbox import check_collision_bbox_point, check_collision_bbox_ray, subdivide_bbox
 
 T = TypeVar("T")
 
@@ -47,6 +47,10 @@ class QuadTree(Generic[T]):
     def find_point(self, point: pr.Vector2) -> list[T]:
         node = next(self.walk_tree(partial(check_collision_bbox_point, point=point)), None)
         return node.entities if node else []
+
+    def find_ray(self, ray: pr.Ray) -> list[T]:
+        nodes = self.walk_tree(partial(check_collision_bbox_ray, ray=ray))
+        return reduce(lambda x, y: x + y.entities, nodes, [])
 
     def find_bbox(self, bbox: pr.BoundingBox) -> list[T]:
         nodes = self.walk_tree(partial(pr.check_collision_boxes, bbox))
