@@ -9,10 +9,10 @@ from tinyrpg.engine.map import Map
 from tinyrpg.engine.particle import Particle
 from tinyrpg.engine.renderer import begin_renderer_draw
 from tinyrpg.engine.widget import Widget
-from tinyrpg.particles.message import Message
 from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.sprites.hero import ActionHero, Hero
+from tinyrpg.widgets.message import Message
 
 
 @dataclass
