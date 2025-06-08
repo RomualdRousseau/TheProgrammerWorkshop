@@ -1,13 +1,15 @@
 from dataclasses import dataclass, field
 from functools import cache
 from random import random
+from typing import Optional
 
 import pyray as pr
 
-from tinyrpg.engine.draw_manager import begin_draw
 from tinyrpg.engine.map import Map
 from tinyrpg.engine.particle import Particle
-from tinyrpg.particles.hey import Hey
+from tinyrpg.engine.renderer import begin_renderer_draw
+from tinyrpg.particles.message import Message
+from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.sprites.hero import ActionSprite, Hero
 
@@ -21,6 +23,7 @@ class Game:
     music: pr.Music
     hero: Hero
     particles: list[Particle] = field(default_factory=lambda: [])
+    message: Optional[Message] = None
 
 
 @cache
@@ -61,14 +64,22 @@ def update(dt: float) -> None:
     # Effects
 
     if game.hero.action == ActionSprite.IDLING and random() < 0.0025:
-        game.particles.append(Hey(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "?"))
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "?"))
 
     if ActionSprite.COLLIDING in game.hero.action and random() < 0.05:
-        game.particles.append(Hey(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "!"))
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "!"))
+
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_A) and game.hero.action != ActionSprite.TALKING:
+        game.message = Message("Hello, how are you?\n\n\nPress SPACE to close", game.camera)
+        game.particles.append(game.message)
+        game.hero.start_talk()
 
     # Garbage collect dead objects
 
     game.particles = [particle for particle in game.particles if particle.is_alive()]
+    if game.message and not game.message.is_alive():
+        game.message = None
+        game.hero.stop_talk()
 
 
 def draw() -> None:
@@ -84,7 +95,8 @@ def draw() -> None:
     # Draw all objects
 
     pr.clear_background(game.map.get_background_color())
-    with begin_draw(game.camera):
+
+    with begin_renderer_draw(game.camera):
         game.map.draw()
         game.hero.draw()
         for particle in game.particles:
