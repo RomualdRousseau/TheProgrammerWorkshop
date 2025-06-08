@@ -2,7 +2,7 @@ import pyray as pr
 
 from tinyrpg.engine.animation import Animation
 from tinyrpg.engine.entity import Entity
-from tinyrpg.engine.renderer import renderer_sorted_draw
+from tinyrpg.engine.renderer import renderer_sorted
 from tinyrpg.utils.bbox import get_bbox_from_rect
 
 
@@ -20,7 +20,7 @@ class Sprite(Entity):
     def get_bbox(self) -> pr.BoundingBox:
         return get_bbox_from_rect(pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height))
 
-    @renderer_sorted_draw
+    @renderer_sorted
     def draw(self):
         pr.draw_texture_pro(
             self.texture,
@@ -67,7 +67,7 @@ class AnimatedSprite(Sprite):
         super().update(dt)
         self.animation.update(dt)
 
-    @renderer_sorted_draw
+    @renderer_sorted
     def draw(self):
         pr.draw_texture_pro(
             self.texture,

@@ -1,38 +1,41 @@
 from contextlib import contextmanager
-from typing import Callable, Optional, Protocol
+from typing import Any, Callable, Protocol
 
 import pyray as pr
 
 
-class RendererSortedDraw(Protocol):
+class Renderer(Protocol):
+    def draw(self): ...
+
+
+class RendererCaller:
+    def __init__(self, renderer: Renderer, draw_method: Callable[[Any], None]):
+        self.renderer = renderer
+        self.draw_method = draw_method
+
+    def draw(self):
+        self.draw_method(self.renderer)
+
+
+class RendererSorted(Renderer):
     def get_layer(self) -> int: ...
 
     def get_depth(self) -> float: ...
 
 
-class RendererDraw:
-    def __init__(self, layer: int, depth: float, draw_func: Optional[Callable[[], None]] = None):
-        self.layer = layer
-        self.depth = depth
-        self.draw_func = draw_func
-
-    def __call__(self):
-        if self.draw_func:
-            self.draw_func()
+class RendererSortedCaller(RendererCaller):
+    def __init__(self, renderer: RendererSorted, draw_method: Callable[[Any], None]):
+        super().__init__(renderer, draw_method)
+        self.depth = renderer.get_depth()
 
     def __lt__(self, other):
-        return self._cmp_depth(other) < 0
-
-    #
-    # Private helpers
-    #
-
-    def _cmp_depth(self, other) -> float:
-        return (self.depth - other.depth) if other.layer == self.layer else (self.layer - other.layer)
+        return self.depth < other.depth
 
 
 class RendererHeap:
-    queue: list[RendererDraw] = []
+    layer_0: list[RendererCaller] = []
+    layer_1: list[RendererSortedCaller] = []
+    layer_2: list[RendererCaller] = []
 
 
 @contextmanager
@@ -41,27 +44,35 @@ def begin_renderer_draw(camera: pr.Camera2D):
 
     yield None
 
-    for draw in sorted(RendererHeap.queue):
-        draw()
-    RendererHeap.queue.clear()
+    for renderer in RendererHeap.layer_0:
+        renderer.draw()
+    for renderer in sorted(RendererHeap.layer_1):
+        renderer.draw()
+    for renderer in RendererHeap.layer_2:
+        renderer.draw()
+
     pr.end_mode_2d()
 
+    RendererHeap.layer_0.clear()
+    RendererHeap.layer_1.clear()
+    RendererHeap.layer_2.clear()
 
-def renderer_sorted_draw(draw_func):
-    def wrapper(self: RendererSortedDraw):
-        def draw_func_with_self(self=self):
-            draw_func(self)
 
-        RendererHeap.queue.append(RendererDraw(self.get_layer(), self.get_depth(), draw_func_with_self))
+def renderer_sorted(draw_method):
+    def wrapper(self):
+        match self.get_layer():
+            case 0:
+                RendererHeap.layer_0.append(RendererCaller(self, draw_method))
+            case 1:
+                RendererHeap.layer_1.append(RendererSortedCaller(self, draw_method))
+            case _:
+                raise ValueError("Invalid layer")
 
     return wrapper
 
 
-def renderer_unsorted_draw(draw_func):
+def renderer_unsorted(draw_method):
     def wrapper(self):
-        def draw_func_with_self(self=self):
-            draw_func(self)
-
-        RendererHeap.queue.append(RendererDraw(99, 0, draw_func_with_self))
+        RendererHeap.layer_2.append(RendererCaller(self, draw_method))
 
     return wrapper

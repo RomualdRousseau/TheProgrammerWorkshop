@@ -3,7 +3,8 @@ from dataclasses import dataclass
 import pyray as pr
 from pytmx import TiledMap
 
-from tinyrpg.engine.renderer import renderer_sorted_draw
+from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
+from tinyrpg.engine.renderer import renderer_sorted
 from tinyrpg.utils.bbox import get_bbox_center, get_bbox_from_rect
 from tinyrpg.utils.quad_tree import QuadTreeBuilder
 
@@ -18,7 +19,7 @@ class MapTile:
     walkable: bool = False
 
 
-class MapTileDrawSorted:
+class MapTileRendererSorted:
     def __init__(self, tile, dest, layer):
         self.tile = tile
         self.layer = layer
@@ -31,7 +32,7 @@ class MapTileDrawSorted:
     def get_depth(self) -> float:
         return self.depth
 
-    @renderer_sorted_draw
+    @renderer_sorted
     def draw(self):
         pr.draw_texture_pro(
             self.tile.texture,
@@ -73,6 +74,11 @@ class Map:
     def get_background_color(self):
         return self.background_color
 
+    def get_world_boundary(self) -> pr.BoundingBox:
+        x = (self.tiledmap.width * self.tiledmap.tilewidth - WORLD_WIDTH) // 2
+        y = (self.tiledmap.height * self.tiledmap.tileheight - WORLD_HEIGHT) // 2
+        return pr.BoundingBox((-x, -y), (x, y))
+
     def get_bbox(self, x: float, y: float) -> pr.BoundingBox:
         return get_bbox_from_rect(self._get_tile_dest(x, y))
 
@@ -97,7 +103,7 @@ class Map:
     def draw(self) -> None:
         for layer_i, layer in enumerate(self.tiledmap.layers):
             for x, y, tile in layer.tiles():
-                MapTileDrawSorted(tile, self._get_tile_dest(x, y), layer_i).draw()
+                MapTileRendererSorted(tile, self._get_tile_dest(x, y), layer_i).draw()
 
     #
     # Private helpers
