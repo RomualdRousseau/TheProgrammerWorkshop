@@ -35,11 +35,10 @@ class RendererSortedCaller(RendererCaller):
 class RendererHeap:
     layer_0: list[RendererCaller] = []
     layer_1: list[RendererSortedCaller] = []
-    layer_2: list[RendererCaller] = []
 
 
 @contextmanager
-def begin_renderer_draw(camera: pr.Camera2D):
+def begin_mode_sorted_2d(camera: pr.Camera2D):
     pr.begin_mode_2d(camera)
 
     yield None
@@ -48,14 +47,11 @@ def begin_renderer_draw(camera: pr.Camera2D):
         renderer.draw()
     for renderer in sorted(RendererHeap.layer_1):
         renderer.draw()
-    for renderer in RendererHeap.layer_2:
-        renderer.draw()
 
     pr.end_mode_2d()
 
     RendererHeap.layer_0.clear()
     RendererHeap.layer_1.clear()
-    RendererHeap.layer_2.clear()
 
 
 def renderer_sorted(draw_method):
@@ -67,12 +63,5 @@ def renderer_sorted(draw_method):
                 RendererHeap.layer_1.append(RendererSortedCaller(self, draw_method))
             case _:
                 raise ValueError("Invalid layer")
-
-    return wrapper
-
-
-def renderer_unsorted(draw_method):
-    def wrapper(self):
-        RendererHeap.layer_2.append(RendererCaller(self, draw_method))
 
     return wrapper

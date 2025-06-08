@@ -7,7 +7,7 @@ import pyray as pr
 from tinyrpg.constants import WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_WIDTH
 from tinyrpg.engine.map import Map
 from tinyrpg.engine.particle import Particle
-from tinyrpg.engine.renderer import begin_renderer_draw
+from tinyrpg.engine.renderer import begin_mode_sorted_2d
 from tinyrpg.engine.widget import Widget
 from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
@@ -98,12 +98,15 @@ def draw() -> None:
 
     pr.clear_background(game.map.get_background_color())
 
-    with begin_renderer_draw(game.camera):
+    with begin_mode_sorted_2d(game.camera):
         game.map.draw()
         game.hero.draw()
-        for particle in game.particles:
-            particle.draw()
-        for message in game.messages:
-            message.draw()
+
+    pr.begin_mode_2d(game.camera)
+    for particle in game.particles:
+        particle.draw()
+    for message in game.messages:
+        message.draw()
+    pr.end_mode_2d()
 
     pr.draw_fps(10, 10)

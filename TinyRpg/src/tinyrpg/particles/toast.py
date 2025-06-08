@@ -2,7 +2,6 @@ import pyray as pr
 
 from tinyrpg.engine.drawing import draw_text_outlined_v
 from tinyrpg.engine.particle import Particle
-from tinyrpg.engine.renderer import renderer_unsorted
 
 
 class Toast(Particle):
@@ -15,7 +14,6 @@ class Toast(Particle):
     def update(self, dt: float):
         super().update(dt)
 
-    @renderer_unsorted
     def draw(self):
         fg_color, bg_color = (
             pr.color_alpha(pr.RAYWHITE, self.life / 100),

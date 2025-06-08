@@ -1,7 +1,6 @@
 import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine.renderer import renderer_unsorted
 from tinyrpg.engine.widget import Widget
 
 MESSAGE_HEIGHT = 50  # px
@@ -50,7 +49,6 @@ class Message(Widget):
                 self.close()
         super().update(dt)
 
-    @renderer_unsorted
     def draw(self):
         rect = self.get_rect_2d(self.camera)
         rect.y += rect.height * (1 - self.fade_time) // 2
