@@ -28,6 +28,7 @@ class ActionSprite(Flag):
     WALKING = auto()
     ATTACKING = auto()
     COLLIDING = auto()
+    TALKING = auto()
 
 
 class Hero(AnimatedSprite):
@@ -35,6 +36,21 @@ class Hero(AnimatedSprite):
         super().__init__(load_texture("player"), pos, HERO_ANIMATIONS)
         self.dir = pr.vector2_zero()
         self.speed = 0
+        self.action = ActionSprite.IDLING
+
+    def get_layer(self):
+        return 1
+
+    def get_depth(self):
+        dest = self.animation.get_dest(self.pos.x, self.pos.y)
+        return dest.y + dest.height * 0.8
+
+    def start_talk(self):
+        self.dir = pr.vector2_zero()
+        self.speed = 0
+        self.action = ActionSprite.TALKING
+
+    def stop_talk(self):
         self.action = ActionSprite.IDLING
 
     def handle_input(self) -> None:
@@ -98,7 +114,8 @@ class Hero(AnimatedSprite):
         super().collide(collision_vector, dt)
 
     def update(self, dt: float):
-        self.handle_input()
+        if self.action != ActionSprite.TALKING:
+            self.handle_input()
         self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
         self.constrain_to_world(HERO_WORLD_BOUNDARY)
         super().update(dt)

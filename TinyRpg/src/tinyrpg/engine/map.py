@@ -3,8 +3,7 @@ from dataclasses import dataclass
 import pyray as pr
 from pytmx import TiledMap
 
-from tinyrpg.engine.draw_command import DrawTextureCommand
-from tinyrpg.engine.draw_manager import emit_draw_command
+from tinyrpg.engine.renderer import renderer_sorted_draw
 from tinyrpg.utils.bbox import get_bbox_center, get_bbox_from_rect
 from tinyrpg.utils.quad_tree import QuadTreeBuilder
 
@@ -17,6 +16,31 @@ class MapTile:
     source: pr.Rectangle
     depth_ratio: float = 1.0
     walkable: bool = False
+
+
+class MapTileDrawSorted:
+    def __init__(self, tile, dest, layer):
+        self.tile = tile
+        self.layer = layer
+        self.dest = dest
+        self.depth = self.dest.y + self.dest.height * self.tile.depth_ratio
+
+    def get_layer(self) -> int:
+        return self.layer
+
+    def get_depth(self) -> float:
+        return self.depth
+
+    @renderer_sorted_draw
+    def draw(self):
+        pr.draw_texture_pro(
+            self.tile.texture,
+            self.tile.source,
+            self.dest,
+            pr.vector2_zero(),
+            0.0,
+            pr.WHITE,
+        )
 
 
 MapBoundingBox = tuple[pr.BoundingBox, MapTile]
@@ -50,7 +74,7 @@ class Map:
         return self.background_color
 
     def get_bbox(self, x: float, y: float) -> pr.BoundingBox:
-        return get_bbox_from_rect(self._get_dest(x, y))
+        return get_bbox_from_rect(self._get_tile_dest(x, y))
 
     def get_tilemap_to_world(self, x: float, y: float) -> pr.Vector2:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
@@ -71,19 +95,14 @@ class Map:
         return has_collision, pr.vector2_add(collision_vector, sum_reaction_2d)
 
     def draw(self) -> None:
-        origin = pr.vector2_zero()
         for layer_i, layer in enumerate(self.tiledmap.layers):
             for x, y, tile in layer.tiles():
-                emit_draw_command(
-                    DrawTextureCommand(
-                        layer_i, tile.depth_ratio, tile.texture, tile.source, self._get_dest(x, y), origin, 0.0
-                    )
-                )
+                MapTileDrawSorted(tile, self._get_tile_dest(x, y), layer_i).draw()
 
     #
     # Private helpers
     #
 
-    def _get_dest(self, x: float, y: float) -> pr.Rectangle:
+    def _get_tile_dest(self, x: float, y: float) -> pr.Rectangle:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
         return pr.Rectangle((x + self.origin.x) * size_x, (y + self.origin.y) * size_y, size_x, size_y)

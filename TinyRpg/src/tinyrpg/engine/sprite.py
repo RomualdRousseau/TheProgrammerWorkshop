@@ -1,9 +1,8 @@
 import pyray as pr
 
 from tinyrpg.engine.animation import Animation
-from tinyrpg.engine.draw_command import DrawTextureCommand
-from tinyrpg.engine.draw_manager import emit_draw_command
 from tinyrpg.engine.entity import Entity
+from tinyrpg.engine.renderer import renderer_sorted_draw
 from tinyrpg.utils.bbox import get_bbox_from_rect
 
 
@@ -12,22 +11,24 @@ class Sprite(Entity):
         super().__init__(pos)
         self.texture = texture
 
+    def get_layer(self) -> int:
+        return 1
+
+    def get_depth(self) -> float:
+        return self.pos.y + self.texture.height
+
     def get_bbox(self) -> pr.BoundingBox:
         return get_bbox_from_rect(pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height))
 
+    @renderer_sorted_draw
     def draw(self):
-        source = pr.Rectangle(0, 0, self.texture.width, self.texture.height)
-        dest = pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height)
-        emit_draw_command(
-            DrawTextureCommand(
-                5,
-                0.8,
-                self.texture,
-                source,
-                dest,
-                pr.vector2_zero(),
-                0.0,
-            )
+        pr.draw_texture_pro(
+            self.texture,
+            pr.Rectangle(0, 0, self.texture.width, self.texture.height),
+            pr.Rectangle(self.pos.x, self.pos.y, self.texture.width, self.texture.height),
+            pr.vector2_zero(),
+            0.0,
+            pr.WHITE,
         )
 
 
@@ -42,6 +43,13 @@ class AnimatedSprite(Sprite):
         super().__init__(texture, pos)
         self.animations = animations
         self.animation = animations[default_name]
+
+    def get_layer(self) -> int:
+        return 1
+
+    def get_depth(self) -> float:
+        dest = self.animation.get_dest(self.pos.x, self.pos.y)
+        return dest.y + dest.height
 
     def get_bbox(self) -> pr.BoundingBox:
         dest = self.animation.get_dest(self.pos.x, self.pos.y)
@@ -59,15 +67,13 @@ class AnimatedSprite(Sprite):
         super().update(dt)
         self.animation.update(dt)
 
+    @renderer_sorted_draw
     def draw(self):
-        emit_draw_command(
-            DrawTextureCommand(
-                1,
-                0.8,
-                self.texture,
-                self.animation.get_source(),
-                self.animation.get_dest(self.pos.x, self.pos.y),
-                self.animation.get_origin(),
-                0.0,
-            )
+        pr.draw_texture_pro(
+            self.texture,
+            self.animation.get_source(),
+            self.animation.get_dest(self.pos.x, self.pos.y),
+            self.animation.get_origin(),
+            0.0,
+            pr.WHITE,
         )
