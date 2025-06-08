@@ -6,31 +6,50 @@ from tinyrpg.engine.draw_manager import DrawCommand
 
 class DrawText(DrawCommand):
     def __init__(self, layer: int, text: str, pos: pr.Vector2, fg_color: pr.Color, bg_color: pr.Color):
-        super().__init__(layer, pos.y + 10)
+        super().__init__(layer, 0)
         self.pos = pos
         self.text = text
+        self.font_size = 10
         self.fg_color = fg_color
         self.bg_color = bg_color
 
     def __call__(self):
         for dir in DIR8:
-            pr.draw_text(self.text, int(self.pos.x + dir[0]), int(self.pos.y + dir[1]), 10, self.bg_color)
-        pr.draw_text(self.text, int(self.pos.x), int(self.pos.y), 10, self.fg_color)
+            pr.draw_text(self.text, int(self.pos.x + dir[0]), int(self.pos.y + dir[1]), self.font_size, self.bg_color)
+        pr.draw_text(self.text, int(self.pos.x), int(self.pos.y), self.font_size, self.fg_color)
 
 
 class DrawRectangle(DrawCommand):
-    def __init__(self, layer: int, depth_ratio: float, rect: pr.Rectangle, color: pr.Color):
-        super().__init__(layer, rect.y + rect.height * depth_ratio)
+    def __init__(self, layer: int, rect: pr.Rectangle, fg_color: pr.Color, bg_color: pr.Color):
+        super().__init__(layer, 0)
         self.rect = rect
-        self.color = color
+        self.fg_color = fg_color
+        self.bg_color = bg_color
 
     def __call__(self):
-        pr.draw_rectangle_rec(self.rect, self.color)
+        pr.draw_rectangle_rec(self.rect, self.bg_color)
+        pr.draw_rectangle_lines_ex(self.rect, 2, self.fg_color)
+
+
+class DrawMessage(DrawRectangle):
+    def __init__(self, layer: int, text: str, pos: pr.Vector2, fg_color: pr.Color, bg_color: pr.Color):
+        self.pos = pos
+        self.text = text
+        self.font_size = 10
+
+        size = pr.measure_text(self.text, self.font_size)
+        super().__init__(
+            layer, pr.Rectangle(self.pos.x - 4, self.pos.y - 4, size + 8, self.font_size + 8), fg_color, bg_color
+        )
+
+    def __call__(self):
+        super().__call__()
+        pr.draw_text(self.text, int(self.pos.x), int(self.pos.y), self.font_size, self.fg_color)
 
 
 class DrawBoundingBox(DrawCommand):
-    def __init__(self, bbox: pr.BoundingBox, color: pr.Color):
-        super().__init__(99, 0)
+    def __init__(self, layer: int, bbox: pr.BoundingBox, color: pr.Color):
+        super().__init__(layer, 0)
         self.bbox = bbox
         self.color = color
 

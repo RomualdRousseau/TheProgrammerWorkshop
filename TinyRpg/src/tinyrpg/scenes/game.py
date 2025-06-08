@@ -7,7 +7,6 @@ import pyray as pr
 from tinyrpg.engine.draw_manager import begin_draw
 from tinyrpg.engine.map import Map
 from tinyrpg.engine.particle import Particle
-from tinyrpg.particles.hello import Hello
 from tinyrpg.particles.hey import Hey
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.sprites.hero import ActionSprite, Hero
@@ -62,10 +61,10 @@ def update(dt: float) -> None:
     # Effects
 
     if game.hero.action == ActionSprite.IDLING and random() < 0.0025:
-        game.particles.append(Hello(pr.Vector2(game.hero.pos.x + 16, game.hero.pos.y - 8)))
+        game.particles.append(Hey(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "?"))
 
-    if game.hero.action == ActionSprite.COLLIDING and random() < 0.05:
-        game.particles.append(Hey(pr.Vector2(game.hero.pos.x + 16, game.hero.pos.y - 8)))
+    if ActionSprite.COLLIDING in game.hero.action and random() < 0.05:
+        game.particles.append(Hey(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "!"))
 
     # Garbage collect dead objects
 

@@ -6,9 +6,10 @@ from tinyrpg.engine.particle import Particle
 
 
 class Hey(Particle):
-    def __init__(self, pos: pr.Vector2):
+    def __init__(self, pos: pr.Vector2, text: str):
         super().__init__(pos)
-        self.vel = pr.Vector2(0, -30)
+        self.vel = pr.Vector2(0, -20)
+        self.text = text
 
     def update(self, dt: float):
         super().update(dt)
@@ -17,7 +18,7 @@ class Hey(Particle):
         emit_draw_command(
             DrawText(
                 99,
-                "hey !",
+                self.text,
                 self.pos,
                 pr.color_alpha(pr.RAYWHITE, self.life / 100),
                 pr.color_alpha(pr.BLACK, self.life / 100),

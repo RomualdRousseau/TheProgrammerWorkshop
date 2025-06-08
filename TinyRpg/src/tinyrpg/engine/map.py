@@ -59,13 +59,13 @@ class Map:
     def check_collide_bbox(self, bbox: pr.BoundingBox, collision_vector: pr.Vector2) -> tuple[bool, pr.Vector2]:
         has_collision = False
         sum_reaction = pr.vector3_zero()
+        # emit_draw_command(DrawBoundingBox(bbox, pr.RED))
         for bbox2, _ in self.bboxes.find_bbox(bbox):
+            # emit_draw_command(DrawBoundingBox(bbox2, pr.GREEN))
             if pr.check_collision_boxes(bbox, bbox2):
-                v = pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))
-                if abs(v.x) >= abs(v.y):
-                    sum_reaction.x = max(min(sum_reaction.x + v.x / abs(v.x), 1), -1)
-                if abs(v.y) >= abs(v.x):
-                    sum_reaction.y = max(min(sum_reaction.y + v.y / abs(v.y), 1), -1)
+                sum_reaction = pr.vector3_add(
+                    sum_reaction, pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))
+                )
                 has_collision |= True
         sum_reaction_2d = pr.vector2_normalize(pr.Vector2(sum_reaction.x, sum_reaction.y))
         return has_collision, pr.vector2_add(collision_vector, sum_reaction_2d)
