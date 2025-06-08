@@ -1,6 +1,7 @@
 import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
+from tinyrpg.engine.drawing import draw_text_outlined_v
 from tinyrpg.engine.widget import Widget
 
 MESSAGE_HEIGHT = 50  # px
@@ -58,13 +59,17 @@ class Message(Widget):
         pr.draw_rectangle_lines_ex(rect, MESSAGE_BORDER, pr.RAYWHITE)
 
         if self.state == 1:
-            pr.draw_text(
-                self.name, int(rect.x + MESSAGE_PADDING), int(rect.y + MESSAGE_PADDING), MESSAGE_FONT_SIZE, pr.RAYWHITE
+            draw_text_outlined_v(
+                self.name,
+                pr.Vector2(rect.x + MESSAGE_PADDING - 1, rect.y - MESSAGE_FONT_SIZE + 2),
+                MESSAGE_FONT_SIZE,
+                pr.BLUE,
+                pr.RAYWHITE,
             )
             pr.draw_text(
                 self.text[: int(self.stroke_time)],
                 int(rect.x + MESSAGE_PADDING),
-                int(rect.y + MESSAGE_FONT_SIZE + MESSAGE_PADDING + MESSAGE_FONT_SPACE),
+                int(rect.y + MESSAGE_PADDING),
                 MESSAGE_FONT_SIZE,
                 pr.RAYWHITE,
             )
