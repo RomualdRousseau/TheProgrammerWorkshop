@@ -4,8 +4,8 @@ import pyray as pr
 
 
 def get_bbox_from_rect(rect: pr.Rectangle) -> pr.BoundingBox:
-    min = pr.Vector3(rect.x, rect.y, 0)
-    max = pr.Vector3(rect.x + rect.width - 1, rect.y + rect.height - 1, 0)
+    min = pr.Vector3(rect.x, rect.y, -1)
+    max = pr.Vector3(rect.x + rect.width - 1, rect.y + rect.height - 1, 1)
     return pr.BoundingBox(min, max)
 
 
@@ -15,15 +15,15 @@ def get_bbox_center(bbox: pr.BoundingBox) -> pr.Vector3:
 
 def subdivide_bbox(bbox: pr.BoundingBox) -> Iterable[pr.BoundingBox]:
     a, b, m = bbox.min, bbox.max, get_bbox_center(bbox)
-    yield pr.BoundingBox(pr.Vector3(a.x, a.y, 0), pr.Vector3(m.x, m.y, 0))
-    yield pr.BoundingBox(pr.Vector3(m.x, a.y, 0), pr.Vector3(b.x, m.y, 0))
-    yield pr.BoundingBox(pr.Vector3(m.x, m.y, 0), pr.Vector3(b.x, b.y, 0))
-    yield pr.BoundingBox(pr.Vector3(a.x, m.y, 0), pr.Vector3(m.x, b.y, 0))
+    yield pr.BoundingBox(pr.Vector3(a.x, a.y, -1), pr.Vector3(m.x, m.y, 1))
+    yield pr.BoundingBox(pr.Vector3(m.x, a.y, -1), pr.Vector3(b.x, m.y, 1))
+    yield pr.BoundingBox(pr.Vector3(m.x, m.y, -1), pr.Vector3(b.x, b.y, 1))
+    yield pr.BoundingBox(pr.Vector3(a.x, m.y, -1), pr.Vector3(m.x, b.y, 1))
 
 
 def expand_bbox(bbox: pr.BoundingBox, v: pr.Vector2) -> pr.BoundingBox:
-    min = pr.Vector3(bbox.min.x - v.x, bbox.min.y - v.y)
-    max = pr.Vector3(bbox.max.x + v.x, bbox.max.y + v.y)
+    min = pr.Vector3(bbox.min.x - v.x, bbox.min.y - v.y, -1)
+    max = pr.Vector3(bbox.max.x + v.x, bbox.max.y + v.y, 1)
     return pr.BoundingBox(min, max)
 
 

@@ -18,7 +18,7 @@ class QuadTreeBuilder(Generic[T]):
 
     def build(self) -> QuadTree[T]:
         bound = self.size * self.spacing / 2
-        bbox = pr.BoundingBox((-bound, -bound, 0), (bound, bound, 0))
+        bbox = pr.BoundingBox((-bound, -bound, -1), (bound, bound, 1))
         depth = int(math.log2(self.size))
         return QuadTree[T](bbox).build_tree(depth)
 

@@ -2,7 +2,7 @@ import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine.widget import Widget
-from tinyrpg.resources import load_sound
+from tinyrpg.resources import load_sound, load_texture
 
 MESSAGE_HEIGHT = 50  # px
 MESSAGE_BORDER = 1  # px
@@ -12,10 +12,11 @@ MESSAGE_FONT_SIZE = 10  # px
 MESSAGE_FONT_SPACE = 2  # px
 MESSAGE_FADE_SPEED = 8  # px.s-1
 MESSAGE_STROKE_SPEED = 45  # ch.s-1
+MESSAGE_PORTRAIT_SIZE = 64  # px
 
 
 class Message(Widget):
-    def __init__(self, name: str, text: str, camera: pr.Camera2D):
+    def __init__(self, name: str, portrait: str, text: str):
         super().__init__(
             pr.Vector2(MESSAGE_MARGIN, WORLD_HEIGHT - MESSAGE_HEIGHT - MESSAGE_MARGIN),
             pr.Vector2(WORLD_WIDTH - MESSAGE_MARGIN * 2, MESSAGE_HEIGHT),
@@ -23,7 +24,8 @@ class Message(Widget):
 
         self.name = name
         self.text = text
-        self.camera = camera
+        self.portrait = load_texture(portrait)
+
         self.state = 0
         self.fade_time = 0
         self.stroke_time = 0
@@ -58,7 +60,7 @@ class Message(Widget):
         else:
             pr.stop_sound(load_sound("key"))
 
-        rect = self.get_rect_2d(self.camera)
+        rect = self.get_rect()
         rect.y += rect.height * (1 - self.fade_time) // 2
         rect.height = rect.height * self.fade_time
 
@@ -85,4 +87,17 @@ class Message(Widget):
                 int(rect.y + MESSAGE_PADDING),
                 MESSAGE_FONT_SIZE,
                 pr.RAYWHITE,
+            )
+            pr.draw_texture_pro(
+                self.portrait,
+                pr.Rectangle(0, 0, self.portrait.width, self.portrait.height),
+                pr.Rectangle(
+                    rect.x + rect.width - MESSAGE_PORTRAIT_SIZE - MESSAGE_BORDER,
+                    rect.y + rect.height - MESSAGE_PORTRAIT_SIZE - MESSAGE_BORDER,
+                    MESSAGE_PORTRAIT_SIZE,
+                    MESSAGE_PORTRAIT_SIZE,
+                ),
+                pr.vector2_zero(),
+                0.0,
+                pr.WHITE,
             )

@@ -1,10 +1,11 @@
+import math
 from dataclasses import dataclass, field
 from functools import cache
 from random import random
 
 import pyray as pr
 
-from tinyrpg.constants import WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_WIDTH
+from tinyrpg.engine.camera import FixedCamera, FollowCamera
 from tinyrpg.engine.map import Map
 from tinyrpg.engine.particle import Particle
 from tinyrpg.engine.renderer import begin_mode_sorted_2d
@@ -12,13 +13,14 @@ from tinyrpg.engine.widget import Widget
 from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.sprites.hero import ActionHero, Hero
-from tinyrpg.utils import clip
+from tinyrpg.widgets.dialog import Dialog
 from tinyrpg.widgets.message import Message
 
 
 @dataclass
 class Game:
-    camera: pr.Camera2D
+    fixed_camera: FixedCamera
+    follow_camera: FollowCamera
     map: Map
     music: pr.Music
     hero: Hero
@@ -29,7 +31,8 @@ class Game:
 @cache
 def get_game(level_name: str) -> Game:
     return Game(
-        pr.Camera2D((WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2), (0, 0), 0, WINDOW_WIDTH // WORLD_WIDTH),
+        FixedCamera(),
+        FollowCamera(),
         load_map(f"{level_name}_map"),
         load_music(f"{level_name}_music"),
         Hero(pr.Vector2(0, -24)),
@@ -63,23 +66,43 @@ def update(dt: float) -> None:
     if has_collision:
         game.hero.collide(collision_vector, dt)
 
+    # Setup camera
+
+    game.follow_camera.set_boundary(game.map.get_world_boundary())
+    if len(game.messages) > 0:
+        game.follow_camera.boundary.max.y = math.inf
+    game.follow_camera.set_follower(game.hero)
+    game.follow_camera.update(dt)
+
     # Effects
 
     if game.hero.action == ActionHero.IDLING and random() < 0.0025:
-        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "?"))
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 4), "?"))
 
     if ActionHero.COLLIDING in game.hero.action and random() < 0.05:
-        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "!"))
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 4), "!"))
 
-    if pr.is_key_pressed(pr.KeyboardKey.KEY_A) and game.hero.action != ActionHero.TALKING:
+    if game.hero.action != ActionHero.TALKING and pr.is_key_pressed(pr.KeyboardKey.KEY_A):
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 20, game.hero.pos.y - 4), "..."))
         game.messages.append(
-            Message(
-                "Romuald", "Hello, how are you?\nLong time no see!\nLong time no see!\nLong time no see!", game.camera
+            Dialog(
+                [
+                    Message(
+                        "Romuald",
+                        "romuald",
+                        "Hello, how are you?\nI love you!",
+                    ),
+                    Message(
+                        "Grace",
+                        "grace",
+                        "I am fine!\nI love you too ...",
+                    ),
+                ]
             )
         )
         game.hero.start_talk()
 
-    if len(game.messages) == 0 and game.hero.action == ActionHero.TALKING:
+    if game.hero.action == ActionHero.TALKING and len(game.messages) == 0:
         game.hero.stop_talk()
 
     # Garbage collect dead objects
@@ -92,26 +115,20 @@ def draw() -> None:
     game = get_game("level1")
     pr.update_music_stream(game.music)
 
-    # Setup camera
-
-    world_boundary = game.map.get_world_boundary()
-    game.camera.target.x = clip(world_boundary.min.x, game.hero.pos.x, world_boundary.max.x)
-    if len(game.messages) == 0:
-        game.camera.target.y = clip(world_boundary.min.y, game.hero.pos.y, world_boundary.max.y)
-    else:
-        game.camera.target.y = max(world_boundary.min.y, game.hero.pos.y)
-
     # Draw all objects
 
     pr.clear_background(game.map.get_background_color())
 
-    with begin_mode_sorted_2d(game.camera):
+    with begin_mode_sorted_2d(game.follow_camera.camera):
         game.map.draw()
         game.hero.draw()
 
-    pr.begin_mode_2d(game.camera)
+    pr.begin_mode_2d(game.follow_camera.camera)
     for particle in game.particles:
         particle.draw()
+    pr.end_mode_2d()
+
+    pr.begin_mode_2d(game.fixed_camera.camera)
     for message in game.messages:
         message.draw()
     pr.end_mode_2d()

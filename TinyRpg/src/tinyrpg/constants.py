@@ -6,6 +6,9 @@ FRAME_RATE = 60  # fps
 
 WORLD_WIDTH = 256  # px
 WORLD_HEIGHT = 256  # px
+WORLD_LAYER_COUNT = 3
+
+CAMERA_SPEED = 5  # px.s-1
 
 EPSILON = 1e-6
 
