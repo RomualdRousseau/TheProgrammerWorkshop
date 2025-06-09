@@ -2,6 +2,7 @@ import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine.widget import Widget
+from tinyrpg.resources import load_sound
 
 MESSAGE_HEIGHT = 50  # px
 MESSAGE_BORDER = 1  # px
@@ -51,6 +52,12 @@ class Message(Widget):
         super().update(dt)
 
     def draw(self):
+        if self.stroke_time < len(self.text):
+            if not pr.is_sound_playing(load_sound("key")):
+                pr.play_sound(load_sound("key"))
+        else:
+            pr.stop_sound(load_sound("key"))
+
         rect = self.get_rect_2d(self.camera)
         rect.y += rect.height * (1 - self.fade_time) // 2
         rect.height = rect.height * self.fade_time

@@ -11,6 +11,7 @@ RESOURCES = {
     "chop": "data/sounds/chop.wav",
     "step": "data/sounds/step.wav",
     "hurt": "data/sounds/hurt.wav",
+    "key": "data/sounds/key.wav",
 }
 
 

@@ -72,7 +72,11 @@ def update(dt: float) -> None:
         game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 6), "!"))
 
     if pr.is_key_pressed(pr.KeyboardKey.KEY_A) and game.hero.action != ActionHero.TALKING:
-        game.messages.append(Message("Romuald", "Hello, how are you?\nLong time no see!", game.camera))
+        game.messages.append(
+            Message(
+                "Romuald", "Hello, how are you?\nLong time no see!\nLong time no see!\nLong time no see!", game.camera
+            )
+        )
         game.hero.start_talk()
 
     if len(game.messages) == 0 and game.hero.action == ActionHero.TALKING:
