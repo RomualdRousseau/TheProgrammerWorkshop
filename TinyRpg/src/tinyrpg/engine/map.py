@@ -4,8 +4,8 @@ import pyray as pr
 from pytmx import TiledMap
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine.renderer import renderer_sorted
-from tinyrpg.utils.bbox import get_bbox_center, get_bbox_from_rect
+from tinyrpg.engine.renderer import renderer
+from tinyrpg.utils.bbox import expand_bbox, get_bbox_center, get_bbox_from_rect
 from tinyrpg.utils.quad_tree import QuadTreeBuilder
 
 MAP_BBOX = pr.BoundingBox((2, 2, 0), (-2, -2, 0))
@@ -19,11 +19,11 @@ class MapTile:
     walkable: bool = False
 
 
-class MapTileRendererSorted:
-    def __init__(self, tile, dest, layer):
+class MapTileRenderer:
+    def __init__(self, tile: MapTile, dest: pr.Rectangle, layer: int):
         self.tile = tile
-        self.layer = layer
         self.dest = dest
+        self.layer = layer
         self.depth = self.dest.y + self.dest.height * self.tile.depth_ratio
 
     def get_layer(self) -> int:
@@ -32,7 +32,7 @@ class MapTileRendererSorted:
     def get_depth(self) -> float:
         return self.depth
 
-    @renderer_sorted
+    @renderer
     def draw(self):
         pr.draw_texture_pro(
             self.tile.texture,
@@ -42,6 +42,21 @@ class MapTileRendererSorted:
             0.0,
             pr.WHITE,
         )
+
+
+class MapBoundingBoxRenderer:
+    def __init__(self, bbox: pr.BoundingBox):
+        self.bbox = bbox
+
+    def get_layer(self) -> int:
+        return 2
+
+    def get_depth(self) -> float:
+        return 0
+
+    @renderer
+    def draw(self):
+        pr.draw_bounding_box(self.bbox, pr.GREEN)
 
 
 MapBoundingBox = tuple[pr.BoundingBox, MapTile]
@@ -79,19 +94,21 @@ class Map:
         y = (self.tiledmap.height * self.tiledmap.tileheight - WORLD_HEIGHT) // 2
         return pr.BoundingBox((-x, -y), (x, y))
 
-    def get_bbox(self, x: float, y: float) -> pr.BoundingBox:
-        return get_bbox_from_rect(self._get_tile_dest(x, y))
-
     def get_tilemap_to_world(self, x: float, y: float) -> pr.Vector2:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
-        return pr.Vector2((x + self.origin.x) * size_x, (y + self.origin.y) * size_y)
+        return pr.Vector2((x + self.origin.x + 0.5) * size_x, (y + self.origin.y + 0.5) * size_y)
+
+    def get_bbox(self, x: float, y: float) -> pr.BoundingBox:
+        return get_bbox_from_rect(self._get_tile_dest(x, y))
 
     def check_collide_bbox(self, bbox: pr.BoundingBox, collision_vector: pr.Vector2) -> tuple[bool, pr.Vector2]:
         has_collision = False
         sum_reaction = pr.vector3_zero()
-        # emit_draw_command(DrawBoundingBox(bbox, pr.RED))
-        for bbox2, _ in self.bboxes.find_bbox(bbox):
-            # emit_draw_command(DrawBoundingBox(bbox2, pr.GREEN))
+        bbox1 = expand_bbox(bbox, pr.Vector2(self.tiledmap.tilewidth / 2, self.tiledmap.tileheight / 2))
+        # MapBoundingBoxRenderer(bbox).draw()
+        # MapBoundingBoxRenderer(bbox1).draw()
+        for bbox2, _ in self.bboxes.find_bbox(bbox1):
+            # MapBoundingBoxRenderer(bbox2).draw()
             if pr.check_collision_boxes(bbox, bbox2):
                 sum_reaction = pr.vector3_add(
                     sum_reaction, pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))
@@ -103,7 +120,7 @@ class Map:
     def draw(self) -> None:
         for layer_i, layer in enumerate(self.tiledmap.layers):
             for x, y, tile in layer.tiles():
-                MapTileRendererSorted(tile, self._get_tile_dest(x, y), layer_i).draw()
+                MapTileRenderer(tile, self._get_tile_dest(x, y), layer_i).draw()
 
     #
     # Private helpers

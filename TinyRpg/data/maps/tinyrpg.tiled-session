@@ -5,8 +5,8 @@
     },
     "activeFile": "",
     "expandedProjectPaths": [
-        ".",
         "tilesets",
+        ".",
         "levels"
     ],
     "fileStates": {
@@ -14,8 +14,8 @@
             "scale": 3.78515625,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 160.0990712074303,
-                "y": 159.83488132094945
+                "x": 194.7079463364293,
+                "y": 159.8348813209494
             }
         },
         "levels/level2.tmx": {
@@ -90,8 +90,8 @@
     "property.type": "int",
     "recentFiles": [
         "levels/level1.tmx",
-        "tilesets/decorations.tsx",
         "tilesets/tilesets.tsx",
+        "tilesets/decorations.tsx",
         "levels/level2.tmx",
         "tilesets/Basic_Furniture.tsx",
         "tilesets/Basic_Grass.tsx",

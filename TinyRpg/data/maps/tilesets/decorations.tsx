@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.1" name="decorations" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+<tileset version="1.10" tiledversion="1.11.2" name="decorations" tilewidth="16" tileheight="16" tilecount="256" columns="16">
  <image source="../textures/decorations.png" width="256" height="256"/>
  <tile id="0">
   <properties>
@@ -42,35 +42,30 @@
  <tile id="7">
   <properties>
    <property name="depth" type="float" value="7"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="8">
   <properties>
    <property name="depth" type="float" value="7"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="9">
   <properties>
    <property name="depth" type="float" value="7"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="10">
   <properties>
    <property name="depth" type="float" value="7"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="11">
   <properties>
    <property name="depth" type="float" value="7"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -139,35 +134,30 @@
  <tile id="23">
   <properties>
    <property name="depth" type="float" value="6"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="24">
   <properties>
    <property name="depth" type="float" value="6"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="25">
   <properties>
    <property name="depth" type="float" value="6"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="26">
   <properties>
    <property name="depth" type="float" value="6"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="27">
   <properties>
    <property name="depth" type="float" value="6"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -229,35 +219,30 @@
  <tile id="39">
   <properties>
    <property name="depth" type="float" value="5"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="40">
   <properties>
    <property name="depth" type="float" value="5"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="41">
   <properties>
    <property name="depth" type="float" value="5"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="42">
   <properties>
    <property name="depth" type="float" value="5"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="43">
   <properties>
    <property name="depth" type="float" value="5"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -321,35 +306,30 @@
  <tile id="55">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="56">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="57">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="58">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="59">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -412,35 +392,30 @@
  <tile id="71">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="72">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="73">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="74">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="75">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -503,35 +478,30 @@
  <tile id="87">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="88">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="89">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="90">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="91">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -679,28 +649,24 @@
  <tile id="119">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="120">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="121">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="122">
   <properties>
    <property name="depth" type="float" value="4"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -767,28 +733,24 @@
  <tile id="135">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="136">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="137">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="138">
   <properties>
    <property name="depth" type="float" value="3"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -855,28 +817,24 @@
  <tile id="151">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="152">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="153">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="154">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -1123,28 +1081,24 @@
  <tile id="203">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="204">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="205">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="206">
   <properties>
    <property name="depth" type="float" value="2"/>
-   <property name="layer_offset" type="int" value="1"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>

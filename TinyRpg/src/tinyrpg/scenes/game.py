@@ -12,6 +12,7 @@ from tinyrpg.engine.widget import Widget
 from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.sprites.hero import ActionHero, Hero
+from tinyrpg.utils import clip
 from tinyrpg.widgets.message import Message
 
 
@@ -90,9 +91,11 @@ def draw() -> None:
     # Setup camera
 
     world_boundary = game.map.get_world_boundary()
-    game.camera.target = game.hero.pos
-    game.camera.target.x = max(world_boundary.min.x, min(game.camera.target.x, world_boundary.max.x))
-    game.camera.target.y = max(world_boundary.min.y, min(game.camera.target.y, world_boundary.max.y))
+    game.camera.target.x = clip(world_boundary.min.x, game.hero.pos.x, world_boundary.max.x)
+    if len(game.messages) == 0:
+        game.camera.target.y = clip(world_boundary.min.y, game.hero.pos.y, world_boundary.max.y)
+    else:
+        game.camera.target.y = max(world_boundary.min.y, game.hero.pos.y)
 
     # Draw all objects
 
