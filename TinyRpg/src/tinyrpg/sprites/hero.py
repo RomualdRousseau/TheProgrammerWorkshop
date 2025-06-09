@@ -5,6 +5,7 @@ import pyray as pr
 from tinyrpg.engine.animation import Animation, AnimationFlag
 from tinyrpg.engine.sprite import AnimatedSprite
 from tinyrpg.resources import load_sound, load_texture
+from tinyrpg.utils.bbox import get_bbox_from_rect
 
 HERO_WORLD_BOUNDARY = pr.BoundingBox((-160 - 8, -160 - 16), (160 - 24, 160 - 24))  # pixels
 HERO_SPEED = 16  # pixel * s-1
@@ -44,6 +45,13 @@ class Hero(AnimatedSprite):
     def get_depth(self):
         dest = self.animation.get_dest(self.pos.x, self.pos.y)
         return dest.y + dest.height * 0.8
+
+    def get_bbox(self) -> pr.BoundingBox:
+        dest = self.animation.get_dest(self.pos.x, self.pos.y)
+        bbox = get_bbox_from_rect(dest)
+        bbox.min = pr.Vector3(bbox.min.x + 12, bbox.min.y + 20, 0)
+        bbox.max = pr.Vector3(bbox.max.x - 12, bbox.max.y - 8, 0)
+        return bbox
 
     def start_talk(self):
         self.dir = pr.vector2_zero()

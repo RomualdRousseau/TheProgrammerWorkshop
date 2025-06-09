@@ -1,7 +1,6 @@
 import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine.drawing import draw_text_outlined_v
 from tinyrpg.engine.widget import Widget
 
 MESSAGE_HEIGHT = 50  # px
@@ -16,9 +15,10 @@ MESSAGE_STROKE_SPEED = 45  # ch.s-1
 
 class Message(Widget):
     def __init__(self, name: str, text: str, camera: pr.Camera2D):
-        pos = pr.Vector2(MESSAGE_MARGIN, WORLD_HEIGHT - MESSAGE_HEIGHT - MESSAGE_MARGIN)
-        size = pr.Vector2(WORLD_WIDTH - MESSAGE_MARGIN * 2, MESSAGE_HEIGHT)
-        super().__init__(pos, size)
+        super().__init__(
+            pr.Vector2(MESSAGE_MARGIN, WORLD_HEIGHT - MESSAGE_HEIGHT - MESSAGE_MARGIN),
+            pr.Vector2(WORLD_WIDTH - MESSAGE_MARGIN * 2, MESSAGE_HEIGHT),
+        )
 
         self.name = name
         self.text = text
@@ -55,16 +55,22 @@ class Message(Widget):
         rect.y += rect.height * (1 - self.fade_time) // 2
         rect.height = rect.height * self.fade_time
 
-        pr.draw_rectangle_rec(rect, pr.color_alpha(pr.BLUE, 0.8))
-        pr.draw_rectangle_lines_ex(rect, MESSAGE_BORDER, pr.RAYWHITE)
+        pr.draw_rectangle_rec(rect, pr.color_alpha(pr.BLUE, self.fade_time * 0.8))
+        pr.draw_rectangle_lines_ex(rect, MESSAGE_BORDER, pr.color_alpha(pr.RAYWHITE, self.fade_time))
 
         if self.state == 1:
-            draw_text_outlined_v(
+            name_width = pr.measure_text(self.name, MESSAGE_FONT_SIZE)
+            pr.draw_rectangle_v(
+                (rect.x, rect.y - MESSAGE_FONT_SIZE),
+                (name_width + MESSAGE_PADDING * 3, MESSAGE_FONT_SIZE),
+                pr.RAYWHITE,
+            )
+            pr.draw_text(
                 self.name,
-                pr.Vector2(rect.x + MESSAGE_PADDING - 1, rect.y - MESSAGE_FONT_SIZE + 2),
+                int(rect.x + MESSAGE_PADDING),
+                int(rect.y - MESSAGE_FONT_SIZE + 1),
                 MESSAGE_FONT_SIZE,
                 pr.BLUE,
-                pr.RAYWHITE,
             )
             pr.draw_text(
                 self.text[: int(self.stroke_time)],
