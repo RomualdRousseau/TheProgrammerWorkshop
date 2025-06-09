@@ -3,6 +3,8 @@ from typing import Any, Callable, Protocol
 
 import pyray as pr
 
+from tinyrpg.constants import WORLD_LAYER_COUNT
+
 
 class Renderer(Protocol):
     def get_layer(self) -> int: ...
@@ -26,9 +28,25 @@ class RendererCaller:
 
 
 class RendererHeap:
-    layer_0: list[RendererCaller] = []
-    layer_1: list[RendererCaller] = []
-    layer_2: list[RendererCaller] = []
+    layers: list[list[RendererCaller]] = [[] for _ in range(WORLD_LAYER_COUNT)]
+    sorted_mask: list[bool] = [i == 1 for i in range(WORLD_LAYER_COUNT)]
+
+
+class BoundingBoxRenderer:
+    def __init__(self, bbox: pr.BoundingBox):
+        self.bbox = bbox
+
+    def get_layer(self) -> int:
+        return 2
+
+    def get_depth(self) -> float:
+        return 0
+
+    def draw(self):
+        def draw_method(self):
+            pr.draw_bounding_box(self.bbox, pr.GREEN)
+
+        RendererHeap.layers[self.get_layer()].append(RendererCaller(self, draw_method))
 
 
 @contextmanager
@@ -37,32 +55,19 @@ def begin_mode_sorted_2d(camera: pr.Camera2D):
 
     yield None
 
-    for renderer in RendererHeap.layer_0:
-        renderer.draw()
-
-    for renderer in sorted(RendererHeap.layer_1):
-        renderer.draw()
-
-    for renderer in RendererHeap.layer_2:
-        renderer.draw()
+    for i in range(WORLD_LAYER_COUNT):
+        items = sorted(RendererHeap.layers[i]) if RendererHeap.sorted_mask[i] else RendererHeap.layers[i]
+        for item in items:
+            item.draw()
 
     pr.end_mode_2d()
 
-    RendererHeap.layer_0.clear()
-    RendererHeap.layer_1.clear()
-    RendererHeap.layer_2.clear()
+    for i in range(WORLD_LAYER_COUNT):
+        RendererHeap.layers[i].clear()
 
 
-def renderer(draw_method):
-    def wrapper(self):
-        match self.get_layer():
-            case 0:
-                RendererHeap.layer_0.append(RendererCaller(self, draw_method))
-            case 1:
-                RendererHeap.layer_1.append(RendererCaller(self, draw_method))
-            case 2:
-                RendererHeap.layer_2.append(RendererCaller(self, draw_method))
-            case _:
-                raise ValueError("Invalid layer")
+def renderer(draw_method: Callable[[Any], None]) -> Callable[[Renderer], None]:
+    def wrapper(self: Renderer):
+        RendererHeap.layers[self.get_layer()].append(RendererCaller(self, draw_method))
 
     return wrapper

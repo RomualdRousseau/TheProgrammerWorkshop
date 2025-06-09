@@ -8,8 +8,6 @@ from tinyrpg.engine.renderer import renderer
 from tinyrpg.utils.bbox import expand_bbox, get_bbox_center, get_bbox_from_rect
 from tinyrpg.utils.quad_tree import QuadTreeBuilder
 
-MAP_BBOX = pr.BoundingBox((2, 2, 0), (-2, -2, 0))
-
 
 @dataclass
 class MapTile:
@@ -42,21 +40,6 @@ class MapTileRenderer:
             0.0,
             pr.WHITE,
         )
-
-
-class MapBoundingBoxRenderer:
-    def __init__(self, bbox: pr.BoundingBox):
-        self.bbox = bbox
-
-    def get_layer(self) -> int:
-        return 2
-
-    def get_depth(self) -> float:
-        return 0
-
-    @renderer
-    def draw(self):
-        pr.draw_bounding_box(self.bbox, pr.GREEN)
 
 
 MapBoundingBox = tuple[pr.BoundingBox, MapTile]
@@ -92,7 +75,7 @@ class Map:
     def get_world_boundary(self) -> pr.BoundingBox:
         x = (self.tiledmap.width * self.tiledmap.tilewidth - WORLD_WIDTH) // 2
         y = (self.tiledmap.height * self.tiledmap.tileheight - WORLD_HEIGHT) // 2
-        return pr.BoundingBox((-x, -y), (x, y))
+        return pr.BoundingBox((-x, -y, -1), (x, y, 1))
 
     def get_tilemap_to_world(self, x: float, y: float) -> pr.Vector2:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
@@ -105,10 +88,10 @@ class Map:
         has_collision = False
         sum_reaction = pr.vector3_zero()
         bbox1 = expand_bbox(bbox, pr.Vector2(self.tiledmap.tilewidth / 2, self.tiledmap.tileheight / 2))
-        # MapBoundingBoxRenderer(bbox).draw()
-        # MapBoundingBoxRenderer(bbox1).draw()
+        # BoundingBoxRenderer(bbox).draw()
+        # BoundingBoxRenderer(bbox1).draw()
         for bbox2, _ in self.bboxes.find_bbox(bbox1):
-            # MapBoundingBoxRenderer(bbox2).draw()
+            # BoundingBoxRenderer(bbox2).draw()
             if pr.check_collision_boxes(bbox, bbox2):
                 sum_reaction = pr.vector3_add(
                     sum_reaction, pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))
