@@ -91,8 +91,8 @@ class Hero(AnimatedSprite):
                 if not pr.is_sound_playing(load_sound("step")):
                     pr.play_sound(load_sound("step"))
             case ActionHero.ATTACKING if int(self.animation.frame) in (0, 1):
-                if not pr.is_sound_playing(load_sound("chop")):
-                    pr.play_sound(load_sound("chop"))
+                if not pr.is_sound_playing(load_sound("hurt")):
+                    pr.play_sound(load_sound("hurt"))
 
     def set_animation_effect(self) -> None:
         match self.action:
