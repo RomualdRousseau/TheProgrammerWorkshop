@@ -15,7 +15,7 @@ MESSAGE_STROKE_SPEED = 45  # ch.s-1
 MESSAGE_PORTRAIT_SIZE = 64  # px
 
 
-class Message(Widget):
+class MessageBox(Widget):
     def __init__(self, name: str, portrait: str, text: str):
         super().__init__(
             pr.Vector2(MESSAGE_MARGIN, WORLD_HEIGHT - MESSAGE_HEIGHT - MESSAGE_MARGIN),

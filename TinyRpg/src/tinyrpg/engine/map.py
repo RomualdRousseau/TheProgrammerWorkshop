@@ -67,7 +67,7 @@ class Map:
 
                 tile.walkable = prop.get("walkable", True)
                 if not tile.walkable:
-                    self.bboxes.append(self.get_tilemap_to_world(x, y), (self.get_bbox(x, y), tile))
+                    self.bboxes.append(self._get_tile_to_world_2d(x, y), (self.get_bbox(x, y), tile))
 
     def get_background_color(self):
         return self.background_color
@@ -77,9 +77,8 @@ class Map:
         y = (self.tiledmap.height * self.tiledmap.tileheight - WORLD_HEIGHT) // 2
         return pr.BoundingBox((-x, -y, -1), (x, y, 1))
 
-    def get_tilemap_to_world(self, x: float, y: float) -> pr.Vector2:
-        size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
-        return pr.Vector2((x + self.origin.x + 0.5) * size_x, (y + self.origin.y + 0.5) * size_y)
+    def get_start_location(self) -> pr.Vector2:
+        return pr.Vector2(0, -24)
 
     def get_bbox(self, x: float, y: float) -> pr.BoundingBox:
         return get_bbox_from_rect(self._get_tile_dest(x, y))
@@ -87,7 +86,7 @@ class Map:
     def check_collide_bbox(self, bbox: pr.BoundingBox, collision_vector: pr.Vector2) -> tuple[bool, pr.Vector2]:
         has_collision = False
         sum_reaction = pr.vector3_zero()
-        bbox1 = expand_bbox(bbox, pr.Vector2(self.tiledmap.tilewidth / 2, self.tiledmap.tileheight / 2))
+        bbox1 = expand_bbox(bbox, pr.Vector2(self.tiledmap.tilewidth * 0.5, self.tiledmap.tileheight * 0.5))
         # BoundingBoxRenderer(bbox).draw()
         # BoundingBoxRenderer(bbox1).draw()
         for bbox2, _ in self.bboxes.find_bbox(bbox1):
@@ -108,6 +107,10 @@ class Map:
     #
     # Private helpers
     #
+
+    def _get_tile_to_world_2d(self, x: float, y: float) -> pr.Vector2:
+        size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
+        return pr.Vector2((x + self.origin.x + 0.5) * size_x, (y + self.origin.y + 0.5) * size_y)
 
     def _get_tile_dest(self, x: float, y: float) -> pr.Rectangle:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
