@@ -86,12 +86,12 @@ def update(dt: float) -> None:
                     MessageBox(
                         "Romuald",
                         "romuald",
-                        "Hello, how are you?\nI love you!",
+                        "Hello Grace, how are you?\nI love you!",
                     ),
                     MessageBox(
                         "Grace",
                         "grace",
-                        "I am fine!\nI love you too ...",
+                        "I am fine, Romuald!\nI love you too ...",
                     ),
                 ]
             )
