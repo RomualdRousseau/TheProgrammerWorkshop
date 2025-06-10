@@ -9,7 +9,7 @@ class Widget(Entity):
         self.size = size
         self.closed = False
 
-    def is_opened(self) -> bool:
+    def is_open(self) -> bool:
         return not self.closed
 
     def is_closed(self) -> bool:

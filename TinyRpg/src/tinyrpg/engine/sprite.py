@@ -1,5 +1,6 @@
 import pyray as pr
 
+from tinyrpg.constants import WORLD_FOREGROUND_LAYER
 from tinyrpg.engine.animation import Animation
 from tinyrpg.engine.entity import Entity
 from tinyrpg.engine.renderer import renderer
@@ -12,7 +13,7 @@ class Sprite(Entity):
         self.texture = texture
 
     def get_layer(self) -> int:
-        return 1
+        return WORLD_FOREGROUND_LAYER
 
     def get_depth(self) -> float:
         return self.pos.y + self.texture.height
@@ -43,9 +44,6 @@ class AnimatedSprite(Sprite):
         super().__init__(texture, pos)
         self.animations = animations
         self.animation = animations[default_name]
-
-    def get_layer(self) -> int:
-        return 1
 
     def get_depth(self) -> float:
         dest = self.animation.get_dest(self.pos.x, self.pos.y)

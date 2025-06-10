@@ -26,6 +26,7 @@ class Entity:
         self.pos.y = max(boundary.min.y, min(self.pos.y, boundary.max.y))
 
     def collide(self, collision_vector: pr.Vector2, dt: float):
+        # TODO: Sliding effect on walls
         u = pr.vector2_scale(collision_vector, 0.5)
         v = pr.vector2_add(u, pr.vector2_scale(self.vel, -dt))
         self.pos = pr.vector2_add(self.pos, v)

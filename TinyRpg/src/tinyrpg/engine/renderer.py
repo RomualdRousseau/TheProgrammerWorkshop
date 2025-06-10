@@ -3,7 +3,7 @@ from typing import Any, Callable, Protocol
 
 import pyray as pr
 
-from tinyrpg.constants import WORLD_LAYER_COUNT
+from tinyrpg.constants import WORLD_FOREGROUND_LAYER, WORLD_LAYER_COUNT
 
 
 class Renderer(Protocol):
@@ -29,7 +29,7 @@ class RendererCaller:
 
 class RendererHeap:
     layers: list[list[RendererCaller]] = [[] for _ in range(WORLD_LAYER_COUNT)]
-    sorted_mask: list[bool] = [i == 1 for i in range(WORLD_LAYER_COUNT)]
+    sorted_mask: list[bool] = [i == WORLD_FOREGROUND_LAYER for i in range(WORLD_LAYER_COUNT)]
 
 
 class BoundingBoxRenderer:
@@ -56,9 +56,9 @@ def begin_mode_sorted_2d(camera: pr.Camera2D):
     yield None
 
     for i in range(WORLD_LAYER_COUNT):
-        items = sorted(RendererHeap.layers[i]) if RendererHeap.sorted_mask[i] else RendererHeap.layers[i]
-        for item in items:
-            item.draw()
+        callers = sorted(RendererHeap.layers[i]) if RendererHeap.sorted_mask[i] else RendererHeap.layers[i]
+        for caller in callers:
+            caller.draw()
 
     pr.end_mode_2d()
 

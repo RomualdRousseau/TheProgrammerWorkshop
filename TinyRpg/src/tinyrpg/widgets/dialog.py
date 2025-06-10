@@ -1,9 +1,9 @@
 from tinyrpg.engine.widget import Widget
-from tinyrpg.widgets.message import Message
+from tinyrpg.widgets.message import MessageBox
 
 
-class Dialog(Widget):
-    def __init__(self, messages: list[Message]):
+class DialogBox(Widget):
+    def __init__(self, messages: list[MessageBox]):
         super().__init__(messages[0].pos, messages[0].size)
         self.messages = messages
         self.current = 0
