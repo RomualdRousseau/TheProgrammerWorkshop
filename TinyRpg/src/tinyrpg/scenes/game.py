@@ -14,6 +14,7 @@ from tinyrpg.engine.widget import Widget
 from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.sprites.hero import ActionHero, Hero
+from tinyrpg.sprites.npc import Npc
 from tinyrpg.widgets.dialog import DialogBox
 from tinyrpg.widgets.message import MessageBox
 
@@ -47,6 +48,7 @@ def get_game(level_name: str) -> Game:
 def init() -> None:
     game = get_game("level1")
     game.sprites.append(game.hero)
+    game.sprites.append(Npc("player", game.map.triggers[0].pos))
     pr.play_music_stream(game.music)
 
 
@@ -78,7 +80,7 @@ def update(dt: float) -> None:
     if ActionHero.COLLIDING in game.hero.action and random() < 0.05:
         game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 4), "!"))
 
-    if game.hero.action != ActionHero.TALKING and pr.is_key_pressed(pr.KeyboardKey.KEY_A):
+    if game.hero.action != ActionHero.TALKING and game.map.check_triggers(game.hero.get_bbox()):
         game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 20, game.hero.pos.y - 4), "..."))
         game.widgets.append(
             DialogBox(
