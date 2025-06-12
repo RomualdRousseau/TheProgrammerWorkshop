@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 import pyray as pr
-from pytmx import TiledMap
+from pytmx import TiledMap, TiledObjectGroup, TiledTileLayer
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine.renderer import renderer
@@ -42,6 +42,13 @@ class MapTileRenderer:
         )
 
 
+class MapTrigger:
+    def __init__(self, pos: pr.Vector2, size: float):
+        self.pos = pos
+        self.size = size
+        self.trigerred = False
+
+
 MapBoundingBox = tuple[pr.BoundingBox, MapTile]
 
 
@@ -49,7 +56,10 @@ class Map:
     def __init__(self, tiledmap: TiledMap):
         self.tiledmap = tiledmap
         self.origin = pr.Vector2(-tiledmap.width // 2, -tiledmap.height // 2)
+        self.start_location = pr.vector2_zero()
         self.bboxes = QuadTreeBuilder[MapBoundingBox](tiledmap.width, tiledmap.tilewidth).build()
+        self.tiles: list[MapTileRenderer] = []
+        self.triggers: list[MapTrigger] = []
 
         if self.tiledmap.background_color:
             r, g, b = [int(self.tiledmap.background_color[i : i + 2], 16) for i in (1, 3, 5)]
@@ -57,17 +67,28 @@ class Map:
         else:
             self.background_color = pr.RAYWHITE
 
-        for layer_i, layer in enumerate(tiledmap.layers):
-            for x, y, tile in layer.tiles():
-                prop = tiledmap.get_tile_properties(x, y, layer_i)
-                if not prop:
-                    continue
+        for layer in tiledmap.layers:
+            match layer:
+                case TiledTileLayer():
+                    for x, y, tile in layer.tiles():
+                        prop = tiledmap.get_tile_properties(x, y, layer.id - 1)
+                        if not prop:
+                            continue
 
-                tile.depth_ratio = prop.get("depth_ratio", prop.get("depth", 1.0))
+                        tile.depth_ratio = prop.get("depth_ratio", prop.get("depth", 1.0))
 
-                tile.walkable = prop.get("walkable", True)
-                if not tile.walkable:
-                    self.bboxes.append(self._get_tile_to_world_2d(x, y), (self.get_bbox(x, y), tile))
+                        tile.walkable = prop.get("walkable", True)
+                        if not tile.walkable:
+                            self.bboxes.append(self._get_tile_xy_to_world_2d(x, y), (self.get_bbox(x, y), tile))
+
+                        self.tiles.append(MapTileRenderer(tile, self._get_tile_dest(x, y), layer.id - 1))
+                case TiledObjectGroup():
+                    for object in layer:
+                        match object.properties["type"]:
+                            case "start":
+                                self.start_location = self._get_xy_to_world_2d(object.x, object.y)
+                            case "trigger":
+                                self.triggers.append(MapTrigger(self._get_xy_to_world_2d(object.x, object.y), 16))
 
     def get_background_color(self):
         return self.background_color
@@ -78,7 +99,7 @@ class Map:
         return pr.BoundingBox((-x, -y, -1), (x, y, 1))
 
     def get_start_location(self) -> pr.Vector2:
-        return pr.Vector2(0, -24)
+        return self.start_location
 
     def get_bbox(self, x: float, y: float) -> pr.BoundingBox:
         return get_bbox_from_rect(self._get_tile_dest(x, y))
@@ -99,16 +120,32 @@ class Map:
         sum_reaction_2d = pr.vector2_normalize(pr.Vector2(sum_reaction.x, sum_reaction.y))
         return has_collision, pr.vector2_add(collision_vector, sum_reaction_2d)
 
+    def check_triggers(self, bbox: pr.BoundingBox) -> bool:
+        has_collision = False
+        center = get_bbox_center(bbox)
+        center = pr.Vector2(center.x, center.y)
+        for trigger in self.triggers:
+            has_collision |= pr.vector2_distance(center, trigger.pos) < trigger.size
+            if has_collision and not trigger.trigerred:
+                trigger.trigerred = True
+                return True
+            if not has_collision and trigger.trigerred:
+                trigger.trigerred = False
+        return False
+
     def draw(self) -> None:
-        for layer_i, layer in enumerate(self.tiledmap.layers):
-            for x, y, tile in layer.tiles():
-                MapTileRenderer(tile, self._get_tile_dest(x, y), layer_i).draw()
+        for tile in self.tiles:
+            tile.draw()
 
     #
     # Private helpers
     #
 
-    def _get_tile_to_world_2d(self, x: float, y: float) -> pr.Vector2:
+    def _get_xy_to_world_2d(self, x: float, y: float) -> pr.Vector2:
+        size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
+        return pr.Vector2(x + self.origin.x * size_x, y + self.origin.y * size_y)
+
+    def _get_tile_xy_to_world_2d(self, x: float, y: float) -> pr.Vector2:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
         return pr.Vector2((x + self.origin.x + 0.5) * size_x, (y + self.origin.y + 0.5) * size_y)
 

@@ -12,9 +12,9 @@
     "fileStates": {
         "levels/level1.tmx": {
             "scale": 3.78515625,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 194.7079463364293,
+                "x": 145.04024767801857,
                 "y": 159.8348813209494
             }
         },
@@ -87,7 +87,7 @@
     "openFiles": [
     ],
     "project": "tinyrpg.tiled-project",
-    "property.type": "int",
+    "property.type": "string",
     "recentFiles": [
         "levels/level1.tmx",
         "tilesets/tilesets.tsx",

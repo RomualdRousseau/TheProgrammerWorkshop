@@ -34,7 +34,7 @@ def load_map(name: str) -> Map:
 
     value = CachedResources.maps.get(name)
     if not value:
-        value = Map(TiledMap(RESOURCES[name], image_loader=image_loader))
+        value = Map(TiledMap(RESOURCES[name], image_loader=image_loader, allow_duplicate_names=True))
         CachedResources.maps[name] = value
     return value
 

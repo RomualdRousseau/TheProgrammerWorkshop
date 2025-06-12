@@ -34,7 +34,11 @@ class ActionHero(Flag):
 
 class Hero(AnimatedSprite):
     def __init__(self, pos: pr.Vector2) -> None:
-        super().__init__(load_texture("player"), pos, HERO_ANIMATIONS)
+        super().__init__(
+            load_texture("player"),
+            pr.vector2_add(pos, pr.vector2_scale(HERO_SIZE, -0.5)),
+            HERO_ANIMATIONS,
+        )
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.action = ActionHero.IDLING
