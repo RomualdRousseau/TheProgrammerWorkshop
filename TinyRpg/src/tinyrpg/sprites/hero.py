@@ -36,7 +36,7 @@ class Hero(AnimatedSprite):
     def __init__(self, pos: pr.Vector2) -> None:
         super().__init__(
             load_texture("player"),
-            pr.vector2_add(pos, pr.vector2_scale(HERO_SIZE, -0.5)),
+            pos,
             HERO_ANIMATIONS,
         )
         self.dir = pr.vector2_zero()
@@ -51,8 +51,7 @@ class Hero(AnimatedSprite):
         return dest.y + dest.height * 0.8
 
     def get_bbox(self) -> pr.BoundingBox:
-        dest = self.animation.get_dest(self.pos.x, self.pos.y)
-        bbox = get_bbox_from_rect(dest)
+        bbox = get_bbox_from_rect(self.get_dest(self.pos.x, self.pos.y))
         bbox.min = pr.Vector3(bbox.min.x + 12, bbox.min.y + 20, 0)
         bbox.max = pr.Vector3(bbox.max.x - 12, bbox.max.y - 8, 0)
         return bbox

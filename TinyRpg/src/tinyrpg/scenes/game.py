@@ -13,6 +13,7 @@ from tinyrpg.engine.sprite import Sprite
 from tinyrpg.engine.widget import Widget
 from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
+from tinyrpg.sprites.enemy import Enemy
 from tinyrpg.sprites.hero import ActionHero, Hero
 from tinyrpg.sprites.npc import Npc
 from tinyrpg.widgets.dialog import DialogBox
@@ -35,7 +36,7 @@ class Game:
 def get_game(level_name: str) -> Game:
     music = load_music(f"{level_name}_music")
     map = load_map(f"{level_name}_map")
-    hero = Hero(map.get_start_location())
+    hero = Hero(map.start_location)
     return Game(
         FixedCamera(),
         FollowCamera(),
@@ -48,7 +49,12 @@ def get_game(level_name: str) -> Game:
 def init() -> None:
     game = get_game("level1")
     game.sprites.append(game.hero)
-    game.sprites.append(Npc("player", game.map.triggers[0].pos))
+    for object in game.map.objects:
+        match object.type:
+            case "npc":
+                game.sprites.append(Npc(object.name, object.pos))
+            case "enemy":
+                game.sprites.append(Enemy(object.name, object.pos))
     pr.play_music_stream(game.music)
 
 
@@ -75,24 +81,25 @@ def update(dt: float) -> None:
     # Gameplay and Effects
 
     if game.hero.action == ActionHero.IDLING and random() < 0.0025:
-        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 4), "?"))
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ";)"))
 
     if ActionHero.COLLIDING in game.hero.action and random() < 0.05:
-        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 14, game.hero.pos.y - 4), "!"))
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ":("))
 
-    if game.hero.action != ActionHero.TALKING and game.map.check_triggers(game.hero.get_bbox()):
-        game.particles.append(Toast(pr.Vector2(game.hero.pos.x + 20, game.hero.pos.y - 4), "..."))
+    if game.hero.action != ActionHero.TALKING and game.map.check_triggers(game.hero.pos):
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), "?"))
+        game.particles.append(Toast(pr.Vector2(game.sprites[1].pos.x, game.sprites[1].pos.y - 16), "!"))
         game.widgets.append(
             DialogBox(
                 [
                     MessageBox(
                         "Romuald",
-                        "romuald",
+                        "portrait-player",
                         "Hello Grace, how are you?\nI love you!",
                     ),
                     MessageBox(
                         "Grace",
-                        "grace",
+                        "portrait-grace",
                         "I am fine, Romuald!\nI love you too ...",
                     ),
                 ]
@@ -123,7 +130,7 @@ def draw() -> None:
 
     # Draw all objects in different layers
 
-    pr.clear_background(game.map.get_background_color())
+    pr.clear_background(game.map.background_color)
 
     with begin_mode_sorted_2d(game.follow_camera.camera):
         game.map.draw()
