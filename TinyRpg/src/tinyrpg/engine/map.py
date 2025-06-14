@@ -49,6 +49,13 @@ class MapTrigger:
         self.trigerred = False
 
 
+class MapObject:
+    def __init__(self, pos: pr.Vector2, type: str, name: str):
+        self.pos = pos
+        self.type = type
+        self.name = name
+
+
 MapBoundingBox = tuple[pr.BoundingBox, MapTile]
 
 
@@ -60,6 +67,7 @@ class Map:
         self.bboxes = QuadTreeBuilder[MapBoundingBox](tiledmap.width, tiledmap.tilewidth).build()
         self.tiles: list[MapTileRenderer] = []
         self.triggers: list[MapTrigger] = []
+        self.objects: list[MapObject] = []
 
         if self.tiledmap.background_color:
             r, g, b = [int(self.tiledmap.background_color[i : i + 2], 16) for i in (1, 3, 5)]
@@ -79,30 +87,28 @@ class Map:
 
                         tile.walkable = prop.get("walkable", True)
                         if not tile.walkable:
-                            self.bboxes.append(self._get_tile_xy_to_world_2d(x, y), (self.get_bbox(x, y), tile))
+                            self.bboxes.append(self._get_tilexy_to_world_2d(x, y), (self.get_bbox(x, y), tile))
 
-                        self.tiles.append(MapTileRenderer(tile, self._get_tile_dest(x, y), layer.id - 1))
+                        self.tiles.append(MapTileRenderer(tile, self._get_tilexy_dest(x, y), layer.id - 1))
                 case TiledObjectGroup():
                     for object in layer:
                         match object.properties["type"]:
                             case "start":
                                 self.start_location = self._get_xy_to_world_2d(object.x, object.y)
                             case "trigger":
-                                self.triggers.append(MapTrigger(self._get_xy_to_world_2d(object.x, object.y), 16))
-
-    def get_background_color(self):
-        return self.background_color
+                                size = object.properties["size"]
+                                self.triggers.append(MapTrigger(self._get_xy_to_world_2d(object.x, object.y), size))
+                            case "enemy" | "npc" as type:
+                                name = object.properties["name"]
+                                self.objects.append(MapObject(self._get_xy_to_world_2d(object.x, object.y), type, name))
 
     def get_world_boundary(self) -> pr.BoundingBox:
         x = (self.tiledmap.width * self.tiledmap.tilewidth - WORLD_WIDTH) // 2
         y = (self.tiledmap.height * self.tiledmap.tileheight - WORLD_HEIGHT) // 2
         return pr.BoundingBox((-x, -y, -1), (x, y, 1))
 
-    def get_start_location(self) -> pr.Vector2:
-        return self.start_location
-
     def get_bbox(self, x: float, y: float) -> pr.BoundingBox:
-        return get_bbox_from_rect(self._get_tile_dest(x, y))
+        return get_bbox_from_rect(self._get_tilexy_dest(x, y))
 
     def check_collide_bbox(self, bbox: pr.BoundingBox, collision_vector: pr.Vector2) -> tuple[bool, pr.Vector2]:
         has_collision = False
@@ -120,12 +126,10 @@ class Map:
         sum_reaction_2d = pr.vector2_normalize(pr.Vector2(sum_reaction.x, sum_reaction.y))
         return has_collision, pr.vector2_add(collision_vector, sum_reaction_2d)
 
-    def check_triggers(self, bbox: pr.BoundingBox) -> bool:
+    def check_triggers(self, pos: pr.Vector2) -> bool:
         has_collision = False
-        center = get_bbox_center(bbox)
-        center = pr.Vector2(center.x, center.y)
         for trigger in self.triggers:
-            has_collision |= pr.vector2_distance(center, trigger.pos) < trigger.size
+            has_collision |= pr.vector2_distance(pos, trigger.pos) <= trigger.size
             if has_collision and not trigger.trigerred:
                 trigger.trigerred = True
                 return True
@@ -145,10 +149,10 @@ class Map:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
         return pr.Vector2(x + self.origin.x * size_x, y + self.origin.y * size_y)
 
-    def _get_tile_xy_to_world_2d(self, x: float, y: float) -> pr.Vector2:
+    def _get_tilexy_to_world_2d(self, x: float, y: float) -> pr.Vector2:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
         return pr.Vector2((x + self.origin.x + 0.5) * size_x, (y + self.origin.y + 0.5) * size_y)
 
-    def _get_tile_dest(self, x: float, y: float) -> pr.Rectangle:
+    def _get_tilexy_dest(self, x: float, y: float) -> pr.Rectangle:
         size_x, size_y = self.tiledmap.tilewidth, self.tiledmap.tileheight
         return pr.Rectangle((x + self.origin.x) * size_x, (y + self.origin.y) * size_y, size_x, size_y)
