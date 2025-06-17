@@ -75,12 +75,12 @@ def update(dt: float) -> None:
     # Collisions and Triggers
 
     for character in game.characters:
-        has_collision, collision_vector = game.map.check_collide_bbox(character.get_bbox())
+        has_collision, collision_vector = game.map.check_collision(character.get_bbox())
         if has_collision:
             character.collide(dt, collision_vector)
 
     for character, other in combinations(game.characters, 2):
-        has_collision, collision_vector = other.check_collide_bbox(character.get_bbox())
+        has_collision, collision_vector = other.check_collision(character.get_bbox())
         if has_collision:
             character.collide(dt, collision_vector, other)
             other.collide(dt, pr.vector2_scale(collision_vector, -1), character)
@@ -154,7 +154,7 @@ def update(dt: float) -> None:
 
     # Garbage collect dead entities
 
-    game.characters = [sprite for sprite in game.characters if not sprite.should_be_free()]
+    game.characters = [character for character in game.characters if not character.should_be_free()]
     game.particles = [particle for particle in game.particles if not particle.should_be_free()]
     game.widgets = [widget for widget in game.widgets if not widget.shoudl_be_free()]
 
@@ -180,8 +180,8 @@ def draw() -> None:
 
     with begin_mode_sorted_2d(game.follow_camera.camera):
         game.map.draw()
-        for sprite in game.characters:
-            sprite.draw()
+        for character in game.characters:
+            character.draw()
 
     pr.begin_mode_2d(game.follow_camera.camera)
     for particle in game.particles:
