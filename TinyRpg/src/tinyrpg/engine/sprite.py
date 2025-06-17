@@ -1,9 +1,5 @@
 from __future__ import annotations
 
-import math
-from dataclasses import dataclass
-from typing import Any, Optional
-
 import pyray as pr
 
 from tinyrpg.constants import WORLD_FOREGROUND_LAYER
@@ -12,31 +8,11 @@ from tinyrpg.engine.entity import Entity
 from tinyrpg.engine.renderer import renderer
 from tinyrpg.utils.bbox import get_bbox_from_rect
 
-SPRITE_TRIGGER_NEAR = 16
-SPRITE_TRIGGER_FAR = 64
-
-
-@dataclass
-class SpriteEvent:
-    name: str
-    object: Optional[Entity]
-    value: Any = None
-
-
-@dataclass
-class SpriteTrigger:
-    dist: float = math.inf
-    last: Optional[Sprite] = None
-    curr: Optional[Sprite] = None
-
 
 class Sprite(Entity):
     def __init__(self, id: str, pos: pr.Vector2, texture: pr.Texture):
         super().__init__(id, pos)
         self.texture = texture
-        self.events: list[SpriteEvent] = []
-        self.trigger_near = SpriteTrigger()
-        self.trigger_far = SpriteTrigger()
 
     def get_layer(self) -> int:
         return WORLD_FOREGROUND_LAYER
@@ -54,49 +30,6 @@ class Sprite(Entity):
             self.texture.width,
             self.texture.height,
         )
-
-    def is_alive(self) -> bool:
-        return True
-
-    def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
-        super().collide(dt, collision_vector, other)
-        self.events.append(SpriteEvent("collide", other))
-
-    def visible(self, other: Sprite):
-        dist = pr.vector2_distance(self.pos, other.pos)
-        if dist < self.trigger_near.dist and dist < SPRITE_TRIGGER_NEAR:
-            self.trigger_near.dist = dist
-            self.trigger_near.curr = other
-        if dist < self.trigger_far.dist and dist < SPRITE_TRIGGER_FAR:
-            self.trigger_far.dist = dist
-            self.trigger_far.curr = other
-
-    def hit(self, damage: int):
-        self.events.append(SpriteEvent("hit", self, damage))
-
-    def think(self):
-        if self.trigger_near.last is None and self.trigger_near.curr is not None:
-            self.events.append(SpriteEvent("trigger_near_enter", self.trigger_near.curr))
-        if self.trigger_near.last is not None and self.trigger_near.curr is None:
-            self.events.append(SpriteEvent("trigger_near_leave", self.trigger_near.last))
-        if self.trigger_near.last is not None and self.trigger_near.curr is not None:
-            self.events.append(SpriteEvent("trigger_near_follow", self.trigger_near.curr))
-        if self.trigger_far.last is None and self.trigger_far.curr is not None:
-            self.events.append(SpriteEvent("trigger_far_enter", self.trigger_far.curr))
-        if self.trigger_far.last is not None and self.trigger_far.curr is None:
-            self.events.append(SpriteEvent("trigger_far_leave", self.trigger_far.last))
-        if self.trigger_far.last is not None and self.trigger_far.curr is not None:
-            self.events.append(SpriteEvent("trigger_far_follow", self.trigger_far.curr))
-
-    def update(self, dt: float):
-        super().update(dt)
-        self.events.clear()
-        self.trigger_near.dist = math.inf
-        self.trigger_near.last = self.trigger_near.curr
-        self.trigger_near.curr = None
-        self.trigger_far.dist = math.inf
-        self.trigger_far.last = self.trigger_far.curr
-        self.trigger_far.curr = None
 
     @renderer
     def draw(self):

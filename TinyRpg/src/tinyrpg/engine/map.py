@@ -117,7 +117,7 @@ class Map:
     def get_tile_bbox(self, x: float, y: float) -> pr.BoundingBox:
         return get_bbox_from_rect(self._get_tilexy_dest(x, y))
 
-    def check_visible_points(self, p1: pr.Vector2, p2: pr.Vector2) -> bool:
+    def check_los(self, p1: pr.Vector2, p2: pr.Vector2) -> bool:
         dir = pr.vector2_subtract(p2, p1)
         dist1 = pr.vector2_length(dir)
         ray = pr.Ray(pr.Vector3(p1.x, p1.y), pr.vector3_normalize(pr.Vector3(dir.x, dir.y)))

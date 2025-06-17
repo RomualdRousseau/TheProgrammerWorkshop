@@ -16,6 +16,9 @@ class Entity:
         self.pos = pos
         self.vel = pr.vector2_zero()
 
+    def should_be_free(self) -> bool:
+        return False
+
     def get_bbox(self) -> pr.BoundingBox:
         return get_bbox_from_rect(
             pr.Rectangle(self.pos.x, self.pos.y, self.mass * DEFAULT_ENTITY_DENSITY, self.mass * DEFAULT_ENTITY_DENSITY)
@@ -52,6 +55,3 @@ class Entity:
         self.vel = pr.vector2_add(self.vel, pr.vector2_scale(acc, dt))
         self.pos = pr.vector2_add(self.pos, pr.vector2_scale(self.vel, dt))
         self.force = pr.vector2_zero()
-
-    def draw(self):
-        pass

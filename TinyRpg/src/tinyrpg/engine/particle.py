@@ -8,9 +8,12 @@ class Particle(Entity):
         super().__init__("particle", pos)
         self.life = 100
 
-    def is_alive(self) -> bool:
-        return self.life > 0
+    def should_be_free(self) -> bool:
+        return self.life <= 0
 
     def update(self, dt: float):
         self.life = max(self.life - 1, 0)
         super().update(dt)
+
+    def draw(self):
+        pass

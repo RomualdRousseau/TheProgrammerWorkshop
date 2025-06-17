@@ -9,10 +9,7 @@ class Widget(Entity):
         self.size = size
         self.closed = False
 
-    def is_open(self) -> bool:
-        return not self.closed
-
-    def is_closed(self) -> bool:
+    def shoudl_be_free(self) -> bool:
         return self.closed
 
     def close(self):
@@ -21,6 +18,5 @@ class Widget(Entity):
     def get_rect(self) -> pr.Rectangle:
         return pr.Rectangle(self.pos.x, self.pos.y, self.size.x, self.size.y)
 
-    def get_rect_2d(self, camera: pr.Camera2D) -> pr.Rectangle:
-        pos = pr.get_screen_to_world_2d((self.pos.x * camera.zoom, self.pos.y * camera.zoom), camera)
-        return pr.Rectangle(pos.x, pos.y, self.size.x, self.size.y)
+    def draw(self):
+        pr.draw_rectangle_rec(self.get_rect(), pr.GREEN)
