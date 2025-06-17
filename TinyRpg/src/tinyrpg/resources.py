@@ -7,7 +7,7 @@ RESOURCES = {
     "level1_map": "data/maps/levels/level1.tmx",
     "level1_music": "data/maps/musics/level1.wav",
     "skeleton": "data/textures/enemies/skeleton.png",
-    "player": "data/textures/characters/player.png",
+    "hero": "data/textures/characters/hero.png",
     "grace": "data/textures/characters/grace.png",
     "portrait-player": "data/textures/portraits/player.png",
     "portrait-grace": "data/textures/portraits/grace.png",
