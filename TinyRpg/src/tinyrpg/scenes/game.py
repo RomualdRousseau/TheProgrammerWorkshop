@@ -84,7 +84,13 @@ def update(dt: float) -> None:
         if has_collision:
             character.collide(dt, collision_vector, other)
             other.collide(dt, pr.vector2_scale(collision_vector, -1), character)
-        has_los = character.id == "hero" and other.is_alive() and game.map.check_los(character.pos, other.pos)
+
+        has_los = (
+            character.id == "hero"
+            and character.is_alive()
+            and other.is_alive()
+            and game.map.check_los(character.pos, other.pos)
+        )
         if has_los:
             other.set_nearest_target(character)
             character.set_nearest_target(other)

@@ -14,6 +14,7 @@ HERO_ANIMATIONS = lambda: {
     "AttackDown": Animation(pr.Vector2(0, 6), HERO_SIZE, 4, 5),
     "AttackLeft": Animation(pr.Vector2(0, 7), HERO_SIZE, 4, 5, AnimationFlag.MIRROR_X),
     "AttackRight": Animation(pr.Vector2(0, 7), HERO_SIZE, 4, 5),
+    "Die": Animation(pr.Vector2(0, 9), HERO_SIZE, 4, 5, AnimationFlag.NONE, False),
 }
 
 HERO_SPEED = 16  # pixel * s-1
