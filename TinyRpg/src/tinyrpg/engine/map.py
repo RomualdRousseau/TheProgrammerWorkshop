@@ -128,7 +128,7 @@ class Map:
                 has_obstacle |= dist1 > dist2
         return not has_obstacle
 
-    def check_collide_bbox(
+    def check_collision(
         self, bbox: pr.BoundingBox, collision_vector: Optional[pr.Vector2] = None
     ) -> tuple[bool, pr.Vector2]:
         has_collision = False

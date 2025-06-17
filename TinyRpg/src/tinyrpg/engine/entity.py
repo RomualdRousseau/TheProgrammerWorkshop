@@ -33,7 +33,7 @@ class Entity:
         self.pos.x = max(boundary.min.x, min(self.pos.x, boundary.max.x))
         self.pos.y = max(boundary.min.y, min(self.pos.y, boundary.max.y))
 
-    def check_collide_bbox(
+    def check_collision(
         self, bbox: pr.BoundingBox, collision_vector: Optional[pr.Vector2] = None
     ) -> tuple[bool, pr.Vector2]:
         has_collision, reaction = False, pr.vector2_zero()
