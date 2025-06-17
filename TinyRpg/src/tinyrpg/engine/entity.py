@@ -1,11 +1,16 @@
+from __future__ import annotations
+
+from typing import Optional
+
 import pyray as pr
 
 from tinyrpg.constants import DEFAULT_ENTITY_DENSITY, DEFAULT_ENTITY_MASS, EPSILON
-from tinyrpg.utils.bbox import get_bbox_from_rect
+from tinyrpg.utils.bbox import get_bbox_center, get_bbox_from_rect
 
 
 class Entity:
-    def __init__(self, pos: pr.Vector2):
+    def __init__(self, id: str, pos: pr.Vector2):
+        self.id = id
         self.mass = DEFAULT_ENTITY_MASS
         self.force = pr.vector2_zero()
         self.pos = pos
@@ -25,7 +30,18 @@ class Entity:
         self.pos.x = max(boundary.min.x, min(self.pos.x, boundary.max.x))
         self.pos.y = max(boundary.min.y, min(self.pos.y, boundary.max.y))
 
-    def collide(self, collision_vector: pr.Vector2, dt: float):
+    def check_collide_bbox(
+        self, bbox: pr.BoundingBox, collision_vector: Optional[pr.Vector2] = None
+    ) -> tuple[bool, pr.Vector2]:
+        has_collision, reaction = False, pr.vector2_zero()
+        bbox2 = self.get_bbox()
+        if pr.check_collision_boxes(bbox, bbox2):
+            reaction = pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))
+            has_collision = True
+        reaction_2d = pr.vector2_normalize(pr.Vector2(reaction.x, reaction.y))
+        return has_collision, pr.vector2_add(collision_vector or pr.vector2_zero(), reaction_2d)
+
+    def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
         # TODO: Sliding effect on walls
         u = pr.vector2_scale(collision_vector, 0.5)
         v = pr.vector2_add(u, pr.vector2_scale(self.vel, -dt))

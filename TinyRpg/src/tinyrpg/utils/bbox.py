@@ -13,6 +13,11 @@ def get_bbox_center(bbox: pr.BoundingBox) -> pr.Vector3:
     return pr.vector3_scale(pr.vector3_add(bbox.min, bbox.max), 0.5)
 
 
+def get_bbox_center_2d(bbox: pr.BoundingBox) -> pr.Vector2:
+    center = get_bbox_center(bbox)
+    return pr.Vector2(center.x, center.y)
+
+
 def subdivide_bbox(bbox: pr.BoundingBox) -> Iterable[pr.BoundingBox]:
     a, b, m = bbox.min, bbox.max, get_bbox_center(bbox)
     yield pr.BoundingBox(pr.Vector3(a.x, a.y, -1), pr.Vector3(m.x, m.y, 1))

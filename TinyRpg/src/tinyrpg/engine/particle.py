@@ -5,7 +5,7 @@ from tinyrpg.engine.entity import Entity
 
 class Particle(Entity):
     def __init__(self, pos: pr.Vector2):
-        super().__init__(pos)
+        super().__init__("particle", pos)
         self.life = 100
 
     def is_alive(self) -> bool:

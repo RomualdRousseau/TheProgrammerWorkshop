@@ -17,12 +17,14 @@ class Animation:
         frame_count: int,
         frame_per_second: float,
         flags=AnimationFlag.NONE,
+        repeat=True,
     ) -> None:
         self.frame_start = frame_start
         self.frame_count = frame_count
         self.frame_size = frame_size
         self.frame_per_second = frame_per_second
         self.frame = 0.0
+        self.repeat = repeat
 
         self.source = pr.Rectangle(
             self.frame_start.x * self.frame_size.x,
@@ -48,4 +50,7 @@ class Animation:
     def update(self, dt: float) -> None:
         self.frame += self.frame_per_second * dt
         if int(self.frame) >= self.frame_count:
-            self.frame -= int(self.frame)
+            if self.repeat:
+                self.frame -= int(self.frame)
+            else:
+                self.frame = self.frame_count - 1

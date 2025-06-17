@@ -3,7 +3,7 @@ from typing import Any, Callable, Protocol
 
 import pyray as pr
 
-from tinyrpg.constants import WORLD_FOREGROUND_LAYER, WORLD_LAYER_COUNT
+from tinyrpg.constants import WORLD_DEBUG_LAYER, WORLD_FOREGROUND_LAYER, WORLD_LAYER_COUNT
 
 
 class Renderer(Protocol):
@@ -37,7 +37,7 @@ class BoundingBoxRenderer:
         self.bbox = bbox
 
     def get_layer(self) -> int:
-        return 2
+        return WORLD_DEBUG_LAYER
 
     def get_depth(self) -> float:
         return 0
@@ -45,6 +45,24 @@ class BoundingBoxRenderer:
     def draw(self):
         def draw_method(self):
             pr.draw_bounding_box(self.bbox, pr.GREEN)
+
+        RendererHeap.layers[self.get_layer()].append(RendererCaller(self, draw_method))
+
+
+class LineRenderer:
+    def __init__(self, p1: pr.Vector2, p2: pr.Vector2):
+        self.p1 = p1
+        self.p2 = p2
+
+    def get_layer(self) -> int:
+        return WORLD_DEBUG_LAYER
+
+    def get_depth(self) -> float:
+        return 0
+
+    def draw(self):
+        def draw_method(self):
+            pr.draw_line_v(self.p1, self.p2, pr.GREEN)
 
         RendererHeap.layers[self.get_layer()].append(RendererCaller(self, draw_method))
 

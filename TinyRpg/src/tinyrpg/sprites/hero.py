@@ -1,14 +1,15 @@
 from enum import Flag, auto
+from typing import Optional
 
 import pyray as pr
 
 from tinyrpg.engine.animation import Animation, AnimationFlag
+from tinyrpg.engine.entity import Entity
 from tinyrpg.engine.sprite import AnimatedSprite
 from tinyrpg.resources import load_sound, load_texture
 from tinyrpg.utils.bbox import get_bbox_from_rect
 
 HERO_WORLD_BOUNDARY = pr.BoundingBox((-160 - 8, -160 - 16), (160 - 24, 160 - 24))  # pixels
-HERO_SPEED = 16  # pixel * s-1
 HERO_SIZE = pr.Vector2(32, 32)  # pixels
 
 HERO_ANIMATIONS = {
@@ -23,6 +24,10 @@ HERO_ANIMATIONS = {
     "AttackRight": Animation(pr.Vector2(0, 7), HERO_SIZE, 4, 5),
 }
 
+HERO_SPEED = 16  # pixel * s-1
+HERO_CHARGE = 30  # frame
+HERO_DAMAGE = 1
+
 
 class ActionHero(Flag):
     IDLING = auto()
@@ -35,19 +40,21 @@ class ActionHero(Flag):
 class Hero(AnimatedSprite):
     def __init__(self, pos: pr.Vector2) -> None:
         super().__init__(
-            load_texture("player"),
+            "hero",
             pos,
+            load_texture("player"),
             HERO_ANIMATIONS,
         )
         self.dir = pr.vector2_zero()
         self.speed = 0
-        self.action = ActionHero.IDLING
+        self.actions = ActionHero.IDLING
+        self.charge = HERO_CHARGE
 
     def get_layer(self):
         return 1
 
     def get_depth(self):
-        dest = self.animation.get_dest(self.pos.x, self.pos.y)
+        dest = self.get_dest(self.pos.x, self.pos.y)
         return dest.y + dest.height * 0.8
 
     def get_bbox(self) -> pr.BoundingBox:
@@ -59,37 +66,47 @@ class Hero(AnimatedSprite):
     def start_talk(self):
         self.dir = pr.vector2_zero()
         self.speed = 0
-        self.action = ActionHero.TALKING
+        self.actions = ActionHero.TALKING
 
     def stop_talk(self):
-        self.action = ActionHero.IDLING
+        self.actions = ActionHero.IDLING
+
+    def start_attack(self):
+        self.charge -= 1
+        if self.charge <= 0:
+            if self.trigger_near.curr:
+                self.trigger_near.curr.hit(HERO_DAMAGE)
+            self.charge = HERO_CHARGE
+
+    def stop_attack(self):
+        self.charge = HERO_CHARGE
 
     def handle_input(self) -> None:
         self.dir = pr.vector2_zero()
         self.speed = 0
-        self.action = ActionHero.IDLING
+        self.actions = ActionHero.IDLING
         if pr.is_key_down(pr.KeyboardKey.KEY_UP):
             self.dir.y = -1
-            self.action = ActionHero.WALKING
+            self.actions = ActionHero.WALKING
             self.speed = HERO_SPEED
         elif pr.is_key_down(pr.KeyboardKey.KEY_DOWN):
             self.dir.y = 1
-            self.action = ActionHero.WALKING
+            self.actions = ActionHero.WALKING
             self.speed = HERO_SPEED
         if pr.is_key_down(pr.KeyboardKey.KEY_LEFT):
             self.dir.x = -1
-            self.action = ActionHero.WALKING
+            self.actions = ActionHero.WALKING
             self.speed = HERO_SPEED
         elif pr.is_key_down(pr.KeyboardKey.KEY_RIGHT):
             self.dir.x = 1
-            self.action = ActionHero.WALKING
+            self.actions = ActionHero.WALKING
             self.speed = HERO_SPEED
         if pr.is_key_down(pr.KeyboardKey.KEY_SPACE):
-            self.action = ActionHero.ATTACKING
+            self.actions = ActionHero.ATTACKING
             self.speed = 0
 
     def play_sound_effect(self) -> None:
-        match self.action:
+        match self.actions:
             case ActionHero.WALKING if int(self.animation.frame) in (1, 4):
                 if not pr.is_sound_playing(load_sound("step")):
                     pr.play_sound(load_sound("step"))
@@ -98,7 +115,7 @@ class Hero(AnimatedSprite):
                     pr.play_sound(load_sound("hurt"))
 
     def set_animation_effect(self) -> None:
-        match self.action:
+        match self.actions:
             case a if ActionHero.WALKING in a and self.dir.x < 0:
                 self.set_animation("WalkLeft")
             case a if ActionHero.WALKING in a and self.dir.x > 0:
@@ -120,13 +137,19 @@ class Hero(AnimatedSprite):
             case _:
                 self.set_animation("Idle")
 
-    def collide(self, collision_vector: pr.Vector2, dt: float):
-        self.action |= ActionHero.COLLIDING
-        super().collide(collision_vector, dt)
+    def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
+        super().collide(dt, collision_vector, other)
+        self.actions |= ActionHero.COLLIDING
+
+    def think(self):
+        super().think()
+        self.handle_input()
+        if ActionHero.ATTACKING in self.actions:
+            self.start_attack()
+        else:
+            self.stop_attack()
 
     def update(self, dt: float):
-        if self.action != ActionHero.TALKING:
-            self.handle_input()
         self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
         self.constrain_to_world(HERO_WORLD_BOUNDARY)
         super().update(dt)

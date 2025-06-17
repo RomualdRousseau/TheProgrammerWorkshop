@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass, field
 from functools import cache
+from itertools import combinations
 from random import random
 
 import pyray as pr
@@ -13,7 +14,7 @@ from tinyrpg.engine.sprite import Sprite
 from tinyrpg.engine.widget import Widget
 from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
-from tinyrpg.sprites.enemy import Enemy
+from tinyrpg.sprites.enemy import ActionEnemy, Enemy
 from tinyrpg.sprites.hero import ActionHero, Hero
 from tinyrpg.sprites.npc import Npc
 from tinyrpg.widgets.dialog import DialogBox
@@ -68,52 +69,90 @@ def update(dt: float) -> None:
 
     # Physic updates
 
-    for entity in game.sprites + game.particles + game.widgets:
-        entity.update(dt)
+    for sprite in game.sprites + game.particles + game.widgets:
+        sprite.update(dt)
 
-    # Collisions
+    # Collisions and Triggers
 
-    for entity in game.sprites:
-        has_collision, collision_vector = game.map.check_collide_bbox(entity.get_bbox(), pr.vector2_zero())
+    for sprite in game.sprites:
+        has_collision, collision_vector = game.map.check_collide_bbox(sprite.get_bbox())
         if has_collision:
-            entity.collide(collision_vector, dt)
+            sprite.collide(dt, collision_vector)
+
+    for sprite, other in combinations(game.sprites, 2):
+        has_collision, collision_vector = other.check_collide_bbox(sprite.get_bbox())
+        if has_collision:
+            sprite.collide(dt, collision_vector, other)
+            other.collide(dt, pr.vector2_scale(collision_vector, -1), sprite)
+
+    for sprite in game.sprites:
+        if (
+            sprite.id != "hero"
+            and game.map.check_visible_points(game.hero.pos, sprite.pos)
+            and sprite.actions != ActionEnemy.DYING  # type: ignore
+        ):
+            game.hero.visible(sprite)
+            sprite.visible(game.hero)
+
+    # AI
+
+    if ActionHero.TALKING not in game.hero.actions:
+        for sprite in game.sprites:
+            sprite.think()
 
     # Gameplay and Effects
 
-    if game.hero.action == ActionHero.IDLING and random() < 0.0025:
+    if ActionHero.IDLING in game.hero.actions and random() < 0.0025:
         game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ";)"))
 
-    if ActionHero.COLLIDING in game.hero.action and random() < 0.05:
+    if ActionHero.COLLIDING in game.hero.actions and random() < 0.05:
         game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ":("))
 
-    if game.hero.action != ActionHero.TALKING and game.map.check_triggers(game.hero.pos):
-        game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), "?"))
-        game.particles.append(Toast(pr.Vector2(game.sprites[1].pos.x, game.sprites[1].pos.y - 16), "!"))
-        game.widgets.append(
-            DialogBox(
-                [
-                    MessageBox(
-                        "Romuald",
-                        "portrait-player",
-                        "Hello Grace, how are you?\nI love you!",
-                    ),
-                    MessageBox(
-                        "Grace",
-                        "portrait-grace",
-                        "I am fine, Romuald!\nI love you too ...",
-                    ),
-                ]
-            )
-        )
-        game.hero.start_talk()
-
-    if game.hero.action == ActionHero.TALKING and len(game.widgets) == 0:
-        game.hero.stop_talk()
+    for sprite in game.sprites:
+        match sprite.id:
+            case "hero":
+                for event in sprite.events:
+                    if event.name == "hit":
+                        game.particles.append(Toast(pr.Vector2(sprite.pos.x, sprite.pos.y - 16), f"-{event.value}"))
+            case "enemy":
+                for event in sprite.events:
+                    if event.name == "trigger_far_enter":
+                        game.particles.append(Toast(pr.Vector2(sprite.pos.x, sprite.pos.y - 16), "!"))
+                    elif event.name == "trigger_far_leave":
+                        game.particles.append(Toast(pr.Vector2(sprite.pos.x, sprite.pos.y - 16), "?"))
+                    elif event.name == "hit":
+                        game.particles.append(Toast(pr.Vector2(sprite.pos.x, sprite.pos.y - 16), f"-{event.value}"))
+            case "npc":
+                for event in sprite.events:
+                    if event.name == "trigger_near_enter":
+                        game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), "?"))
+                        game.particles.append(Toast(pr.Vector2(game.sprites[1].pos.x, game.sprites[1].pos.y - 16), "!"))
+                        game.widgets.append(
+                            DialogBox(
+                                [
+                                    MessageBox(
+                                        "Romuald",
+                                        "portrait-player",
+                                        "Hello Grace, how are you?\nI love you!",
+                                    ),
+                                    MessageBox(
+                                        "Grace",
+                                        "portrait-grace",
+                                        "I am fine, Romuald!\nI love you too ...",
+                                    ),
+                                ]
+                            )
+                        )
+                        game.hero.start_talk()
 
     # Garbage collect dead entities
 
+    game.sprites = [sprite for sprite in game.sprites if sprite.is_alive()]
     game.particles = [particle for particle in game.particles if particle.is_alive()]
     game.widgets = [widget for widget in game.widgets if widget.is_open()]
+
+    if game.hero.actions == ActionHero.TALKING and len(game.widgets) == 0:
+        game.hero.stop_talk()
 
 
 def draw() -> None:
