@@ -5,7 +5,7 @@ from tinyrpg.engine.entity import Entity
 
 class Widget(Entity):
     def __init__(self, pos: pr.Vector2, size: pr.Vector2):
-        super().__init__(pos)
+        super().__init__("widget", pos)
         self.size = size
         self.closed = False
 

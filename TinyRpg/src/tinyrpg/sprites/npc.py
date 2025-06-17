@@ -1,8 +1,10 @@
 from enum import Flag, auto
+from typing import Optional
 
 import pyray as pr
 
 from tinyrpg.engine.animation import Animation, AnimationFlag
+from tinyrpg.engine.entity import Entity
 from tinyrpg.engine.sprite import AnimatedSprite
 from tinyrpg.resources import load_sound, load_texture
 from tinyrpg.utils.bbox import get_bbox_from_rect
@@ -17,17 +19,12 @@ NPC_ANIMATIONS = {
     "WalkDown": Animation(pr.Vector2(0, 3), NPC_SIZE, 6, 5),
     "WalkLeft": Animation(pr.Vector2(0, 4), NPC_SIZE, 6, 5, AnimationFlag.MIRROR_X),
     "WalkRight": Animation(pr.Vector2(0, 4), NPC_SIZE, 6, 5),
-    "AttackUp": Animation(pr.Vector2(0, 8), NPC_SIZE, 4, 5),
-    "AttackDown": Animation(pr.Vector2(0, 6), NPC_SIZE, 4, 5),
-    "AttackLeft": Animation(pr.Vector2(0, 7), NPC_SIZE, 4, 5, AnimationFlag.MIRROR_X),
-    "AttackRight": Animation(pr.Vector2(0, 7), NPC_SIZE, 4, 5),
 }
 
 
 class ActionNpc(Flag):
     IDLING = auto()
     WALKING = auto()
-    ATTACKING = auto()
     COLLIDING = auto()
     TALKING = auto()
 
@@ -35,13 +32,14 @@ class ActionNpc(Flag):
 class Npc(AnimatedSprite):
     def __init__(self, name: str, pos: pr.Vector2) -> None:
         super().__init__(
-            load_texture(name),
+            "npc",
             pos,
+            load_texture(name),
             NPC_ANIMATIONS,
         )
         self.dir = pr.vector2_zero()
         self.speed = 0
-        self.action = ActionNpc.IDLING
+        self.actions = ActionNpc.IDLING
 
     def get_layer(self):
         return 1
@@ -56,25 +54,14 @@ class Npc(AnimatedSprite):
         bbox.max = pr.Vector3(bbox.max.x - 12, bbox.max.y - 8, 0)
         return bbox
 
-    def start_talk(self):
-        self.dir = pr.vector2_zero()
-        self.speed = 0
-        self.action = ActionNpc.TALKING
-
-    def stop_talk(self):
-        self.action = ActionNpc.IDLING
-
     def play_sound_effect(self) -> None:
-        match self.action:
+        match self.actions:
             case ActionNpc.WALKING if int(self.animation.frame) in (1, 4):
                 if not pr.is_sound_playing(load_sound("step")):
                     pr.play_sound(load_sound("step"))
-            case ActionNpc.ATTACKING if int(self.animation.frame) in (0, 1):
-                if not pr.is_sound_playing(load_sound("hurt")):
-                    pr.play_sound(load_sound("hurt"))
 
     def set_animation_effect(self) -> None:
-        match self.action:
+        match self.actions:
             case a if ActionNpc.WALKING in a and self.dir.x < 0:
                 self.set_animation("WalkLeft")
             case a if ActionNpc.WALKING in a and self.dir.x > 0:
@@ -83,22 +70,12 @@ class Npc(AnimatedSprite):
                 self.set_animation("WalkUp")
             case a if ActionNpc.WALKING in a and self.dir.y > 0:
                 self.set_animation("WalkDown")
-            case ActionNpc.ATTACKING if self.dir.x < 0:
-                self.set_animation("AttackLeft")
-            case ActionNpc.ATTACKING if self.dir.x > 0:
-                self.set_animation("AttackRight")
-            case ActionNpc.ATTACKING if self.dir.y < 0:
-                self.set_animation("AttackUp")
-            case ActionNpc.ATTACKING if self.dir.y > 0:
-                self.set_animation("AttackDown")
-            case ActionNpc.ATTACKING:
-                self.set_animation("AttackDown")
             case _:
                 self.set_animation("Idle")
 
-    def collide(self, collision_vector: pr.Vector2, dt: float):
-        self.action |= ActionNpc.COLLIDING
-        super().collide(collision_vector, dt)
+    def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
+        super().collide(dt, collision_vector, other)
+        self.actions |= ActionNpc.COLLIDING
 
     def update(self, dt: float):
         self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
