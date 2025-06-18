@@ -1,7 +1,7 @@
 import pyray as pr
 
 from tinyrpg.engine.animation import Animation, AnimationFlag
-from tinyrpg.sprites.character import Character, CharacterAction, CharacterStats
+from tinyrpg.engine.character import Character, CharacterAction, CharacterStats
 
 HERO_SIZE = pr.Vector2(32, 32)  # pixels
 HERO_ANIMATIONS = lambda: {
