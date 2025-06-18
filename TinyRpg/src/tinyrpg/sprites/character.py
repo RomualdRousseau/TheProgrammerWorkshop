@@ -10,6 +10,7 @@ import pyray as pr
 from tinyrpg.engine.animation import Animation
 from tinyrpg.engine.entity import Entity
 from tinyrpg.engine.sprite import AnimatedSprite
+from tinyrpg.engine.timer import Timer
 from tinyrpg.resources import load_sound, load_texture
 from tinyrpg.utils.bbox import get_bbox_from_rect
 
@@ -58,11 +59,11 @@ class Character(AnimatedSprite):
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.actions = CharacterAction.IDLING
-        self.attack_timer = math.inf
-        self.free_timer = math.inf
-        self.events: list[CharacterEvent] = []
+        self.attack_timer = Timer()
+        self.free_timer = Timer()
         self.trigger_near = CharacterTrigger()
         self.trigger_far = CharacterTrigger()
+        self.events: list[CharacterEvent] = []
 
     def get_layer(self):
         return 1
@@ -81,22 +82,18 @@ class Character(AnimatedSprite):
         return self.life > 0
 
     def should_be_free(self) -> bool:
-        return self.life <= 0 and self.free_timer <= 0
+        return self.life <= 0 and self.free_timer.is_elapsed()
 
     def handle_ai(self):
         pass
 
     def handle_attack(self):
-        if self.attack_timer == math.inf:
-            self.attack_timer = self.stats.charge
-        elif self.attack_timer <= 0:
+        if self.attack_timer.is_elapsed():
+            self.attack_timer.reset()
             if self.trigger_near.curr:
                 self.trigger_near.curr.hit(self.stats.damage)
-            self.attack_timer = math.inf
-
-    def handle_timers(self, dt: float):
-        self.attack_timer = max(0, self.attack_timer - dt) if self.attack_timer != math.inf else math.inf
-        self.free_timer = max(0, self.free_timer - dt) if self.free_timer != math.inf else math.inf
+        else:
+            self.attack_timer.set(self.stats.charge)
 
     def reset_triggers(self):
         self.trigger_near.dist = math.inf
@@ -125,6 +122,9 @@ class Character(AnimatedSprite):
             case CharacterAction.WALKING if int(self.animation.frame) in (1, 4):
                 if not pr.is_sound_playing(load_sound("step")):
                     pr.play_sound(load_sound("step"))
+            case CharacterAction.ATTACKING if int(self.animation.frame) in (0, 1):
+                if not pr.is_sound_playing(load_sound("chop")):
+                    pr.play_sound(load_sound("chop"))
             case CharacterAction.DYING if int(self.animation.frame) in (0, 1):
                 if not pr.is_sound_playing(load_sound("hurt")):
                     pr.play_sound(load_sound("hurt"))
@@ -180,16 +180,18 @@ class Character(AnimatedSprite):
                 self.handle_attack()
         else:
             self.actions = CharacterAction.DYING
-            if self.free_timer == math.inf:
-                self.free_timer = CHARACTER_FREE_TIMER
+            self.free_timer.set(CHARACTER_FREE_TIMER)
 
     def update(self, dt: float):
-        self.events.clear()
-        self.reset_triggers()
-        self.handle_timers(dt)
+        self.attack_timer.update(dt)
+        self.free_timer.update(dt)
+
         self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
         self.constrain_to_world(CHARACTER_WORLD_BOUNDARY)
         super().update(dt)
+
+        self.events.clear()
+        self.reset_triggers()
 
     def draw(self):
         self.play_sound_effect()
