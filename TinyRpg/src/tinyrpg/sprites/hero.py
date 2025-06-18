@@ -18,10 +18,11 @@ HERO_ANIMATIONS = lambda: {
 }
 
 HERO_SPEED = 16  # pixel * s-1
-HERO_CHARGE = 0.5  # second
+HERO_ATTACK_SPEED = 0.5  # second
 HERO_DAMAGE = 1
+HERO_ARMOR = 1
 HERO_LIFE = 10
-HERO_STATS = lambda: CharacterStats(HERO_SPEED, HERO_CHARGE, HERO_DAMAGE, HERO_LIFE)
+HERO_STATS = lambda: CharacterStats(HERO_SPEED, HERO_ATTACK_SPEED, HERO_DAMAGE, HERO_ARMOR, HERO_LIFE)
 
 
 class Hero(Character):
