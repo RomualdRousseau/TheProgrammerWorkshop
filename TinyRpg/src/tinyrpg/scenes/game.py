@@ -110,47 +110,36 @@ def update(dt: float) -> None:
         game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ":("))
 
     for character in game.characters:
-        match character.id:
-            case "hero":
-                for event in character.events:
-                    if event.name == "hit":
-                        game.particles.append(
-                            Toast(pr.Vector2(character.pos.x, character.pos.y - 16), f"-{event.value}")
+        for event in character.events:
+            match (character.id, event.name):
+                case ("hero", "hit"):
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                case ("skeleton", "trigger_far_enter"):
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
+                case ("skeleton", "trigger_far_leave"):
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "?"))
+                case ("skeleton", "hit"):
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                case ("grace", "trigger_near_enter"):
+                    game.particles.append(Toast(pr.vector2_add(game.hero.pos, (0, -16)), "?"))
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
+                    game.widgets.append(
+                        DialogBox(
+                            [
+                                MessageBox(
+                                    "Grace",
+                                    "portrait-grace",
+                                    "Hello Romuald! How are you?\nHelp me to find my treasure?\nI love you ...",
+                                ),
+                                MessageBox(
+                                    "Romuald",
+                                    "portrait-player",
+                                    "Hello Grace, I a good and you!\nYes, sure.\nI love you too ...",
+                                ),
+                            ]
                         )
-            case "skeleton":
-                for event in character.events:
-                    if event.name == "trigger_far_enter":
-                        game.particles.append(Toast(pr.Vector2(character.pos.x, character.pos.y - 16), "!"))
-                    elif event.name == "trigger_far_leave":
-                        game.particles.append(Toast(pr.Vector2(character.pos.x, character.pos.y - 16), "?"))
-                    elif event.name == "hit":
-                        game.particles.append(
-                            Toast(pr.Vector2(character.pos.x, character.pos.y - 16), f"-{event.value}")
-                        )
-            case "grace":
-                for event in character.events:
-                    if event.name == "trigger_near_enter":
-                        game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), "?"))
-                        game.particles.append(
-                            Toast(pr.Vector2(game.characters[1].pos.x, game.characters[1].pos.y - 16), "!")
-                        )
-                        game.widgets.append(
-                            DialogBox(
-                                [
-                                    MessageBox(
-                                        "Romuald",
-                                        "portrait-player",
-                                        "Hello Grace, how are you?\nI love you!",
-                                    ),
-                                    MessageBox(
-                                        "Grace",
-                                        "portrait-grace",
-                                        "I am fine, Romuald!\nI love you too ...",
-                                    ),
-                                ]
-                            )
-                        )
-                        game.hero.start_talk()
+                    )
+                    game.hero.start_talk()
 
     # Garbage collect dead entities
 
