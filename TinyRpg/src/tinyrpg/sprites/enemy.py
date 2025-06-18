@@ -18,10 +18,11 @@ ENEMY_ANIMATIONS = lambda: {
 }
 
 ENEMY_SPEED = 8  # pixel * s-1
-ENEMY_CHARGE = 0.8  # s
+ENEMY_ATTACK_SPEED = 0.8  # s
 ENEMY_DAMAGE = 1
+ENEMY_ARMOR = 0
 ENEMY_LIFE = 2
-ENEMY_STATS = lambda: CharacterStats(ENEMY_SPEED, ENEMY_CHARGE, ENEMY_DAMAGE, ENEMY_LIFE)
+ENEMY_STATS = lambda: CharacterStats(ENEMY_SPEED, ENEMY_ATTACK_SPEED, ENEMY_DAMAGE, ENEMY_ARMOR, ENEMY_LIFE)
 
 
 class Enemy(Character):
@@ -32,6 +33,7 @@ class Enemy(Character):
             ENEMY_STATS(),
             ENEMY_ANIMATIONS(),
         )
+        print(self.stats)
 
     def handle_ai(self):
         if self.trigger_near.curr is not None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from enum import Flag, auto
+from random import uniform
 from typing import Any, Optional
 
 import pyray as pr
@@ -25,6 +26,7 @@ class CharacterStats:
     speed: float
     attack_speed: float
     damage: int
+    armor: int
     hp: int
     trigger_near: int = CHARACTER_TRIGGER_NEAR_DEFAULT
     trigger_far: int = CHARACTER_TRIGGER_FAR_DEFAULT
@@ -171,8 +173,10 @@ class Character(AnimatedSprite):
             self.trigger_far.curr = other
 
     def hit(self, damage: int):
-        self.life -= damage
-        self.events.append(CharacterEvent("hit", self, damage))
+        damage = max(0, damage - math.floor(uniform(0, self.stats.armor + 1)))
+        if damage > 0:
+            self.life -= damage
+            self.events.append(CharacterEvent("hit", self, damage))
 
     def think(self):
         if self.is_alive():

@@ -13,10 +13,11 @@ NPC_ANIMATIONS = lambda: {
 }
 
 NPC_SPEED = 8  # pixel * s-1
-NPC_CHARGE = 1  # frame
+NPC_ATTACK_SPEED = 1  # frame
 NPC_DAMAGE = 1
+NPC_ARMOR = 0
 NPC_LIFE = 1
-NPC_STATS = lambda: CharacterStats(NPC_SPEED, NPC_CHARGE, NPC_DAMAGE, NPC_LIFE)
+NPC_STATS = lambda: CharacterStats(NPC_SPEED, NPC_ATTACK_SPEED, NPC_DAMAGE, NPC_ARMOR, NPC_LIFE)
 
 
 class Npc(Character):
