@@ -11,8 +11,8 @@ RESOURCES = {
     "grace": "data/textures/characters/grace.png",
     "portrait-player": "data/textures/portraits/player.png",
     "portrait-grace": "data/textures/portraits/grace.png",
-    "chop": "data/sounds/chop.wav",
     "step": "data/sounds/step.wav",
+    "hit": "data/sounds/hit.wav",
     "hurt": "data/sounds/hurt.wav",
     "key": "data/sounds/key.wav",
 }
