@@ -4,14 +4,14 @@ from typing import Optional
 
 import pyray as pr
 
-from tinyrpg.constants import DEFAULT_ENTITY_DENSITY, DEFAULT_ENTITY_MASS, EPSILON
+from tinyrpg.constants import ENTITY_DENSITY_DEFAULT, ENTITY_MASS_DEFAULT, EPSILON
 from tinyrpg.utils.bbox import get_bbox_center, get_bbox_from_rect
 
 
 class Entity:
     def __init__(self, id: str, pos: pr.Vector2):
         self.id = id
-        self.mass = DEFAULT_ENTITY_MASS
+        self.mass = ENTITY_MASS_DEFAULT
         self.force = pr.vector2_zero()
         self.pos = pos
         self.vel = pr.vector2_zero()
@@ -21,7 +21,7 @@ class Entity:
 
     def get_bbox(self) -> pr.BoundingBox:
         return get_bbox_from_rect(
-            pr.Rectangle(self.pos.x, self.pos.y, self.mass * DEFAULT_ENTITY_DENSITY, self.mass * DEFAULT_ENTITY_DENSITY)
+            pr.Rectangle(self.pos.x, self.pos.y, self.mass * ENTITY_DENSITY_DEFAULT, self.mass * ENTITY_DENSITY_DEFAULT)
         )
 
     def move_constant(self, speed: pr.Vector2, dt: float):

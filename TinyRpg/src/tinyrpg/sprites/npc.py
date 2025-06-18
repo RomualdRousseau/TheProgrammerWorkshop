@@ -1,7 +1,7 @@
 import pyray as pr
 
 from tinyrpg.engine.animation import Animation, AnimationFlag
-from tinyrpg.sprites.character import Character, CharacterStats
+from tinyrpg.engine.character import Character, CharacterStats
 
 NPC_SIZE = pr.Vector2(32, 32)  # pixels
 NPC_ANIMATIONS = lambda: {

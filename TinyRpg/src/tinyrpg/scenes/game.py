@@ -7,13 +7,13 @@ from random import random
 import pyray as pr
 
 from tinyrpg.engine.camera import FixedCamera, FollowCamera
+from tinyrpg.engine.character import Character, CharacterAction
 from tinyrpg.engine.map import Map
 from tinyrpg.engine.particle import Particle
 from tinyrpg.engine.renderer import begin_mode_sorted_2d
 from tinyrpg.engine.widget import Widget
 from tinyrpg.particles.toast import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
-from tinyrpg.sprites.character import Character, CharacterAction
 from tinyrpg.sprites.enemy import Enemy
 from tinyrpg.sprites.hero import Hero
 from tinyrpg.sprites.npc import Npc
@@ -89,7 +89,7 @@ def update(dt: float) -> None:
             character.id == "hero"
             and character.is_alive()
             and other.is_alive()
-            and game.map.check_los(character.pos, other.pos)
+            and game.map.check_los(other.pos, character.pos)
         )
         if has_los:
             other.set_nearest_target(character)

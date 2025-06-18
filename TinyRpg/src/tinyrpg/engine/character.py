@@ -7,6 +7,7 @@ from typing import Any, Optional
 
 import pyray as pr
 
+from tinyrpg.constants import CHARACTER_FREE_TIMER, CHARACTER_TRIGGER_FAR_DEFAULT, CHARACTER_TRIGGER_NEAR_DEFAULT
 from tinyrpg.engine.animation import Animation
 from tinyrpg.engine.entity import Entity
 from tinyrpg.engine.sprite import AnimatedSprite
@@ -14,18 +15,19 @@ from tinyrpg.engine.timer import Timer
 from tinyrpg.resources import load_sound, load_texture
 from tinyrpg.utils.bbox import get_bbox_from_rect
 
-CHARACTER_WORLD_BOUNDARY = pr.BoundingBox((-160 - 8, -160 - 16), (160 - 24, 160 - 24))  # pixels
-CHARACTER_FREE_TIMER = 60  # s
+CHARACTER_WORLD_BOUNDARY = pr.BoundingBox((-168, -176), (136, 136))  # pixels
+CHARACTER_BOUNDINGBOX_ADJUST = pr.BoundingBox((12, 20), (-12, -8))  # pixels
+CHARACTER_DEPTH_RATIO = 0.8
 
 
 @dataclass
 class CharacterStats:
     speed: float
-    charge: float
+    attack_speed: float
     damage: int
-    life: int
-    trigger_near: int = 16
-    trigger_far: int = 64
+    hp: int
+    trigger_near: int = CHARACTER_TRIGGER_NEAR_DEFAULT
+    trigger_far: int = CHARACTER_TRIGGER_FAR_DEFAULT
 
 
 @dataclass
@@ -55,7 +57,7 @@ class Character(AnimatedSprite):
     def __init__(self, name: str, pos: pr.Vector2, stats: CharacterStats, animations: dict[str, Animation]) -> None:
         super().__init__(name, pos, load_texture(name), animations)
         self.stats = stats
-        self.life = self.stats.life
+        self.life = self.stats.hp
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.actions = CharacterAction.IDLING
@@ -70,12 +72,12 @@ class Character(AnimatedSprite):
 
     def get_depth(self):
         dest = self.get_dest(self.pos.x, self.pos.y)
-        return dest.y + dest.height * 0.8
+        return dest.y + dest.height * CHARACTER_DEPTH_RATIO
 
     def get_bbox(self) -> pr.BoundingBox:
         bbox = get_bbox_from_rect(self.get_dest(self.pos.x, self.pos.y))
-        bbox.min = pr.Vector3(bbox.min.x + 12, bbox.min.y + 20, 0)
-        bbox.max = pr.Vector3(bbox.max.x - 12, bbox.max.y - 8, 0)
+        bbox.min = pr.vector3_add(bbox.min, CHARACTER_BOUNDINGBOX_ADJUST.min)
+        bbox.max = pr.vector3_add(bbox.max, CHARACTER_BOUNDINGBOX_ADJUST.max)
         return bbox
 
     def is_alive(self) -> bool:
@@ -93,7 +95,7 @@ class Character(AnimatedSprite):
             if self.trigger_near.curr:
                 self.trigger_near.curr.hit(self.stats.damage)
         else:
-            self.attack_timer.set(self.stats.charge)
+            self.attack_timer.set(self.stats.attack_speed)
 
     def reset_triggers(self):
         self.trigger_near.dist = math.inf

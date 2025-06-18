@@ -7,6 +7,7 @@ from pytmx import TiledMap, TiledObjectGroup, TiledTileLayer
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine.renderer import renderer
 from tinyrpg.utils.bbox import (
+    check_collision_bbox_point,
     check_collision_bbox_ray,
     expand_bbox,
     get_bbox_center,
@@ -119,12 +120,14 @@ class Map:
 
     def check_los(self, p1: pr.Vector2, p2: pr.Vector2) -> bool:
         dir = pr.vector2_subtract(p2, p1)
+        ray = pr.Ray((p1.x, p1.y), pr.vector3_normalize((dir.x, dir.y)))
         dist1 = pr.vector2_length(dir)
-        ray = pr.Ray(pr.Vector3(p1.x, p1.y), pr.vector3_normalize(pr.Vector3(dir.x, dir.y)))
+        # LineRenderer(p1, p2).draw()
         has_obstacle = False
         for bbox, _ in self.bboxes.find_ray(ray):
-            if check_collision_bbox_ray(bbox, ray):
-                dist2 = pr.vector2_distance(p1, get_bbox_center_2d(bbox))
+            if not check_collision_bbox_point(bbox, p1) and check_collision_bbox_ray(bbox, ray):
+                # BoundingBoxRenderer(bbox).draw()
+                dist2 = pr.vector2_distance(get_bbox_center_2d(bbox), p1)
                 has_obstacle |= dist1 > dist2
         return not has_obstacle
 
