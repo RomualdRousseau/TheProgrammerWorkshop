@@ -6,19 +6,20 @@ from random import random
 
 import pyray as pr
 
-from tinyrpg.characters.enemy import Enemy
-from tinyrpg.characters.hero import Hero
-from tinyrpg.characters.npc import Npc
-from tinyrpg.engine.camera import FixedCamera, FollowCamera
-from tinyrpg.engine.character import Character, CharacterAction
-from tinyrpg.engine.map import Map
-from tinyrpg.engine.particle import Particle
-from tinyrpg.engine.renderer import begin_mode_sorted_2d
-from tinyrpg.engine.widget import Widget
-from tinyrpg.particles.toast import Toast
+from tinyrpg.characters import Enemy, Hero, Npc
+from tinyrpg.engine import (
+    Character,
+    CharacterAction,
+    FixedCamera,
+    FollowCamera,
+    Map,
+    Particle,
+    Widget,
+    begin_mode_sorted_2d,
+)
+from tinyrpg.particles import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
-from tinyrpg.widgets.dialog import DialogBox
-from tinyrpg.widgets.message import MessageBox
+from tinyrpg.widgets import DialogBox, MessageBox
 
 
 @dataclass
