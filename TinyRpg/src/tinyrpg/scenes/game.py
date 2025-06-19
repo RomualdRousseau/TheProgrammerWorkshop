@@ -161,6 +161,8 @@ def update(dt: float) -> None:
     if len(game.widgets) == 0:
         if pr.is_key_pressed(pr.KeyboardKey.KEY_I):
             game.widgets.append(VerticalEffect(InventoryBox()))
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_HOME):
+        pr.take_screenshot("screenshot.png")
 
     # Garbage collect dead entities
 

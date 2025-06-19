@@ -35,14 +35,14 @@ class QuadTree(Generic[T]):
             self.children = [QuadTree[T](bbox, self).build_tree(depth - 1) for bbox in subdivide_bbox(self.bbox)]
         return self
 
-    def walk_tree(self, check_collide: Callable[[pr.BoundingBox], bool]) -> Generator[QuadTree[T]]:
-        if check_collide(self.bbox):
+    def walk_tree(self, check_collision_func: Callable[[pr.BoundingBox], bool]) -> Generator[QuadTree[T]]:
+        if check_collision_func(self.bbox):
             match self.children:
                 case []:
                     yield self
                 case _:
                     for child in self.children:
-                        yield from child.walk_tree(check_collide)
+                        yield from child.walk_tree(check_collision_func)
 
     def find_point(self, point: pr.Vector2) -> list[T]:
         node = next(self.walk_tree(partial(check_collision_bbox_point, point=point)), None)
