@@ -22,7 +22,8 @@ from tinyrpg.engine import (
 )
 from tinyrpg.particles import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
-from tinyrpg.widgets import DialogBox, InventoryBox, MessageBox
+from tinyrpg.widgets import DialogEffect, InventoryBox, MessageBox
+from tinyrpg.widgets.effects.vertical import VerticalEffect
 
 
 @dataclass
@@ -133,17 +134,21 @@ def update(dt: float) -> None:
                     game.particles.append(Toast(pr.vector2_add(game.hero.pos, (0, -16)), "?"))
                     game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
                     game.widgets.append(
-                        DialogBox(
+                        DialogEffect(
                             [
-                                MessageBox(
-                                    "Grace",
-                                    "portrait-grace",
-                                    "Hello Romuald! How are you?\nHelp me to find my treasure?\nI love you ...",
+                                VerticalEffect(
+                                    MessageBox(
+                                        "Grace",
+                                        "portrait-grace",
+                                        "Hello Romuald! How are you?\nHelp me to find my treasure?\nI love you ...",
+                                    )
                                 ),
-                                MessageBox(
-                                    "Romuald",
-                                    "portrait-player",
-                                    "Hello Grace, I a good and you!\nYes, sure.\nI love you too ...",
+                                VerticalEffect(
+                                    MessageBox(
+                                        "Romuald",
+                                        "portrait-player",
+                                        "Hello Grace, I a good and you!\nYes, sure.\nI love you too ...",
+                                    )
                                 ),
                             ]
                         )
@@ -155,7 +160,7 @@ def update(dt: float) -> None:
 
     if len(game.widgets) == 0:
         if pr.is_key_pressed(pr.KeyboardKey.KEY_I):
-            game.widgets.append(InventoryBox())
+            game.widgets.append(VerticalEffect(InventoryBox()))
 
     # Garbage collect dead entities
 
