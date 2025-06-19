@@ -4,13 +4,12 @@ from typing import Optional
 import pyray as pr
 from pytmx import TiledMap, TiledObjectGroup, TiledTileLayer
 
-from tinyrpg.engine.renderer import renderer
+from tinyrpg.constants import CHARACTER_TRIGGER_FAR_DEFAULT
+from tinyrpg.engine.renderer import BoundingBoxRenderer, LineRenderer, renderer
 from tinyrpg.utils import (
     QuadTreeBuilder,
     check_collision_bbox_point,
-    check_collision_bbox_ray,
     get_bbox_center,
-    get_bbox_center_2d,
     get_bbox_from_rect,
     resize_bbox,
 )
@@ -121,13 +120,17 @@ class Map:
         dir = pr.vector2_subtract(p2, p1)
         ray = pr.Ray((p1.x, p1.y), pr.vector3_normalize((dir.x, dir.y)))
         dist1 = pr.vector2_length(dir)
-        # LineRenderer(p1, p2).draw()
+        if dist1 >= CHARACTER_TRIGGER_FAR_DEFAULT:
+            return False
+        LineRenderer(p1, p2).draw()
         has_obstacle = False
         for bbox, _ in self.bboxes.find_ray(ray):
-            if not check_collision_bbox_point(bbox, p1) and check_collision_bbox_ray(bbox, ray):
-                # BoundingBoxRenderer(bbox).draw()
-                dist2 = pr.vector2_distance(get_bbox_center_2d(bbox), p1)
-                has_obstacle |= dist1 > dist2
+            if not check_collision_bbox_point(bbox, p1):
+                col = pr.get_ray_collision_box(ray, bbox)
+                if col.hit:
+                    dist2 = col.distance
+                    BoundingBoxRenderer(bbox).draw()
+                    has_obstacle |= dist2 < dist1
         return not has_obstacle
 
     def check_collision(
