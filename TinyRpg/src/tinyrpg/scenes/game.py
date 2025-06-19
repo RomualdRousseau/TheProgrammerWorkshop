@@ -45,10 +45,10 @@ def get_game(level_name: str) -> Game:
 
     music = load_music(f"{level_name}_music")
     map = load_map(f"{level_name}_map")
-    hero = Hero(map.start_location)
+    hero = Hero(map.start_location, map.get_world_boundary())
     return Game(
         FixedCamera(),
-        FollowCamera(),
+        FollowCamera(map.get_world_boundary()),
         music,
         map,
         hero,
@@ -61,9 +61,9 @@ def init() -> None:
     for object in game.map.objects:
         match object.type:
             case "npc":
-                game.characters.append(Npc(object.name, object.pos))
+                game.characters.append(Npc(object.name, object.pos, game.map.get_world_boundary()))
             case "enemy":
-                game.characters.append(Enemy(object.name, object.pos))
+                game.characters.append(Enemy(object.name, object.pos, game.map.get_world_boundary()))
     pr.play_music_stream(game.music)
 
 
@@ -100,13 +100,14 @@ def update(dt: float) -> None:
             and game.map.check_los(other.pos, character.pos)
         )
         if has_los:
-            other.set_nearest_target(character)
             character.set_nearest_target(other)
+            other.set_nearest_target(character)
 
     # AI
 
-    if CharacterAction.TALKING not in game.hero.actions:
+    if len(game.widgets) == 0:
         for character in game.characters:
+            character.stop_talk()
             character.think()
 
     # Gameplay and Effects
@@ -148,19 +149,19 @@ def update(dt: float) -> None:
                         )
                     )
                     game.hero.start_talk()
+                    character.start_talk()
 
-    if pr.is_key_pressed(pr.KeyboardKey.KEY_I):
-        game.widgets.append(InventoryBox())
-        game.hero.start_talk()
+    # User interface
+
+    if len(game.widgets) == 0:
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_I):
+            game.widgets.append(InventoryBox())
 
     # Garbage collect dead entities
 
     game.characters = [character for character in game.characters if not character.should_be_free()]
     game.particles = [particle for particle in game.particles if not particle.should_be_free()]
     game.widgets = [widget for widget in game.widgets if not widget.shoudl_be_free()]
-
-    if game.hero.actions == CharacterAction.TALKING and len(game.widgets) == 0:
-        game.hero.stop_talk()
 
 
 def draw() -> None:

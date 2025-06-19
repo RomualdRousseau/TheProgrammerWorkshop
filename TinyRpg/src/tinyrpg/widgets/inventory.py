@@ -1,8 +1,7 @@
 import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine.inventory import get_inventory
-from tinyrpg.engine.widget import Widget
+from tinyrpg.engine import Widget, get_inventory
 
 MESSAGE_HEIGHT = 200  # px
 MESSAGE_BORDER = 1  # px
@@ -24,10 +23,15 @@ class InventoryBox(Widget):
 
         self.state = 0
         self.fade_time = 0
+        self.cursor = 0
 
     def handle_input(self):
         if pr.is_key_pressed(pr.KeyboardKey.KEY_SPACE):
             self.state = 2
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_DOWN):
+            self.cursor += 1
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_UP):
+            self.cursor -= 1
 
     def update(self, dt: float):
         match self.state:
@@ -58,8 +62,9 @@ class InventoryBox(Widget):
         if self.state == 1:
             inventory = get_inventory()
             for y, item in enumerate(inventory.bag):
+                symbol = "> " if y == self.cursor else "  "
                 pr.draw_text(
-                    item.name,
+                    symbol + item.name,
                     int(rect.x + MESSAGE_PADDING),
                     int(rect.y + MESSAGE_PADDING + y * MESSAGE_FONT_SIZE),
                     MESSAGE_FONT_SIZE,

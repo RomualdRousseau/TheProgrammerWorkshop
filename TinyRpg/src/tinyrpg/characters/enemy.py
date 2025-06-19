@@ -1,7 +1,6 @@
 import pyray as pr
 
-from tinyrpg.engine.animation import Animation, AnimationFlag
-from tinyrpg.engine.character import Character, CharacterAction, CharacterStats
+from tinyrpg.engine import Animation, AnimationFlag, Character, CharacterAction, CharacterStats
 
 ENEMY_SIZE = pr.Vector2(32, 32)  # pixels
 ENEMY_ANIMATIONS = lambda: {
@@ -26,13 +25,8 @@ ENEMY_STATS = lambda: CharacterStats(ENEMY_SPEED, ENEMY_ATTACK_SPEED, ENEMY_DAMA
 
 
 class Enemy(Character):
-    def __init__(self, name: str, pos: pr.Vector2) -> None:
-        super().__init__(
-            name,
-            pos,
-            ENEMY_STATS(),
-            ENEMY_ANIMATIONS(),
-        )
+    def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
+        super().__init__(name, pos, ENEMY_STATS(), ENEMY_ANIMATIONS(), boundary)
         print(self.stats)
 
     def handle_ai(self):

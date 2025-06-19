@@ -1,7 +1,6 @@
 import pyray as pr
 
-from tinyrpg.engine.drawing import draw_text_outlined_v
-from tinyrpg.engine.particle import Particle
+from tinyrpg.engine import Particle, draw_text_outlined_v
 
 
 class Toast(Particle):

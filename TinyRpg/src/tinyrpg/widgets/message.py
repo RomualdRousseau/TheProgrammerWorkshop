@@ -1,7 +1,7 @@
 import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine.widget import Widget
+from tinyrpg.engine import Widget
 from tinyrpg.resources import load_sound, load_texture
 
 MESSAGE_HEIGHT = 50  # px

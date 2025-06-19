@@ -14,10 +14,10 @@ from tinyrpg.engine.entity import Entity
 from tinyrpg.engine.sprite import AnimatedSprite
 from tinyrpg.engine.timer import Timer
 from tinyrpg.resources import load_sound, load_texture
-from tinyrpg.utils.bbox import get_bbox_from_rect
+from tinyrpg.utils.bbox import adjust_bbox, get_bbox_from_rect
 
-CHARACTER_WORLD_BOUNDARY = pr.BoundingBox((-168, -176), (136, 136))  # pixels
-CHARACTER_BOUNDINGBOX_ADJUST = pr.BoundingBox((12, 20), (-12, -8))  # pixels
+CHARACTER_BOUNDARY_ADJUST = pr.BoundingBox((8, 0), (-8, -8))  # pixels
+CHARACTER_BBOX_ADJUST = pr.BoundingBox((12, 20), (-12, -8))  # pixels
 CHARACTER_DEPTH_RATIO = 0.8
 
 
@@ -28,6 +28,7 @@ class CharacterStats:
     damage: int
     armor: int
     hp: int
+    xp: int = 1
     trigger_near: int = CHARACTER_TRIGGER_NEAR_DEFAULT
     trigger_far: int = CHARACTER_TRIGGER_FAR_DEFAULT
 
@@ -56,7 +57,14 @@ class CharacterAction(Flag):
 
 
 class Character(AnimatedSprite):
-    def __init__(self, name: str, pos: pr.Vector2, stats: CharacterStats, animations: dict[str, Animation]) -> None:
+    def __init__(
+        self,
+        name: str,
+        pos: pr.Vector2,
+        stats: CharacterStats,
+        animations: dict[str, Animation],
+        boundary: pr.BoundingBox,
+    ):
         super().__init__(name, pos, load_texture(name), animations)
         self.stats = stats
         self.life = self.stats.hp
@@ -68,6 +76,7 @@ class Character(AnimatedSprite):
         self.trigger_near = CharacterTrigger()
         self.trigger_far = CharacterTrigger()
         self.events: list[CharacterEvent] = []
+        self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
 
     def get_layer(self):
         return 1
@@ -77,16 +86,22 @@ class Character(AnimatedSprite):
         return dest.y + dest.height * CHARACTER_DEPTH_RATIO
 
     def get_bbox(self) -> pr.BoundingBox:
-        bbox = get_bbox_from_rect(self.get_dest(self.pos.x, self.pos.y))
-        bbox.min = pr.vector3_add(bbox.min, CHARACTER_BOUNDINGBOX_ADJUST.min)
-        bbox.max = pr.vector3_add(bbox.max, CHARACTER_BOUNDINGBOX_ADJUST.max)
-        return bbox
+        rect = self.get_dest(self.pos.x, self.pos.y)
+        return adjust_bbox(get_bbox_from_rect(rect), CHARACTER_BBOX_ADJUST)
 
     def is_alive(self) -> bool:
         return self.life > 0
 
     def should_be_free(self) -> bool:
         return self.life <= 0 and self.free_timer.is_elapsed()
+
+    def start_talk(self):
+        self.dir = pr.vector2_zero()
+        self.speed = 0
+        self.actions = CharacterAction.TALKING
+
+    def stop_talk(self):
+        self.actions &= ~CharacterAction.TALKING
 
     def handle_ai(self):
         self.dir = pr.vector2_zero()
@@ -195,7 +210,7 @@ class Character(AnimatedSprite):
         self.free_timer.update(dt)
 
         self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
-        self.constrain_to_world(CHARACTER_WORLD_BOUNDARY)
+        self.constrain_to_boundary(self.boundary)
         super().update(dt)
 
         self.events.clear()

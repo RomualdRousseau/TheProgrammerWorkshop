@@ -43,7 +43,7 @@ DIR8 = [
 ]
 
 ITEM_DATABASE = [
-    ("sword", "right", 1, 0),
+    ("Sword", "right", 1, 0),
     ("Buckler", "left", 0, 1),
     ("Necklace", "left", 1, 1),
 ]
