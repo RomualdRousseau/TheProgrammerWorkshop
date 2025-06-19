@@ -89,7 +89,9 @@ class Character(AnimatedSprite):
         return self.life <= 0 and self.free_timer.is_elapsed()
 
     def handle_ai(self):
-        pass
+        self.dir = pr.vector2_zero()
+        self.speed = 0
+        self.actions = CharacterAction.IDLING
 
     def handle_attack(self):
         if self.attack_timer.is_elapsed():

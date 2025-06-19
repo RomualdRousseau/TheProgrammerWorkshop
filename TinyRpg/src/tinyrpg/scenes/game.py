@@ -7,19 +7,22 @@ from random import random
 import pyray as pr
 
 from tinyrpg.characters import Enemy, Hero, Npc
+from tinyrpg.constants import ITEM_DATABASE
 from tinyrpg.engine import (
     Character,
     CharacterAction,
     FixedCamera,
     FollowCamera,
+    Item,
     Map,
     Particle,
     Widget,
     begin_mode_sorted_2d,
+    get_inventory,
 )
 from tinyrpg.particles import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
-from tinyrpg.widgets import DialogBox, MessageBox
+from tinyrpg.widgets import DialogBox, InventoryBox, MessageBox
 
 
 @dataclass
@@ -36,6 +39,10 @@ class Game:
 
 @cache
 def get_game(level_name: str) -> Game:
+    inventory = get_inventory()
+    inventory.bag.append(Item(*ITEM_DATABASE[0]))
+    inventory.bag.append(Item(*ITEM_DATABASE[1]))
+
     music = load_music(f"{level_name}_music")
     map = load_map(f"{level_name}_map")
     hero = Hero(map.start_location)
@@ -141,6 +148,10 @@ def update(dt: float) -> None:
                         )
                     )
                     game.hero.start_talk()
+
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_I):
+        game.widgets.append(InventoryBox())
+        game.hero.start_talk()
 
     # Garbage collect dead entities
 
