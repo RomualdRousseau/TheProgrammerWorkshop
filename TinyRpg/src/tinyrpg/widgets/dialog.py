@@ -1,4 +1,4 @@
-from tinyrpg.engine.widget import Widget
+from tinyrpg.engine import Widget
 from tinyrpg.widgets.message import MessageBox
 
 

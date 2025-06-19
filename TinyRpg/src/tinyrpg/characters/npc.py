@@ -2,9 +2,7 @@ from typing import Optional
 
 import pyray as pr
 
-from tinyrpg.engine.animation import Animation, AnimationFlag
-from tinyrpg.engine.character import Character, CharacterStats
-from tinyrpg.engine.entity import Entity
+from tinyrpg.engine import Animation, AnimationFlag, Character, CharacterStats, Entity
 
 NPC_SIZE = pr.Vector2(32, 32)  # pixels
 NPC_ANIMATIONS = lambda: {
@@ -24,8 +22,8 @@ NPC_STATS = lambda: CharacterStats(NPC_SPEED, NPC_ATTACK_SPEED, NPC_DAMAGE, NPC_
 
 
 class Npc(Character):
-    def __init__(self, name: str, pos: pr.Vector2) -> None:
-        super().__init__(name, pos, NPC_STATS(), NPC_ANIMATIONS())
+    def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
+        super().__init__(name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary)
 
     def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
         # super().collide(dt, collision_vector, other)

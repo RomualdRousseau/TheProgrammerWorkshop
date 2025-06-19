@@ -29,7 +29,7 @@ class Entity:
         friction = pr.vector2_add(pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu))
         self.force = pr.vector2_add(self.force, pr.vector2_add(speed, friction))
 
-    def constrain_to_world(self, boundary: pr.BoundingBox):
+    def constrain_to_boundary(self, boundary: pr.BoundingBox):
         self.pos.x = max(boundary.min.x, min(self.pos.x, boundary.max.x))
         self.pos.y = max(boundary.min.y, min(self.pos.y, boundary.max.y))
 

@@ -1,10 +1,16 @@
+from tinyrpg.engine.animation import Animation as Animation
+from tinyrpg.engine.animation import AnimationFlag as AnimationFlag
 from tinyrpg.engine.camera import FixedCamera as FixedCamera
 from tinyrpg.engine.camera import FollowCamera as FollowCamera
 from tinyrpg.engine.character import Character as Character
 from tinyrpg.engine.character import CharacterAction as CharacterAction
+from tinyrpg.engine.character import CharacterStats as CharacterStats
+from tinyrpg.engine.drawing import draw_text_outlined_v as draw_text_outlined_v
+from tinyrpg.engine.entity import Entity as Entity
 from tinyrpg.engine.inventory import Item as Item
 from tinyrpg.engine.inventory import get_inventory as get_inventory
 from tinyrpg.engine.map import Map as Map
+from tinyrpg.engine.map import MapTile as MapTile
 from tinyrpg.engine.particle import Particle as Particle
 from tinyrpg.engine.renderer import begin_mode_sorted_2d as begin_mode_sorted_2d
 from tinyrpg.engine.widget import Widget as Widget

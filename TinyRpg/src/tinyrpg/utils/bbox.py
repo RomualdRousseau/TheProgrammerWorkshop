@@ -26,9 +26,15 @@ def subdivide_bbox(bbox: pr.BoundingBox) -> Iterable[pr.BoundingBox]:
     yield pr.BoundingBox(pr.Vector3(a.x, m.y, -1), pr.Vector3(m.x, b.y, 1))
 
 
-def expand_bbox(bbox: pr.BoundingBox, v: pr.Vector2) -> pr.BoundingBox:
+def resize_bbox(bbox: pr.BoundingBox, v: pr.Vector2) -> pr.BoundingBox:
     min = pr.Vector3(bbox.min.x - v.x, bbox.min.y - v.y, -1)
     max = pr.Vector3(bbox.max.x + v.x, bbox.max.y + v.y, 1)
+    return pr.BoundingBox(min, max)
+
+
+def adjust_bbox(bbox: pr.BoundingBox, adjust: pr.BoundingBox) -> pr.BoundingBox:
+    min = pr.Vector3(bbox.min.x + adjust.min.x, bbox.min.y + adjust.min.y, -1)
+    max = pr.Vector3(bbox.max.x + adjust.max.x, bbox.max.y + adjust.max.y, -1)
     return pr.BoundingBox(min, max)
 
 

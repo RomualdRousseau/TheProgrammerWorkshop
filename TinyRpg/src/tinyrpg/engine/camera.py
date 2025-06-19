@@ -1,7 +1,10 @@
 import pyray as pr
 
-from tinyrpg.constants import CAMERA_SPEED, WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_WIDTH
+from tinyrpg.constants import CAMERA_SPEED, WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine.entity import Entity
+from tinyrpg.utils import resize_bbox
+
+CAMERA_BOUNDARY_RESIZE = pr.Vector2(-WORLD_WIDTH // 2, -WORLD_HEIGHT // 2)  # pixels
 
 
 class FixedCamera:
@@ -10,12 +13,13 @@ class FixedCamera:
 
 
 class FollowCamera:
-    def __init__(self):
+    def __init__(self, boundary):
         self.camera = pr.Camera2D((WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2), (0, 0), 0, WINDOW_WIDTH // WORLD_WIDTH)
         self.target = pr.vector2_zero()
+        self.boundary = resize_bbox(boundary, CAMERA_BOUNDARY_RESIZE)
 
     def set_boundary(self, boundary: pr.BoundingBox):
-        self.boundary = boundary
+        self.boundary = resize_bbox(boundary, CAMERA_BOUNDARY_RESIZE)
 
     def set_follower(self, follower: Entity):
         self.follower = follower

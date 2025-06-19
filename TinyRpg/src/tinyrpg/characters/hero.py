@@ -1,7 +1,6 @@
 import pyray as pr
 
-from tinyrpg.engine.animation import Animation, AnimationFlag
-from tinyrpg.engine.character import Character, CharacterAction, CharacterStats
+from tinyrpg.engine import Animation, AnimationFlag, Character, CharacterAction, CharacterStats
 
 HERO_SIZE = pr.Vector2(32, 32)  # pixels
 HERO_ANIMATIONS = lambda: {
@@ -26,21 +25,8 @@ HERO_STATS = lambda: CharacterStats(HERO_SPEED, HERO_ATTACK_SPEED, HERO_DAMAGE, 
 
 
 class Hero(Character):
-    def __init__(self, pos: pr.Vector2) -> None:
-        super().__init__(
-            "hero",
-            pos,
-            HERO_STATS(),
-            HERO_ANIMATIONS(),
-        )
-
-    def start_talk(self):
-        self.dir = pr.vector2_zero()
-        self.speed = 0
-        self.actions = CharacterAction.TALKING
-
-    def stop_talk(self):
-        self.actions = CharacterAction.IDLING
+    def __init__(self, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
+        super().__init__("hero", pos, HERO_STATS(), HERO_ANIMATIONS(), boundary)
 
     def handle_ai(self) -> None:
         self.dir = pr.vector2_zero()
