@@ -20,6 +20,8 @@ CHARACTER_TRIGGER_NEAR_DEFAULT = 16
 CHARACTER_TRIGGER_FAR_DEFAULT = 64
 CHARACTER_FREE_TIMER = 60  # s
 
+MAX_AVOID_FORCE = 2000  # N
+
 EPSILON = 1e-6
 
 DIR4 = [
@@ -38,4 +40,10 @@ DIR8 = [
     (-1, 1),
     (-1, 0),
     (-1, -1),
+]
+
+ITEM_DATABASE = [
+    ("sword", "right", 1, 0),
+    ("Buckler", "left", 0, 1),
+    ("Necklace", "left", 1, 1),
 ]
