@@ -7,18 +7,16 @@ from random import random
 import pyray as pr
 
 from tinyrpg.characters import Enemy, Hero, Npc
-from tinyrpg.constants import ITEM_DATABASE
+from tinyrpg.characters.hero import get_hero
 from tinyrpg.engine import (
     Character,
     CharacterAction,
     FixedCamera,
     FollowCamera,
-    Item,
     Map,
     Particle,
     Widget,
     begin_mode_sorted_2d,
-    get_inventory,
 )
 from tinyrpg.particles import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
@@ -40,13 +38,10 @@ class Game:
 
 @cache
 def get_game(level_name: str) -> Game:
-    inventory = get_inventory()
-    inventory.bag.append(Item(*ITEM_DATABASE[0]))
-    inventory.bag.append(Item(*ITEM_DATABASE[1]))
-
     music = load_music(f"{level_name}_music")
     map = load_map(f"{level_name}_map")
-    hero = Hero(map.start_location, map.get_world_boundary())
+    hero = get_hero()
+    hero.set_position_and_boundary(map.start_location, map.get_world_boundary())
     return Game(
         FixedCamera(),
         FollowCamera(map.get_world_boundary()),
@@ -95,7 +90,7 @@ def update(dt: float) -> None:
             other.collide(dt, pr.vector2_scale(collision_vector, -1), character)
 
         has_los = (
-            character.id == "hero"
+            character.id == "player"
             and character.is_alive()
             and other.is_alive()
             and game.map.check_los(other.pos, character.pos)
@@ -122,7 +117,7 @@ def update(dt: float) -> None:
     for character in game.characters:
         for event in character.events:
             match (character.id, event.name):
-                case ("hero", "hit"):
+                case ("player", "hit"):
                     game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
                 case ("skeleton", "trigger_far_enter"):
                     game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))

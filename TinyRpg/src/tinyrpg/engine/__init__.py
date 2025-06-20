@@ -8,7 +8,6 @@ from tinyrpg.engine.character import CharacterStats as CharacterStats
 from tinyrpg.engine.drawing import draw_text_outlined_v as draw_text_outlined_v
 from tinyrpg.engine.entity import Entity as Entity
 from tinyrpg.engine.inventory import Item as Item
-from tinyrpg.engine.inventory import get_inventory as get_inventory
 from tinyrpg.engine.map import Map as Map
 from tinyrpg.engine.map import MapTile as MapTile
 from tinyrpg.engine.particle import Particle as Particle

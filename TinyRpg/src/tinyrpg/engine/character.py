@@ -9,6 +9,7 @@ from typing import Any, Optional
 import pyray as pr
 
 from tinyrpg.constants import CHARACTER_FREE_TIMER, CHARACTER_TRIGGER_FAR_DEFAULT, CHARACTER_TRIGGER_NEAR_DEFAULT
+from tinyrpg.engine import inventory
 from tinyrpg.engine.animation import Animation
 from tinyrpg.engine.entity import Entity
 from tinyrpg.engine.sprite import AnimatedSprite
@@ -59,15 +60,17 @@ class CharacterAction(Flag):
 class Character(AnimatedSprite):
     def __init__(
         self,
+        id: str,
         name: str,
         pos: pr.Vector2,
         stats: CharacterStats,
         animations: dict[str, Animation],
         boundary: pr.BoundingBox,
     ):
-        super().__init__(name, pos, load_texture(name), animations)
+        super().__init__(id, pos, load_texture(id), animations)
+        self.name = name
         self.stats = stats
-        self.life = self.stats.hp
+        self.health = self.stats.hp
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.actions = CharacterAction.IDLING
@@ -77,6 +80,7 @@ class Character(AnimatedSprite):
         self.trigger_far = CharacterTrigger()
         self.events: list[CharacterEvent] = []
         self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
+        self.inventory = inventory.Inventory()
 
     def get_layer(self):
         return 1
@@ -89,11 +93,29 @@ class Character(AnimatedSprite):
         rect = self.get_dest(self.pos.x, self.pos.y)
         return adjust_bbox(get_bbox_from_rect(rect), CHARACTER_BBOX_ADJUST)
 
+    def get_damage(self):
+        damage = self.stats.damage
+        for item in self.inventory.equipment:
+            if item:
+                damage += item.damage
+        return damage
+
+    def get_armor(self):
+        armor = self.stats.armor
+        for item in self.inventory.equipment:
+            if item:
+                armor += item.armor
+        return armor
+
     def is_alive(self) -> bool:
-        return self.life > 0
+        return self.health > 0
 
     def should_be_free(self) -> bool:
-        return self.life <= 0 and self.free_timer.is_elapsed()
+        return self.health <= 0 and self.free_timer.is_elapsed()
+
+    def set_position_and_boundary(self, pos: pr.Vector2, boundary: pr.BoundingBox):
+        self.pos = pos
+        self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
 
     def start_talk(self):
         self.dir = pr.vector2_zero()
@@ -112,7 +134,7 @@ class Character(AnimatedSprite):
         if self.attack_timer.is_elapsed():
             self.attack_timer.reset()
             if self.trigger_near.curr:
-                self.trigger_near.curr.hit(self.stats.damage)
+                self.trigger_near.curr.hit(self.get_damage())
         else:
             self.attack_timer.set(self.stats.attack_speed)
 
@@ -190,9 +212,9 @@ class Character(AnimatedSprite):
             self.trigger_far.curr = other
 
     def hit(self, damage: int):
-        damage = max(0, damage - math.floor(uniform(0, self.stats.armor + 1)))
+        damage = max(0, damage - math.floor(uniform(0, self.get_armor() + 1)))
         if damage > 0:
-            self.life -= damage
+            self.health -= damage
             self.events.append(CharacterEvent("hit", self, damage))
 
     def think(self):
