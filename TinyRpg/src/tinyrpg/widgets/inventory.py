@@ -1,7 +1,9 @@
 import pyray as pr
 
+from tinyrpg.characters.hero import get_hero
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine import Widget
+from tinyrpg.engine.inventory import EquipmentSlot
 from tinyrpg.resources import load_texture
 
 MESSAGE_HEIGHT = 200  # px
@@ -26,35 +28,46 @@ class InventoryBox(Widget):
     def handle_input(self):
         if pr.is_key_pressed(pr.KeyboardKey.KEY_SPACE):
             self.close()
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_DOWN):
-            self.cursor += 1
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_UP):
-            self.cursor -= 1
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_RIGHT):
+            self.cursor = min(self.cursor + 1, 3 + 8)
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_LEFT):
+            self.cursor = max(self.cursor - 1, 0)
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_E) and self.cursor >= 3:
+            get_hero().inventory.equip(self.cursor - 3)
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_X) and self.cursor >= 3:
+            get_hero().inventory.remove(self.cursor - 3)
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_X) and self.cursor < 3:
+            get_hero().inventory.unequip(self.cursor)
 
     def update(self, dt: float):
         self.handle_input()
         super().update(dt)
 
     def draw(self):
+        hero = get_hero()
+        inventory = hero.inventory
+
         rect = self.get_rect()
-        half_width = self.size.x // 2
+        half_width = rect.width // 2
         item_size = (half_width - MESSAGE_MARGIN) / 3 - MESSAGE_MARGIN
         item_offset = (half_width - MESSAGE_MARGIN) / 3
         x, y = rect.x + MESSAGE_MARGIN, rect.y + MESSAGE_MARGIN
+        selected = None
 
         pr.draw_rectangle_rec(rect, pr.color_alpha(pr.BLUE, 0.8))
         pr.draw_rectangle_lines_ex(rect, MESSAGE_BORDER, pr.RAYWHITE)
 
-        name_width = pr.measure_text("Romuald", 10)
+        name = f"{hero.name} - Lvl {hero.stats.xp}"
+        name_width = pr.measure_text(name, 10)
         pr.draw_text(
-            "Romuald",
+            name,
             int(x + (half_width - 2 * MESSAGE_MARGIN - name_width) // 2),
             int(y),
             MESSAGE_FONT_SIZE,
             pr.RAYWHITE,
         )
         pr.draw_texture_pro(
-            load_texture("hero"),
+            hero.texture,
             pr.Rectangle(0, 0, 32, 32),
             pr.Rectangle(rect.x + (half_width - 64) // 2 + 1, y + item_offset + 2, 64, 64),
             pr.vector2_zero(),
@@ -63,19 +76,99 @@ class InventoryBox(Widget):
         )
         y += MESSAGE_FONT_SIZE + MESSAGE_MARGIN
 
-        for i in range(3):
-            for j in range(3):
-                if i == 0 and j == 1 or i == 2 and j == 0 or i == 2 and j == 2:
-                    pr.draw_rectangle_lines_ex(
-                        pr.Rectangle(
-                            x + j * item_offset,
-                            y + i * item_offset,
-                            item_size,
-                            item_size,
-                        ),
-                        1,
-                        pr.RAYWHITE,
-                    )
+        equipment = inventory.equipment[EquipmentSlot.NECK.value]
+        if self.cursor == EquipmentSlot.NECK.value:
+            pr.draw_rectangle_lines_ex(
+                pr.Rectangle(
+                    x + 1 * item_offset,
+                    y + 0 * item_offset,
+                    item_size,
+                    item_size,
+                ),
+                1,
+                pr.YELLOW,
+            )
+            selected = equipment
+        else:
+            pr.draw_rectangle_lines_ex(
+                pr.Rectangle(
+                    x + 1 * item_offset,
+                    y + 0 * item_offset,
+                    item_size,
+                    item_size,
+                ),
+                1,
+                pr.RAYWHITE,
+            )
+        if equipment:
+            pr.draw_texture(
+                load_texture(equipment.texture),
+                int(x + 1 * item_offset + 1),
+                int(y + 0 * item_offset + 1),
+                pr.WHITE,
+            )
+        equipment = inventory.equipment[EquipmentSlot.WEAPON.value]
+        if self.cursor == EquipmentSlot.WEAPON.value:
+            pr.draw_rectangle_lines_ex(
+                pr.Rectangle(
+                    x + 0 * item_offset,
+                    y + 2 * item_offset,
+                    item_size,
+                    item_size,
+                ),
+                1,
+                pr.YELLOW,
+            )
+            selected = equipment
+        else:
+            pr.draw_rectangle_lines_ex(
+                pr.Rectangle(
+                    x + 0 * item_offset,
+                    y + 2 * item_offset,
+                    item_size,
+                    item_size,
+                ),
+                1,
+                pr.RAYWHITE,
+            )
+        if equipment:
+            pr.draw_texture(
+                load_texture(equipment.texture),
+                int(x + 0 * item_offset + 1),
+                int(y + 2 * item_offset + 1),
+                pr.WHITE,
+            )
+        equipment = inventory.equipment[EquipmentSlot.SHIELD.value]
+        if self.cursor == EquipmentSlot.SHIELD.value:
+            pr.draw_rectangle_lines_ex(
+                pr.Rectangle(
+                    x + 2 * item_offset,
+                    y + 2 * item_offset,
+                    item_size,
+                    item_size,
+                ),
+                1,
+                pr.YELLOW,
+            )
+            selected = equipment
+        else:
+            pr.draw_rectangle_lines_ex(
+                pr.Rectangle(
+                    x + 2 * item_offset,
+                    y + 2 * item_offset,
+                    item_size,
+                    item_size,
+                ),
+                1,
+                pr.RAYWHITE,
+            )
+        if equipment:
+            pr.draw_texture(
+                load_texture(equipment.texture),
+                int(x + 2 * item_offset + 1),
+                int(y + 2 * item_offset + 1),
+                pr.WHITE,
+            )
         y += 3 * item_offset
 
         pr.draw_rectangle_lines_ex(
@@ -89,37 +182,30 @@ class InventoryBox(Widget):
             pr.RAYWHITE,
         )
         pr.draw_text(
-            "XP :\t\t\t\t1",
+            f"HP :\t\t\t\t{hero.health}/{hero.stats.hp}",
             int(x + MESSAGE_PADDING),
             int(y + MESSAGE_PADDING + MESSAGE_FONT_SIZE * 0),
             MESSAGE_FONT_SIZE - MESSAGE_FONT_SPACE,
             pr.RAYWHITE,
         )
         pr.draw_text(
-            "HP :\t\t\t\t5/5",
+            f"ATK:\t\t\t\t{hero.get_damage()}",
             int(x + MESSAGE_PADDING),
             int(y + MESSAGE_PADDING + MESSAGE_FONT_SIZE * 1),
             MESSAGE_FONT_SIZE - MESSAGE_FONT_SPACE,
             pr.RAYWHITE,
         )
         pr.draw_text(
-            "ATK:\t\t\t\t1",
+            f"DEF:\t\t\t\t{hero.get_armor()}",
             int(x + MESSAGE_PADDING),
             int(y + MESSAGE_PADDING + MESSAGE_FONT_SIZE * 2),
             MESSAGE_FONT_SIZE - MESSAGE_FONT_SPACE,
             pr.RAYWHITE,
         )
         pr.draw_text(
-            "DEF:\t\t\t\t1",
+            f"COIN:\t\t\t\t{inventory.coin}",
             int(x + MESSAGE_PADDING),
             int(y + MESSAGE_PADDING + MESSAGE_FONT_SIZE * 3),
-            MESSAGE_FONT_SIZE - MESSAGE_FONT_SPACE,
-            pr.RAYWHITE,
-        )
-        pr.draw_text(
-            "COIN:\t\t\t\t100",
-            int(x + MESSAGE_PADDING),
-            int(y + MESSAGE_PADDING + MESSAGE_FONT_SIZE * 4),
             MESSAGE_FONT_SIZE - MESSAGE_FONT_SPACE,
             pr.RAYWHITE,
         )
@@ -138,16 +224,38 @@ class InventoryBox(Widget):
 
         for i in range(3):
             for j in range(3):
-                pr.draw_rectangle_lines_ex(
-                    pr.Rectangle(
-                        x + j * item_offset,
-                        y + i * item_offset,
-                        item_size,
-                        item_size,
-                    ),
-                    1,
-                    pr.RAYWHITE,
-                )
+                cursor = max(self.cursor - 3, -1)
+                if cursor == i * 3 + j:
+                    selected = inventory.bag[cursor]
+                    pr.draw_rectangle_lines_ex(
+                        pr.Rectangle(
+                            x + j * item_offset,
+                            y + i * item_offset,
+                            item_size,
+                            item_size,
+                        ),
+                        1,
+                        pr.YELLOW,
+                    )
+                else:
+                    pr.draw_rectangle_lines_ex(
+                        pr.Rectangle(
+                            x + j * item_offset,
+                            y + i * item_offset,
+                            item_size,
+                            item_size,
+                        ),
+                        1,
+                        pr.RAYWHITE,
+                    )
+                item = inventory.bag[i * 3 + j]
+                if item:
+                    pr.draw_texture(
+                        load_texture(item.texture),
+                        int(x + j * item_offset + 1),
+                        int(y + i * item_offset + 1),
+                        pr.WHITE,
+                    )
         y += 3 * item_offset
 
         pr.draw_rectangle_lines_ex(
@@ -160,13 +268,14 @@ class InventoryBox(Widget):
             1,
             pr.RAYWHITE,
         )
-        pr.draw_text(
-            "Potion\nRestore 20 HP",
-            int(x + MESSAGE_PADDING),
-            int(y + MESSAGE_PADDING),
-            8,
-            pr.RAYWHITE,
-        )
+        if selected:
+            pr.draw_text(
+                f"{selected.name}\n{selected.description}",
+                int(x + MESSAGE_PADDING),
+                int(y + MESSAGE_PADDING),
+                8,
+                pr.RAYWHITE,
+            )
 
         # inventory = get_inventory()
         # for y, item in enumerate(inventory.bag):

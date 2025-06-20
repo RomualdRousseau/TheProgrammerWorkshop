@@ -1,6 +1,10 @@
+from functools import cache
+
 import pyray as pr
 
+from tinyrpg.constants import ITEM_DATABASE
 from tinyrpg.engine import Animation, AnimationFlag, Character, CharacterAction, CharacterStats
+from tinyrpg.engine.inventory import Item
 
 HERO_SIZE = pr.Vector2(32, 32)  # pixels
 HERO_ANIMATIONS = lambda: {
@@ -25,8 +29,12 @@ HERO_STATS = lambda: CharacterStats(HERO_SPEED, HERO_ATTACK_SPEED, HERO_DAMAGE, 
 
 
 class Hero(Character):
-    def __init__(self, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
-        super().__init__("hero", pos, HERO_STATS(), HERO_ANIMATIONS(), boundary)
+    def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
+        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary)
+        self.inventory.bag[0] = Item(*ITEM_DATABASE[0])
+        self.inventory.bag[1] = Item(*ITEM_DATABASE[1])
+        self.inventory.bag[2] = Item(*ITEM_DATABASE[2])
+        self.inventory.bag[3] = Item(*ITEM_DATABASE[3])
 
     def handle_ai(self) -> None:
         self.dir = pr.vector2_zero()
@@ -51,3 +59,8 @@ class Hero(Character):
         if pr.is_key_down(pr.KeyboardKey.KEY_SPACE):
             self.actions = CharacterAction.ATTACKING
             self.speed = 0
+
+
+@cache
+def get_hero() -> Hero:
+    return Hero("Romuald", pr.vector2_zero(), pr.BoundingBox((0, 0), (0, 0)))

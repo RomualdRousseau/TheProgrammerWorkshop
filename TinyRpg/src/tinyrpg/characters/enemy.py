@@ -26,7 +26,7 @@ ENEMY_STATS = lambda: CharacterStats(ENEMY_SPEED, ENEMY_ATTACK_SPEED, ENEMY_DAMA
 
 class Enemy(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
-        super().__init__(name, pos, ENEMY_STATS(), ENEMY_ANIMATIONS(), boundary)
+        super().__init__(name, name, pos, ENEMY_STATS(), ENEMY_ANIMATIONS(), boundary)
         print(self.stats)
 
     def handle_ai(self):

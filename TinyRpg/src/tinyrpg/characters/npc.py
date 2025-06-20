@@ -23,7 +23,7 @@ NPC_STATS = lambda: CharacterStats(NPC_SPEED, NPC_ATTACK_SPEED, NPC_DAMAGE, NPC_
 
 class Npc(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
-        super().__init__(name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary)
+        super().__init__(name, name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary)
 
     def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
         # super().collide(dt, collision_vector, other)
