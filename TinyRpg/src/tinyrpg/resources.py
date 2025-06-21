@@ -1,7 +1,7 @@
 import pyray as pr
 from pytmx import TiledMap
 
-from tinyrpg.engine.map import Map, MapTile
+from tinyrpg.engine.game.map import Map, MapTile
 
 RESOURCES = {
     "level1_map": "data/maps/levels/level1.tmx",

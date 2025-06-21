@@ -9,17 +9,18 @@ from typing import Any, Optional
 import pyray as pr
 
 from tinyrpg.constants import CHARACTER_FREE_TIMER, CHARACTER_TRIGGER_FAR_DEFAULT, CHARACTER_TRIGGER_NEAR_DEFAULT
-from tinyrpg.engine import inventory
-from tinyrpg.engine.animation import Animation
-from tinyrpg.engine.entity import Entity
-from tinyrpg.engine.sprite import AnimatedSprite
-from tinyrpg.engine.timer import Timer
+from tinyrpg.engine.base.animation import Animation
+from tinyrpg.engine.base.entity import Entity
+from tinyrpg.engine.base.sprite import AnimatedSprite
+from tinyrpg.engine.game.inventory import Inventory
+from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
+from tinyrpg.engine.utils.timer import Timer
 from tinyrpg.resources import load_sound, load_texture
-from tinyrpg.utils.bbox import adjust_bbox, get_bbox_from_rect
 
+CHARACTER_SIZE = pr.Vector2(32, 32)  # pixels
 CHARACTER_BOUNDARY_ADJUST = pr.BoundingBox((8, 0), (-8, -8))  # pixels
 CHARACTER_BBOX_ADJUST = pr.BoundingBox((12, 20), (-12, -8))  # pixels
-CHARACTER_DEPTH_RATIO = 0.8
+CHARACTER_DEPTH_RATIO = 0.8  # %
 
 
 @dataclass
@@ -80,7 +81,7 @@ class Character(AnimatedSprite):
         self.trigger_far = CharacterTrigger()
         self.events: list[CharacterEvent] = []
         self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
-        self.inventory = inventory.Inventory()
+        self.inventory = Inventory()
 
     def get_layer(self):
         return 1

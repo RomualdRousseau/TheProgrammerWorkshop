@@ -1,6 +1,6 @@
 import pyray as pr
 
-from tinyrpg.engine.entity import Entity
+from tinyrpg.engine.base.entity import Entity
 
 
 class Widget(Entity):

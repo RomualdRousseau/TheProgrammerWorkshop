@@ -1,7 +1,7 @@
 import pyray as pr
 
-from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine import Widget
+from tinyrpg.constants import INPUT_CLOSE_MESSAGE, WORLD_HEIGHT, WORLD_WIDTH
+from tinyrpg.engine import Widget, is_key_pressed
 from tinyrpg.resources import load_sound, load_texture
 
 MESSAGE_HEIGHT = 50  # px
@@ -27,7 +27,7 @@ class MessageBox(Widget):
         self.stroke_time = 0
 
     def handle_input(self):
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_SPACE):
+        if is_key_pressed(INPUT_CLOSE_MESSAGE):
             self.close()
 
     def play_sound_effect(self):

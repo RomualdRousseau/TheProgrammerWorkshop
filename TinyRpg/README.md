@@ -1,15 +1,17 @@
 ## TODO
 - Map event (location, time)
-  x get_trigger(location)
-  x distance with another point
+  - [x] get_trigger(location)
+  - [x] distance with another point
 - Map line of sight
-  - check if 2 points are visible from each other on the map
+  - [x] check if 2 points are visible from each other on the map
 - Map path finding
-  - get a path between 2 points on the map (distance map?)
+  - [ ] get a path between 2 points on the map (distance map?)
 - NPC
-  x Special tile map on layer 2
-  - AnimatedSprite + IA
+  - [x] Special tile map on layer 2
+  - [x] AnimatedSprite + IA
 - Monster
-  - Same as NPC
-  - Fight System
+  - [x] Same as NPC
+  - [x] Fight System
 - Inventory / Equipment
+  - [x] Inventory / Equipment
+  - [ ] Revise navigation

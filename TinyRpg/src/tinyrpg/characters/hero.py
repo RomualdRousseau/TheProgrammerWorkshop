@@ -2,30 +2,38 @@ from functools import cache
 
 import pyray as pr
 
-from tinyrpg.constants import ITEM_DATABASE
-from tinyrpg.engine import Animation, AnimationFlag, Character, CharacterAction, CharacterStats
-from tinyrpg.engine.inventory import Item
+from tinyrpg.constants import INPUT_ATTACK, ITEM_DATABASE
+from tinyrpg.engine import (
+    CHARACTER_SIZE,
+    Animation,
+    AnimationFlag,
+    Character,
+    CharacterAction,
+    CharacterStats,
+    Item,
+    is_key_down,
+)
 
-HERO_SIZE = pr.Vector2(32, 32)  # pixels
 HERO_ANIMATIONS = lambda: {
-    "Idle": Animation(pr.Vector2(0, 0), HERO_SIZE, 6, 3),
-    "WalkUp": Animation(pr.Vector2(0, 5), HERO_SIZE, 6, 5),
-    "WalkDown": Animation(pr.Vector2(0, 3), HERO_SIZE, 6, 5),
-    "WalkLeft": Animation(pr.Vector2(0, 4), HERO_SIZE, 6, 5, AnimationFlag.MIRROR_X),
-    "WalkRight": Animation(pr.Vector2(0, 4), HERO_SIZE, 6, 5),
-    "AttackUp": Animation(pr.Vector2(0, 8), HERO_SIZE, 4, 5),
-    "AttackDown": Animation(pr.Vector2(0, 6), HERO_SIZE, 4, 5),
-    "AttackLeft": Animation(pr.Vector2(0, 7), HERO_SIZE, 4, 5, AnimationFlag.MIRROR_X),
-    "AttackRight": Animation(pr.Vector2(0, 7), HERO_SIZE, 4, 5),
-    "Die": Animation(pr.Vector2(0, 9), HERO_SIZE, 4, 5, AnimationFlag.NONE, False),
+    "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
+    "WalkUp": Animation(pr.Vector2(0, 5), CHARACTER_SIZE, 6, 5),
+    "WalkDown": Animation(pr.Vector2(0, 3), CHARACTER_SIZE, 6, 5),
+    "WalkLeft": Animation(pr.Vector2(0, 4), CHARACTER_SIZE, 6, 5, AnimationFlag.MIRROR_X),
+    "WalkRight": Animation(pr.Vector2(0, 4), CHARACTER_SIZE, 6, 5),
+    "AttackUp": Animation(pr.Vector2(0, 8), CHARACTER_SIZE, 4, 5),
+    "AttackDown": Animation(pr.Vector2(0, 6), CHARACTER_SIZE, 4, 5),
+    "AttackLeft": Animation(pr.Vector2(0, 7), CHARACTER_SIZE, 4, 5, AnimationFlag.MIRROR_X),
+    "AttackRight": Animation(pr.Vector2(0, 7), CHARACTER_SIZE, 4, 5),
+    "Die": Animation(pr.Vector2(0, 9), CHARACTER_SIZE, 4, 5, AnimationFlag.NONE, False),
 }
 
-HERO_SPEED = 16  # pixel * s-1
-HERO_ATTACK_SPEED = 0.5  # second
-HERO_DAMAGE = 1
-HERO_ARMOR = 1
-HERO_LIFE = 10
-HERO_STATS = lambda: CharacterStats(HERO_SPEED, HERO_ATTACK_SPEED, HERO_DAMAGE, HERO_ARMOR, HERO_LIFE)
+HERO_STATS = lambda: CharacterStats(
+    speed=8,  # pixel * s-1
+    attack_speed=0.5,  # s
+    damage=1,
+    armor=1,
+    hp=10,
+)
 
 
 class Hero(Character):
@@ -40,23 +48,23 @@ class Hero(Character):
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.actions = CharacterAction.IDLING
-        if pr.is_key_down(pr.KeyboardKey.KEY_UP):
+        if is_key_down("UP"):
             self.dir.y = -1
             self.actions = CharacterAction.WALKING
-            self.speed = HERO_SPEED
-        elif pr.is_key_down(pr.KeyboardKey.KEY_DOWN):
+            self.speed = self.stats.speed
+        elif is_key_down("DOWN"):
             self.dir.y = 1
             self.actions = CharacterAction.WALKING
-            self.speed = HERO_SPEED
-        if pr.is_key_down(pr.KeyboardKey.KEY_LEFT):
+            self.speed = self.stats.speed
+        if is_key_down("LEFT"):
             self.dir.x = -1
             self.actions = CharacterAction.WALKING
-            self.speed = HERO_SPEED
-        elif pr.is_key_down(pr.KeyboardKey.KEY_RIGHT):
+            self.speed = self.stats.speed
+        elif is_key_down("RIGHT"):
             self.dir.x = 1
             self.actions = CharacterAction.WALKING
-            self.speed = HERO_SPEED
-        if pr.is_key_down(pr.KeyboardKey.KEY_SPACE):
+            self.speed = self.stats.speed
+        if is_key_down(INPUT_ATTACK):
             self.actions = CharacterAction.ATTACKING
             self.speed = 0
 
