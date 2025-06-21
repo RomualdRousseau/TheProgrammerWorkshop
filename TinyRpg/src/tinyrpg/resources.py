@@ -14,6 +14,7 @@ RESOURCES = {
     "sword": "data/textures/objects/sword.png",
     "shield": "data/textures/objects/shield.png",
     "gem": "data/textures/objects/gem.png",
+    "chest": "data/textures/objects/chest.png",
     "potion": "data/textures/objects/potion.png",
     "step": "data/sounds/step.wav",
     "hit": "data/sounds/hit.wav",

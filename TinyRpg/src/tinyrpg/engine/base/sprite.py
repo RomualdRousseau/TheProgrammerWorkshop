@@ -90,8 +90,3 @@ class AnimatedSprite(Sprite):
             0.0,
             pr.WHITE,
         )
-
-        # pr.draw_circle_v(self.pos, 1, pr.GREEN)
-        # pr.draw_circle_lines_v(self.pos, 16, pr.GREEN)
-        # pr.draw_bounding_box(self.get_bbox(), pr.GREEN)
-        # pr.draw_bounding_box(get_bbox_from_rect(self.get_dest(self.pos.x, self.pos.y)), pr.GREEN)

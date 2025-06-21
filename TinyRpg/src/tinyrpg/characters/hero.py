@@ -2,7 +2,7 @@ from functools import cache
 
 import pyray as pr
 
-from tinyrpg.constants import INPUT_ATTACK, ITEM_DATABASE
+from tinyrpg.constants import INPUT_ATTACK
 from tinyrpg.engine import (
     CHARACTER_SIZE,
     Animation,
@@ -10,9 +10,9 @@ from tinyrpg.engine import (
     Character,
     CharacterAction,
     CharacterStats,
-    Item,
-    is_key_down,
+    is_action_down,
 )
+from tinyrpg.engine.game.inventory import EquipmentType
 
 HERO_ANIMATIONS = lambda: {
     "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
@@ -28,7 +28,7 @@ HERO_ANIMATIONS = lambda: {
 }
 
 HERO_STATS = lambda: CharacterStats(
-    speed=8,  # pixel * s-1
+    speed=10,  # pixel * s-1
     attack_speed=0.5,  # s
     damage=1,
     armor=1,
@@ -39,32 +39,28 @@ HERO_STATS = lambda: CharacterStats(
 class Hero(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
         super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary)
-        self.inventory.bag[0] = Item(*ITEM_DATABASE[0])
-        self.inventory.bag[1] = Item(*ITEM_DATABASE[1])
-        self.inventory.bag[2] = Item(*ITEM_DATABASE[2])
-        self.inventory.bag[3] = Item(*ITEM_DATABASE[3])
 
     def handle_ai(self) -> None:
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.actions = CharacterAction.IDLING
-        if is_key_down("UP"):
+        if is_action_down("UP"):
             self.dir.y = -1
             self.actions = CharacterAction.WALKING
             self.speed = self.stats.speed
-        elif is_key_down("DOWN"):
+        elif is_action_down("DOWN"):
             self.dir.y = 1
             self.actions = CharacterAction.WALKING
             self.speed = self.stats.speed
-        if is_key_down("LEFT"):
+        if is_action_down("LEFT"):
             self.dir.x = -1
             self.actions = CharacterAction.WALKING
             self.speed = self.stats.speed
-        elif is_key_down("RIGHT"):
+        elif is_action_down("RIGHT"):
             self.dir.x = 1
             self.actions = CharacterAction.WALKING
             self.speed = self.stats.speed
-        if is_key_down(INPUT_ATTACK):
+        if is_action_down(INPUT_ATTACK) and self.inventory.is_equiped_with(EquipmentType.WEAPON):
             self.actions = CharacterAction.ATTACKING
             self.speed = 0
 

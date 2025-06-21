@@ -14,11 +14,11 @@ INPUT_ACTION_MAP = {
 }
 
 
-def is_key_down(key: str) -> bool:
-    action_map = INPUT_ACTION_MAP[key]
+def is_action_down(action: str) -> bool:
+    action_map = INPUT_ACTION_MAP[action]
     return any(pr.is_key_down(x) for x in action_map)
 
 
-def is_key_pressed(key: str) -> bool:
-    action_map = INPUT_ACTION_MAP[key]
+def is_action_pressed(action: str) -> bool:
+    action_map = INPUT_ACTION_MAP[action]
     return any(pr.is_key_pressed(x) for x in action_map)

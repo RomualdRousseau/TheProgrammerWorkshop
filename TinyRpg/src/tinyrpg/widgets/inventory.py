@@ -2,17 +2,19 @@ import pyray as pr
 
 from tinyrpg.characters import get_hero
 from tinyrpg.constants import (
-    INPUT_CLOSE_INVENTORY,
-    INPUT_TRASH_ITEM,
-    INPUT_UNUSE_ITEM,
-    INPUT_USE_ITEM,
+    INPUT_INVENTORY_CLOSE,
+    INPUT_INVENTORY_DROP,
+    INPUT_INVENTORY_EQUIP,
+    INPUT_INVENTORY_NEXT,
+    INPUT_INVENTORY_PREVIOUS,
+    INPUT_INVENTORY_UNEQUIP,
     WORLD_HEIGHT,
     WORLD_WIDTH,
 )
 from tinyrpg.engine import (
-    EquipmentSlot,
+    EquipmentType,
     Widget,
-    is_key_pressed,
+    is_action_pressed,
 )
 from tinyrpg.resources import load_texture
 
@@ -36,21 +38,17 @@ class InventoryBox(Widget):
         self.cursor = 0
 
     def handle_input(self):
-        if is_key_pressed(INPUT_CLOSE_INVENTORY):
-            self.close()
-        if is_key_pressed("RIGHT"):
+        if is_action_pressed(INPUT_INVENTORY_NEXT):
             self.cursor = min(self.cursor + 1, 3 + 8)
-        if is_key_pressed("LEFT"):
+        if is_action_pressed(INPUT_INVENTORY_PREVIOUS):
             self.cursor = max(self.cursor - 1, 0)
-        if is_key_pressed("DOWN"):
-            self.cursor = min(self.cursor + 3, 3 + 8)
-        if is_key_pressed("UP"):
-            self.cursor = max(self.cursor - 3, 0)
-        if is_key_pressed(INPUT_USE_ITEM) and self.cursor >= 3:
+        if is_action_pressed(INPUT_INVENTORY_CLOSE):
+            self.close()
+        if is_action_pressed(INPUT_INVENTORY_EQUIP) and self.cursor >= 3:
             get_hero().inventory.equip(self.cursor - 3)
-        if is_key_pressed(INPUT_TRASH_ITEM) and self.cursor >= 3:
-            get_hero().inventory.remove(self.cursor - 3)
-        if is_key_pressed(INPUT_UNUSE_ITEM) and self.cursor < 3:
+        if is_action_pressed(INPUT_INVENTORY_DROP) and self.cursor >= 3:
+            get_hero().inventory.drop(self.cursor - 3)
+        if is_action_pressed(INPUT_INVENTORY_UNEQUIP) and self.cursor < 3:
             get_hero().inventory.unequip(self.cursor)
 
     def update(self, dt: float):
@@ -90,8 +88,8 @@ class InventoryBox(Widget):
         )
         y += MESSAGE_FONT_SIZE + MESSAGE_MARGIN
 
-        equipment = inventory.equipment[EquipmentSlot.NECK.value]
-        if self.cursor == EquipmentSlot.NECK.value:
+        equipment = inventory.equipment[EquipmentType.CLOTHE.value]
+        if self.cursor == EquipmentType.CLOTHE.value:
             pr.draw_rectangle_lines_ex(
                 pr.Rectangle(
                     x + 1 * item_offset,
@@ -121,8 +119,8 @@ class InventoryBox(Widget):
                 int(y + 0 * item_offset + 1),
                 pr.WHITE,
             )
-        equipment = inventory.equipment[EquipmentSlot.WEAPON.value]
-        if self.cursor == EquipmentSlot.WEAPON.value:
+        equipment = inventory.equipment[EquipmentType.WEAPON.value]
+        if self.cursor == EquipmentType.WEAPON.value:
             pr.draw_rectangle_lines_ex(
                 pr.Rectangle(
                     x + 0 * item_offset,
@@ -152,8 +150,8 @@ class InventoryBox(Widget):
                 int(y + 2 * item_offset + 1),
                 pr.WHITE,
             )
-        equipment = inventory.equipment[EquipmentSlot.SHIELD.value]
-        if self.cursor == EquipmentSlot.SHIELD.value:
+        equipment = inventory.equipment[EquipmentType.SHIELD.value]
+        if self.cursor == EquipmentType.SHIELD.value:
             pr.draw_rectangle_lines_ex(
                 pr.Rectangle(
                     x + 2 * item_offset,

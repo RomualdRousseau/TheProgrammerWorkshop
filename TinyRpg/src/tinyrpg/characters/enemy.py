@@ -16,7 +16,7 @@ ENEMY_ANIMATIONS = lambda: {
 }
 
 ENEMY_STATS = lambda: CharacterStats(
-    speed=6,  # pixel * s-1
+    speed=8,  # pixel * s-1
     attack_speed=0.8,  # s
     damage=1,
     armor=0,

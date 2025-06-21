@@ -25,5 +25,5 @@ class Npc(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
         super().__init__(name, name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary)
 
-    def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
+    def collide(self, collision_vector: pr.Vector2, other: Optional[Entity] = None):
         pass

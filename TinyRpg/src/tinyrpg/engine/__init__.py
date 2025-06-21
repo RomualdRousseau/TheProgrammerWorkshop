@@ -4,8 +4,8 @@ from tinyrpg.engine.base.camera import FixedCamera as FixedCamera
 from tinyrpg.engine.base.camera import FollowCamera as FollowCamera
 from tinyrpg.engine.base.drawing import draw_text_outlined_v as draw_text_outlined_v
 from tinyrpg.engine.base.entity import Entity as Entity
-from tinyrpg.engine.base.input import is_key_down as is_key_down
-from tinyrpg.engine.base.input import is_key_pressed as is_key_pressed
+from tinyrpg.engine.base.input import is_action_down as is_action_down
+from tinyrpg.engine.base.input import is_action_pressed as is_action_pressed
 from tinyrpg.engine.base.particle import Particle as Particle
 from tinyrpg.engine.base.renderer import begin_mode_sorted_2d as begin_mode_sorted_2d
 from tinyrpg.engine.base.widget import Widget as Widget
@@ -15,10 +15,12 @@ from tinyrpg.engine.game.character import CHARACTER_SIZE as CHARACTER_SIZE
 from tinyrpg.engine.game.character import Character as Character
 from tinyrpg.engine.game.character import CharacterAction as CharacterAction
 from tinyrpg.engine.game.character import CharacterStats as CharacterStats
-from tinyrpg.engine.game.inventory import EquipmentSlot as EquipmentSlot
+from tinyrpg.engine.game.inventory import EquipmentType as EquipmentType
 from tinyrpg.engine.game.inventory import Item as Item
 from tinyrpg.engine.game.map import Map as Map
 from tinyrpg.engine.game.map import MapTile as MapTile
+from tinyrpg.engine.game.object import OBJECT_SIZE as OBJECT_SIZE
+from tinyrpg.engine.game.object import Object as Object
 from tinyrpg.engine.utils.bbox import adjust_bbox as adjust_bbox
 from tinyrpg.engine.utils.bbox import check_collision_bbox_point as check_collision_bbox_point
 from tinyrpg.engine.utils.bbox import check_collision_bbox_ray as check_collision_bbox_ray
