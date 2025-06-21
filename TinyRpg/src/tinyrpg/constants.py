@@ -58,7 +58,7 @@ DIR8 = [
 ITEM_DATABASE = [
     ("Sword", 0, "sword", 1, 0, "+1 Damage"),
     ("Shield", 2, "shield", 0, 1, "+1 Armor"),
-    ("Necklace", 1, "gem", 1, 1, "Magic\n+1 Damage\n+1 Armor"),
+    ("Gem", 3, "gem", 0, 0, "Grace's gem"),
     ("Potion", 3, "potion", 0, 0, "Restore 5 HP"),
 ]
 
