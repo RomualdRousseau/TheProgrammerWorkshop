@@ -18,6 +18,24 @@ class MapTile:
     walkable: bool = False
 
 
+@dataclass
+class MapTrigger:
+    pos: pr.Vector2
+    name: str
+    size: int
+    trigerred = False
+
+
+@dataclass
+class MapObject:
+    pos: pr.Vector2
+    type: str
+    name: str
+
+
+MapBoundingBox = tuple[pr.BoundingBox, MapTile]
+
+
 class MapTileRenderer:
     def __init__(self, tile: MapTile, dest: pr.Rectangle, layer: int):
         self.tile = tile
@@ -41,23 +59,6 @@ class MapTileRenderer:
             0.0,
             pr.WHITE,
         )
-
-
-class MapTrigger:
-    def __init__(self, pos: pr.Vector2, size: float):
-        self.pos = pos
-        self.size = size
-        self.trigerred = False
-
-
-class MapObject:
-    def __init__(self, pos: pr.Vector2, type: str, name: str):
-        self.pos = pos
-        self.type = type
-        self.name = name
-
-
-MapBoundingBox = tuple[pr.BoundingBox, MapTile]
 
 
 class Map:
@@ -97,9 +98,12 @@ class Map:
                             case "start":
                                 self.start_location = self._get_xy_to_world_2d(object.x, object.y)
                             case "trigger":
+                                name = object.properties["name"]
                                 size = object.properties["size"]
-                                self.triggers.append(MapTrigger(self._get_xy_to_world_2d(object.x, object.y), size))
-                            case "enemy" | "npc" as type:
+                                self.triggers.append(
+                                    MapTrigger(self._get_xy_to_world_2d(object.x, object.y), name, size)
+                                )
+                            case "enemy" | "npc" | "object" as type:
                                 name = object.properties["name"]
                                 self.objects.append(MapObject(self._get_xy_to_world_2d(object.x, object.y), type, name))
 
@@ -113,49 +117,53 @@ class Map:
 
     def check_los(self, p1: pr.Vector2, p2: pr.Vector2) -> bool:
         dir = pr.vector2_subtract(p2, p1)
-        ray = pr.Ray((p1.x, p1.y), pr.vector3_normalize((dir.x, dir.y)))
-        dist1 = pr.vector2_length(dir)
-        if dist1 >= CHARACTER_TRIGGER_FAR_DEFAULT:
+        dist = pr.vector2_length(dir)
+        if dist >= CHARACTER_TRIGGER_FAR_DEFAULT:
             return False
-        LineRenderer(p1, p2).draw()
-        has_obstacle = False
+
+        ray = pr.Ray((p1.x, p1.y, 0), pr.vector3_normalize((dir.x, dir.y, 0)))
+        nearest_bbox = None
         for bbox, _ in self.bboxes.find_ray(ray):
             if not check_collision_bbox_point(bbox, p1):
                 col = pr.get_ray_collision_box(ray, bbox)
-                if col.hit:
-                    dist2 = col.distance
-                    BoundingBoxRenderer(bbox).draw()
-                    has_obstacle |= dist2 < dist1
-        return not has_obstacle
+                if col.hit and col.distance < dist:
+                    nearest_bbox = bbox
+
+        LineRenderer(p1, p2).draw()
+        if nearest_bbox:
+            BoundingBoxRenderer(nearest_bbox).draw()
+
+        return nearest_bbox is None
 
     def check_collision(
         self, bbox: pr.BoundingBox, collision_vector: Optional[pr.Vector2] = None
     ) -> tuple[bool, pr.Vector2]:
+        bbox1 = resize_bbox(bbox, pr.Vector2(self.tiledmap.tilewidth * 0.5, self.tiledmap.tileheight * 0.5))
+        BoundingBoxRenderer(bbox1).draw()
+
         has_collision = False
         sum_reaction = pr.vector3_zero()
-        bbox1 = resize_bbox(bbox, pr.Vector2(self.tiledmap.tilewidth * 0.5, self.tiledmap.tileheight * 0.5))
-        BoundingBoxRenderer(bbox).draw()
-        BoundingBoxRenderer(bbox1).draw()
         for bbox2, _ in self.bboxes.find_bbox(bbox1):
-            BoundingBoxRenderer(bbox2).draw()
-            if pr.check_collision_boxes(bbox, bbox2):
-                sum_reaction = pr.vector3_add(
-                    sum_reaction, pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))
-                )
-                has_collision |= True
-        sum_reaction_2d = pr.vector2_normalize(pr.Vector2(sum_reaction.x, sum_reaction.y))
+            if pr.check_collision_boxes(bbox1, bbox2):
+                BoundingBoxRenderer(bbox2).draw()
+                if pr.check_collision_boxes(bbox, bbox2):
+                    reaction = pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))
+                    sum_reaction = pr.vector3_add(sum_reaction, reaction)
+                    has_collision |= True
+
+        sum_reaction_2d = pr.vector2_normalize((sum_reaction.x, sum_reaction.y))
         return has_collision, pr.vector2_add(collision_vector or pr.vector2_zero(), sum_reaction_2d)
 
-    def check_triggers(self, pos: pr.Vector2) -> bool:
+    def check_triggers(self, pos: pr.Vector2) -> Optional[MapTrigger]:
         has_collision = False
         for trigger in self.triggers:
             has_collision |= pr.vector2_distance(pos, trigger.pos) <= trigger.size
             if has_collision and not trigger.trigerred:
                 trigger.trigerred = True
-                return True
+                return trigger
             if not has_collision and trigger.trigerred:
                 trigger.trigerred = False
-        return False
+        return None
 
     def draw(self) -> None:
         for tile in self.tiles:

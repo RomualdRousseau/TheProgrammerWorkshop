@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#3e8948" nextlayerid="4" nextobjectid="8">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#3e8948" nextlayerid="4" nextobjectid="9">
  <tileset firstgid="1" source="../tilesets/tilesets.tsx"/>
  <tileset firstgid="257" source="../tilesets/decorations.tsx"/>
  <layer id="1" name="Terrain" width="20" height="20">
@@ -43,9 +43,9 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,369,370,0,418,0,0,0,0,0,0,0,0,0,0,322,0,0,
+0,0,0,369,370,0,418,0,0,0,0,0,0,0,0,0,0,308,0,0,
 0,0,0,0,0,273,0,0,0,0,0,0,0,0,0,0,337,305,0,0,
-0,418,506,0,0,0,0,0,0,0,0,0,0,0,386,0,0,0,0,0,
+0,418,0,0,0,0,0,0,0,0,0,0,0,0,386,0,0,0,0,0,
 0,273,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 388,0,420,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
@@ -57,10 +57,10 @@
    </properties>
    <point/>
   </object>
-  <object id="3" x="264" y="104">
+  <object id="3" x="40" y="280">
    <properties>
-    <property name="size" type="int" value="16"/>
-    <property name="type" value="trigger"/>
+    <property name="name" value="chest"/>
+    <property name="type" value="object"/>
    </properties>
    <point/>
   </object>
@@ -89,6 +89,13 @@
    <properties>
     <property name="name" value="skeleton"/>
     <property name="type" value="enemy"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="8" x="199.728" y="137.115">
+   <properties>
+    <property name="name" value="chest"/>
+    <property name="type" value="object"/>
    </properties>
    <point/>
   </object>

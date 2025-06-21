@@ -8,9 +8,15 @@ from typing import Any, Optional
 
 import pyray as pr
 
-from tinyrpg.constants import CHARACTER_FREE_TIMER, CHARACTER_TRIGGER_FAR_DEFAULT, CHARACTER_TRIGGER_NEAR_DEFAULT
+from tinyrpg.constants import (
+    CHARACTER_FREE_TIMER,
+    CHARACTER_TRIGGER_FAR_DEFAULT,
+    CHARACTER_TRIGGER_NEAR_DEFAULT,
+    DEBUG_ENABLED,
+)
 from tinyrpg.engine.base.animation import Animation
 from tinyrpg.engine.base.entity import Entity
+from tinyrpg.engine.base.renderer import BoundingBoxRenderer
 from tinyrpg.engine.base.sprite import AnimatedSprite
 from tinyrpg.engine.game.inventory import Inventory
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
@@ -122,6 +128,8 @@ class Character(AnimatedSprite):
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.actions = CharacterAction.TALKING
+        self.events.clear()
+        self.reset_triggers()
 
     def stop_talk(self):
         self.actions &= ~CharacterAction.TALKING
@@ -198,8 +206,8 @@ class Character(AnimatedSprite):
             case _:
                 self.set_animation("Idle")
 
-    def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
-        super().collide(dt, collision_vector, other)
+    def collide(self, collision_vector: pr.Vector2, other: Optional[Entity] = None):
+        super().collide(collision_vector, other)
         self.actions |= CharacterAction.COLLIDING
         self.events.append(CharacterEvent("collide", other))
 
@@ -219,27 +227,32 @@ class Character(AnimatedSprite):
             self.events.append(CharacterEvent("hit", self, damage))
 
     def think(self):
-        if self.is_alive():
-            self.handle_triggers()
-            self.handle_ai()
-            if CharacterAction.ATTACKING in self.actions:
-                self.handle_attack()
-        else:
-            self.actions = CharacterAction.DYING
-            self.free_timer.set(CHARACTER_FREE_TIMER)
+        if CharacterAction.TALKING not in self.actions:
+            if self.is_alive():
+                self.handle_triggers()
+                self.handle_ai()
+                if CharacterAction.ATTACKING in self.actions:
+                    self.handle_attack()
+            else:
+                self.actions = CharacterAction.DYING
+                self.free_timer.set(CHARACTER_FREE_TIMER)
 
     def update(self, dt: float):
-        self.attack_timer.update(dt)
-        self.free_timer.update(dt)
+        if CharacterAction.TALKING not in self.actions:
+            self.attack_timer.update(dt)
+            self.free_timer.update(dt)
 
-        self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
-        self.constrain_to_boundary(self.boundary)
-        super().update(dt)
+            self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
+            self.constrain_to_boundary(self.boundary)
+            super().update(dt)
 
-        self.events.clear()
-        self.reset_triggers()
+            self.events.clear()
+            self.reset_triggers()
 
     def draw(self):
         self.play_sound_effect()
         self.set_animation_effect()
         super().draw()
+
+        if DEBUG_ENABLED:
+            BoundingBoxRenderer(self.get_bbox()).draw()
