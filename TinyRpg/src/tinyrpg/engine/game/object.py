@@ -62,6 +62,10 @@ class Object(AnimatedSprite):
         rect = self.get_dest(self.pos.x, self.pos.y)
         return adjust_bbox(get_bbox_from_rect(rect), OBJECT_BBOX_ADJUST)
 
+    def open(self):
+        if self.actions == ObjectAction.IDLING:
+            self.actions = ObjectAction.OPENING
+
     def play_sound_effect(self) -> None:
         match self.actions:
             case ObjectAction.OPENING if int(self.animation.frame) == 0:
@@ -77,7 +81,6 @@ class Object(AnimatedSprite):
 
     def collide(self, collision_vector: pr.Vector2, other: Optional[Entity] = None):
         if self.actions == ObjectAction.IDLING:
-            self.actions = ObjectAction.OPENING
             self.events.append(ObjectEvent("collide", other))
 
     def update(self, dt: float):

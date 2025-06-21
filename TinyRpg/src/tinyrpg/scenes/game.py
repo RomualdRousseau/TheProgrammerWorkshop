@@ -133,7 +133,7 @@ def update(dt: float) -> None:
         if CharacterAction.COLLIDING in game.hero.actions and random() < 0.05:
             game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ":("))
 
-        for character in game.characters + game.objects:
+        for character in game.characters:
             for event in character.events:
                 match (character.id, event.name):
                     case ("player", "hit"):
@@ -174,17 +174,22 @@ def update(dt: float) -> None:
                             game.particles.append(Feary("sword", character.pos, game.hero, Item(*ITEM_DATABASE[0])))
                             game.particles.append(Feary("shield", character.pos, game.hero, Item(*ITEM_DATABASE[1])))
                         game.hero.start_talk()
-                        # character.start_talk()
+                        character.start_talk()
+
+        for object in game.objects:
+            for event in object.events:
+                match (object.id, event.name):
                     case ("chest", "collide"):
                         game.quest_gem_to_collect = Item(*ITEM_DATABASE[2])
                         game.particles.append(
                             Feary(
                                 "gem",
-                                pr.Vector2(game.hero.pos.x, game.hero.pos.y - 8),
+                                object.pos,
                                 game.hero,
                                 game.quest_gem_to_collect,
                             )
                         )
+                        object.open()
 
     # User interface
 

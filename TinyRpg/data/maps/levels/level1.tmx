@@ -92,12 +92,5 @@
    </properties>
    <point/>
   </object>
-  <object id="8" x="199.728" y="137.115">
-   <properties>
-    <property name="name" value="chest"/>
-    <property name="type" value="object"/>
-   </properties>
-   <point/>
-  </object>
  </objectgroup>
 </map>
