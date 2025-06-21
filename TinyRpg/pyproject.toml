@@ -1,7 +1,7 @@
 [project]
 name = "tinyrpg"
 version = "0.1.0"
-description = "Add your description here"
+description = "A classical rpg game"
 readme = "README.md"
 authors = [
     { name = "Romuald Rousseau", email = "romualdrousseau@gmail.com" }
@@ -52,7 +52,6 @@ ignore = [
     "D107",  # Missing docstring in `__init__`
     "E731"  # Lambda-assignment
 ]
-
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

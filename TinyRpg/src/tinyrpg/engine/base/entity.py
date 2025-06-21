@@ -5,7 +5,7 @@ from typing import Optional
 import pyray as pr
 
 from tinyrpg.constants import ENTITY_DENSITY_DEFAULT, ENTITY_MASS_DEFAULT, EPSILON, MAX_AVOID_FORCE
-from tinyrpg.utils.bbox import get_bbox_center, get_bbox_from_rect
+from tinyrpg.engine.utils.bbox import get_bbox_center, get_bbox_from_rect
 
 
 class Entity:

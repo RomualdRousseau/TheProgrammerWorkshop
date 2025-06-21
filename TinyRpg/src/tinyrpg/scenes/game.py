@@ -8,20 +8,23 @@ import pyray as pr
 
 from tinyrpg.characters import Enemy, Hero, Npc
 from tinyrpg.characters.hero import get_hero
+from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY, INPUT_TAKE_SCREENSHOT
 from tinyrpg.engine import (
     Character,
     CharacterAction,
+    DialogEffect,
     FixedCamera,
     FollowCamera,
     Map,
     Particle,
+    VerticalEffect,
     Widget,
     begin_mode_sorted_2d,
+    is_key_pressed,
 )
 from tinyrpg.particles import Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
-from tinyrpg.widgets import DialogEffect, InventoryBox, MessageBox
-from tinyrpg.widgets.effects.vertical import VerticalEffect
+from tinyrpg.widgets import InventoryBox, MessageBox
 
 
 @dataclass
@@ -154,9 +157,9 @@ def update(dt: float) -> None:
     # User interface
 
     if len(game.widgets) == 0:
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_I):
+        if is_key_pressed(INPUT_OPEN_INVENTORY):
             game.widgets.append(VerticalEffect(InventoryBox()))
-    if pr.is_key_pressed(pr.KeyboardKey.KEY_HOME):
+    if DEBUG_ENABLED and is_key_pressed(INPUT_TAKE_SCREENSHOT):
         pr.take_screenshot("screenshot.png")
 
     # Garbage collect dead entities

@@ -3,10 +3,10 @@ from __future__ import annotations
 import pyray as pr
 
 from tinyrpg.constants import WORLD_FOREGROUND_LAYER
-from tinyrpg.engine.animation import Animation
-from tinyrpg.engine.entity import Entity
-from tinyrpg.engine.renderer import renderer
-from tinyrpg.utils import get_bbox_from_rect
+from tinyrpg.engine.base.animation import Animation
+from tinyrpg.engine.base.entity import Entity
+from tinyrpg.engine.base.renderer import renderer
+from tinyrpg.engine.utils.bbox import get_bbox_from_rect
 
 
 class Sprite(Entity):

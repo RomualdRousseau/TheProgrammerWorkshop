@@ -2,23 +2,23 @@ from typing import Optional
 
 import pyray as pr
 
-from tinyrpg.engine import Animation, AnimationFlag, Character, CharacterStats, Entity
+from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterStats, Entity
 
-NPC_SIZE = pr.Vector2(32, 32)  # pixels
 NPC_ANIMATIONS = lambda: {
-    "Idle": Animation(pr.Vector2(0, 0), NPC_SIZE, 6, 3),
-    "WalkUp": Animation(pr.Vector2(0, 5), NPC_SIZE, 6, 5),
-    "WalkDown": Animation(pr.Vector2(0, 3), NPC_SIZE, 6, 5),
-    "WalkLeft": Animation(pr.Vector2(0, 4), NPC_SIZE, 6, 5, AnimationFlag.MIRROR_X),
-    "WalkRight": Animation(pr.Vector2(0, 4), NPC_SIZE, 6, 5),
+    "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
+    "WalkUp": Animation(pr.Vector2(0, 5), CHARACTER_SIZE, 6, 5),
+    "WalkDown": Animation(pr.Vector2(0, 3), CHARACTER_SIZE, 6, 5),
+    "WalkLeft": Animation(pr.Vector2(0, 4), CHARACTER_SIZE, 6, 5, AnimationFlag.MIRROR_X),
+    "WalkRight": Animation(pr.Vector2(0, 4), CHARACTER_SIZE, 6, 5),
 }
 
-NPC_SPEED = 8  # pixel * s-1
-NPC_ATTACK_SPEED = 1  # frame
-NPC_DAMAGE = 1
-NPC_ARMOR = 0
-NPC_LIFE = 1
-NPC_STATS = lambda: CharacterStats(NPC_SPEED, NPC_ATTACK_SPEED, NPC_DAMAGE, NPC_ARMOR, NPC_LIFE)
+NPC_STATS = lambda: CharacterStats(
+    speed=8,  # pixel * s-1
+    attack_speed=1,  # s
+    damage=0,
+    armor=0,
+    hp=1,
+)
 
 
 class Npc(Character):
@@ -26,7 +26,4 @@ class Npc(Character):
         super().__init__(name, name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary)
 
     def collide(self, dt: float, collision_vector: pr.Vector2, other: Optional[Entity] = None):
-        # super().collide(dt, collision_vector, other)
-        # self.actions |= CharacterAction.COLLIDING
-        # self.events.append(CharacterEvent("collide", other))
         pass

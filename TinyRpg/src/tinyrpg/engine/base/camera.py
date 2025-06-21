@@ -1,8 +1,8 @@
 import pyray as pr
 
 from tinyrpg.constants import CAMERA_SPEED, WINDOW_HEIGHT, WINDOW_WIDTH, WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine.entity import Entity
-from tinyrpg.utils import resize_bbox
+from tinyrpg.engine.base.entity import Entity
+from tinyrpg.engine.utils.bbox import resize_bbox
 
 CAMERA_BOUNDARY_RESIZE = pr.Vector2(-WORLD_WIDTH // 2, -WORLD_HEIGHT // 2)  # pixels
 

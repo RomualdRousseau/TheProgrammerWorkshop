@@ -5,14 +5,9 @@ import pyray as pr
 from pytmx import TiledMap, TiledObjectGroup, TiledTileLayer
 
 from tinyrpg.constants import CHARACTER_TRIGGER_FAR_DEFAULT
-from tinyrpg.engine.renderer import BoundingBoxRenderer, LineRenderer, renderer
-from tinyrpg.utils import (
-    QuadTreeBuilder,
-    check_collision_bbox_point,
-    get_bbox_center,
-    get_bbox_from_rect,
-    resize_bbox,
-)
+from tinyrpg.engine.base.renderer import BoundingBoxRenderer, LineRenderer, renderer
+from tinyrpg.engine.utils.bbox import check_collision_bbox_point, get_bbox_center, get_bbox_from_rect, resize_bbox
+from tinyrpg.engine.utils.quad_tree import QuadTreeBuilder
 
 
 @dataclass
@@ -139,10 +134,10 @@ class Map:
         has_collision = False
         sum_reaction = pr.vector3_zero()
         bbox1 = resize_bbox(bbox, pr.Vector2(self.tiledmap.tilewidth * 0.5, self.tiledmap.tileheight * 0.5))
-        # BoundingBoxRenderer(bbox).draw()
-        # BoundingBoxRenderer(bbox1).draw()
+        BoundingBoxRenderer(bbox).draw()
+        BoundingBoxRenderer(bbox1).draw()
         for bbox2, _ in self.bboxes.find_bbox(bbox1):
-            # BoundingBoxRenderer(bbox2).draw()
+            BoundingBoxRenderer(bbox2).draw()
             if pr.check_collision_boxes(bbox, bbox2):
                 sum_reaction = pr.vector3_add(
                     sum_reaction, pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))

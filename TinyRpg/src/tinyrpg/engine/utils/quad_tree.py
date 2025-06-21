@@ -6,7 +6,7 @@ from typing import Callable, Generator, Generic, Optional, TypeVar
 
 import pyray as pr
 
-from tinyrpg.utils.bbox import check_collision_bbox_point, check_collision_bbox_ray, subdivide_bbox
+from tinyrpg.engine.utils.bbox import check_collision_bbox_point, check_collision_bbox_ray, subdivide_bbox
 
 T = TypeVar("T")
 

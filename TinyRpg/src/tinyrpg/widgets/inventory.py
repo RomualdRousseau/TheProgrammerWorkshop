@@ -1,9 +1,19 @@
 import pyray as pr
 
-from tinyrpg.characters.hero import get_hero
-from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine import Widget
-from tinyrpg.engine.inventory import EquipmentSlot
+from tinyrpg.characters import get_hero
+from tinyrpg.constants import (
+    INPUT_CLOSE_INVENTORY,
+    INPUT_TRASH_ITEM,
+    INPUT_UNUSE_ITEM,
+    INPUT_USE_ITEM,
+    WORLD_HEIGHT,
+    WORLD_WIDTH,
+)
+from tinyrpg.engine import (
+    EquipmentSlot,
+    Widget,
+    is_key_pressed,
+)
 from tinyrpg.resources import load_texture
 
 MESSAGE_HEIGHT = 200  # px
@@ -26,17 +36,21 @@ class InventoryBox(Widget):
         self.cursor = 0
 
     def handle_input(self):
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_SPACE):
+        if is_key_pressed(INPUT_CLOSE_INVENTORY):
             self.close()
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_RIGHT):
+        if is_key_pressed("RIGHT"):
             self.cursor = min(self.cursor + 1, 3 + 8)
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_LEFT):
+        if is_key_pressed("LEFT"):
             self.cursor = max(self.cursor - 1, 0)
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_E) and self.cursor >= 3:
+        if is_key_pressed("DOWN"):
+            self.cursor = min(self.cursor + 3, 3 + 8)
+        if is_key_pressed("UP"):
+            self.cursor = max(self.cursor - 3, 0)
+        if is_key_pressed(INPUT_USE_ITEM) and self.cursor >= 3:
             get_hero().inventory.equip(self.cursor - 3)
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_X) and self.cursor >= 3:
+        if is_key_pressed(INPUT_TRASH_ITEM) and self.cursor >= 3:
             get_hero().inventory.remove(self.cursor - 3)
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_X) and self.cursor < 3:
+        if is_key_pressed(INPUT_UNUSE_ITEM) and self.cursor < 3:
             get_hero().inventory.unequip(self.cursor)
 
     def update(self, dt: float):

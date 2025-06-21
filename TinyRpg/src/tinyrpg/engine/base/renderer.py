@@ -3,7 +3,7 @@ from typing import Any, Callable, Protocol
 
 import pyray as pr
 
-from tinyrpg.constants import WORLD_DEBUG_LAYER, WORLD_FOREGROUND_LAYER, WORLD_LAYER_COUNT
+from tinyrpg.constants import DEBUG_ENABLED, WORLD_DEBUG_LAYER, WORLD_FOREGROUND_LAYER, WORLD_LAYER_COUNT
 
 
 class Renderer(Protocol):
@@ -43,6 +43,9 @@ class BoundingBoxRenderer:
         return 0
 
     def draw(self):
+        if not DEBUG_ENABLED:
+            return
+
         def draw_method(self):
             pr.draw_bounding_box(self.bbox, pr.GREEN)
 
@@ -61,6 +64,9 @@ class LineRenderer:
         return 0
 
     def draw(self):
+        if not DEBUG_ENABLED:
+            return
+
         def draw_method(self):
             pr.draw_line_v(self.p1, self.p2, pr.GREEN)
 
