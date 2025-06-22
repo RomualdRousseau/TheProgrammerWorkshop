@@ -20,6 +20,8 @@ RESOURCES = {
     "hit": "data/sounds/hit.wav",
     "hurt": "data/sounds/hurt.wav",
     "key": "data/sounds/key.wav",
+    "pick": "data/sounds/pick.wav",
+    "open": "data/sounds/open.wav",
 }
 
 

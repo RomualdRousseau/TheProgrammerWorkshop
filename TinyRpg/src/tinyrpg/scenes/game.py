@@ -26,7 +26,7 @@ from tinyrpg.engine import (
     is_action_pressed,
 )
 from tinyrpg.objects.chest import Chest
-from tinyrpg.particles import Feary, Toast
+from tinyrpg.particles import Pick, Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.widgets import InventoryBox, MessageBox
 
@@ -154,8 +154,8 @@ def update(dt: float):
 
                             def give_sword_and_shield(game=game, character=character):
                                 game.quest_state = 1
-                                game.particles.append(Feary(character.pos, Item(*ITEM_DATABASE[0]), game.hero))
-                                game.particles.append(Feary(character.pos, Item(*ITEM_DATABASE[1]), game.hero))
+                                game.particles.append(Pick(character.pos, Item(*ITEM_DATABASE[0]), game.hero))
+                                game.particles.append(Pick(character.pos, Item(*ITEM_DATABASE[1]), game.hero))
 
                             game.widgets.append(
                                 DialogEffect(
@@ -179,7 +179,7 @@ def update(dt: float):
                             def give_gift(game=game, character=character):
                                 assert game.quest_gem_to_collect is not None
                                 game.hero.inventory.drop(game.hero.inventory.index(game.quest_gem_to_collect))
-                                game.particles.append(Feary(character.pos, Item(*ITEM_DATABASE[3]), game.hero))
+                                game.particles.append(Pick(character.pos, Item(*ITEM_DATABASE[3]), game.hero))
 
                             game.widgets.append(
                                 DialogEffect(
@@ -201,7 +201,7 @@ def update(dt: float):
                     if not object.is_open():
                         game.quest_state = 2
                         game.quest_gem_to_collect = Item(*ITEM_DATABASE[2])
-                        game.particles.append(Feary(object.pos, game.quest_gem_to_collect, game.hero))
+                        game.particles.append(Pick(object.pos, game.quest_gem_to_collect, game.hero))
                         object.open()
 
     if is_action_pressed(INPUT_OPEN_INVENTORY):
