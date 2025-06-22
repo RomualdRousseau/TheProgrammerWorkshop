@@ -12,6 +12,7 @@ from tinyrpg.engine import (
     CharacterStats,
     is_action_down,
 )
+from tinyrpg.engine.game.character import CHARACTER_NO_RESET_MASK
 from tinyrpg.engine.game.inventory import EquipmentType
 
 HERO_ANIMATIONS = lambda: {
@@ -41,28 +42,26 @@ class Hero(Character):
         super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary)
 
     def handle_ai(self) -> None:
-        self.dir = pr.vector2_zero()
-        self.speed = 0
-        self.actions = CharacterAction.IDLING
+        super().handle_ai()
         if is_action_down("UP"):
             self.dir.y = -1
-            self.actions = CharacterAction.WALKING
             self.speed = self.stats.speed
+            self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.WALKING
         elif is_action_down("DOWN"):
             self.dir.y = 1
-            self.actions = CharacterAction.WALKING
             self.speed = self.stats.speed
+            self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.WALKING
         if is_action_down("LEFT"):
             self.dir.x = -1
-            self.actions = CharacterAction.WALKING
             self.speed = self.stats.speed
+            self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.WALKING
         elif is_action_down("RIGHT"):
             self.dir.x = 1
-            self.actions = CharacterAction.WALKING
             self.speed = self.stats.speed
+            self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.WALKING
         if is_action_down(INPUT_ATTACK) and self.inventory.is_equiped_with(EquipmentType.WEAPON):
-            self.actions = CharacterAction.ATTACKING
             self.speed = 0
+            self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.ATTACKING
 
 
 @cache

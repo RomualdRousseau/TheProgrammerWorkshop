@@ -7,11 +7,11 @@ from tinyrpg.resources import load_sound, load_texture
 
 
 class Feary(Particle):
-    def __init__(self, name: str, pos: pr.Vector2, target: Character, item: Item):
+    def __init__(self, pos: pr.Vector2, item: Item, target: Character):
         super().__init__(pos)
-        self.texture = load_texture(name)
-        self.target = target
         self.item = item
+        self.target = target
+        self.texture = load_texture(item.texture)
         self.time = 0
         self.random_force(5000, 0, math.pi)
 

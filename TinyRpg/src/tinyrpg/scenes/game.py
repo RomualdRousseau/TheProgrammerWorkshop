@@ -42,6 +42,7 @@ class Game:
     objects: list[Object] = field(default_factory=lambda: [])
     particles: list[Particle] = field(default_factory=lambda: [])
     widgets: list[Widget] = field(default_factory=lambda: [])
+    quest_state: int = 0
     quest_gem_to_collect: Optional[Item] = None
 
 
@@ -60,7 +61,7 @@ def get_game(level_name: str) -> Game:
     )
 
 
-def init() -> None:
+def init():
     game = get_game("level1")
     game.characters.append(game.hero)
     for object in game.map.objects:
@@ -74,82 +75,112 @@ def init() -> None:
     pr.play_music_stream(game.music)
 
 
-def release() -> None:
+def release():
     get_game.cache_clear()
     unload_resources()
 
 
-def update(dt: float) -> None:
+def update(dt: float):
     game = get_game("level1")
+
+    if is_action_pressed(INPUT_TAKE_SCREENSHOT):
+        pr.take_screenshot("screenshot.png")
+
+    if len(game.widgets) > 0:
+        update_widgets(dt)
+        return
 
     # Physic updates
 
-    if len(game.widgets) == 0:
-        for entity in game.characters + game.objects + game.particles:
-            entity.update(dt)
-    else:
-        for entity in game.particles + game.widgets:
-            entity.update(dt)
+    for entity in game.characters + game.objects + game.particles:
+        entity.update(dt)
 
     # Collisions and Triggers
 
-    if len(game.widgets) == 0:
-        for character in game.characters:
-            has_collision, collision_vector = game.map.check_collision(character.get_bbox())
-            if has_collision:
-                character.collide(collision_vector)
+    for character in game.characters:
+        has_collision, collision_vector = game.map.check_collision(character.get_bbox())
+        if has_collision:
+            character.collide(collision_vector)
 
-    if len(game.widgets) == 0:
-        for character, other in combinations(game.characters + game.objects, 2):
-            has_collision, collision_vector = other.check_collision(character.get_bbox())
-            if has_collision:
-                character.collide(collision_vector, other)
-                other.collide(pr.vector2_scale(collision_vector, -1), character)
+    for character, other in combinations(game.characters + game.objects, 2):
+        has_collision, collision_vector = other.check_collision(character.get_bbox())
+        if has_collision:
+            character.collide(collision_vector, other)
+            other.collide(pr.vector2_scale(collision_vector, -1), character)
 
-        for character in game.characters:
-            has_los = (
-                character.id != "player"
-                and game.hero.is_alive()
-                and character.is_alive()
-                and game.map.check_los(character.pos, game.hero.pos)
-            )
-            if has_los:
-                game.hero.set_nearest_target(character)
-                character.set_nearest_target(game.hero)
+    for character in game.characters:
+        has_los = (
+            character.id != "player"
+            and game.hero.is_alive()
+            and character.is_alive()
+            and game.map.check_los(character.pos, game.hero.pos)
+        )
+        if has_los:
+            game.hero.set_nearest_target(character)
+            character.set_nearest_target(game.hero)
 
     # AI
 
-    if len(game.widgets) == 0:
-        for character in game.characters:
-            character.stop_talk()
-            character.think()
+    for character in game.characters:
+        character.think()
 
     # Gameplay and Effects
 
-    if len(game.widgets) == 0:
-        if CharacterAction.IDLING in game.hero.actions and random() < 0.0025:
-            game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ";)"))
+    if CharacterAction.IDLING in game.hero.actions and random() < 0.0025:
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ";)"))
 
-        if CharacterAction.COLLIDING in game.hero.actions and random() < 0.05:
-            game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ":("))
+    if CharacterAction.COLLIDING in game.hero.actions and random() < 0.05:
+        game.particles.append(Toast(pr.Vector2(game.hero.pos.x, game.hero.pos.y - 16), ":("))
 
-        for character in game.characters:
-            for event in character.events:
-                match (character.id, event.name):
-                    case ("player", "hit"):
-                        game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
-                    case ("skeleton", "trigger_far_enter"):
-                        game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
-                    case ("skeleton", "trigger_far_leave"):
-                        game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "?"))
-                    case ("skeleton", "hit"):
-                        game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
-                    case ("grace", "trigger_near_enter"):
-                        game.particles.append(Toast(pr.vector2_add(game.hero.pos, (0, -16)), "?"))
-                        game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
-                        if game.quest_gem_to_collect:
-                            game.hero.inventory.drop(game.hero.inventory.index(game.quest_gem_to_collect))
-                            game.particles.append(Feary("potion", character.pos, game.hero, Item(*ITEM_DATABASE[3])))
+    for character in game.characters:
+        for event in character.events:
+            match (character.id, event.name):
+                case ("player", "hit"):
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                case ("skeleton", "trigger_far_enter"):
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
+                case ("skeleton", "trigger_far_leave"):
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "?"))
+                case ("skeleton", "hit"):
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                case ("grace", "trigger_near_enter"):
+                    game.particles.append(Toast(pr.vector2_add(game.hero.pos, (0, -16)), "?"))
+                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
+                    game.hero.start_talk()
+                    character.start_talk()
+
+                    match game.quest_state:
+                        case 0:
+
+                            def give_sword_and_shield(game=game, character=character):
+                                game.quest_state = 1
+                                game.particles.append(Feary(character.pos, Item(*ITEM_DATABASE[0]), game.hero))
+                                game.particles.append(Feary(character.pos, Item(*ITEM_DATABASE[1]), game.hero))
+
+                            game.widgets.append(
+                                DialogEffect(
+                                    [
+                                        VerticalEffect(MessageBox("Grace", "portrait-grace", MESSAGE_GRACE)),
+                                        VerticalEffect(MessageBox("Romuald", "portrait-player", MESSAGE_PLAYER)),
+                                    ]
+                                ).on_close(give_sword_and_shield)
+                            )
+                        case 1:
+                            game.widgets.append(
+                                DialogEffect(
+                                    [
+                                        VerticalEffect(MessageBox("Grace", "portrait-grace", "I love you")),
+                                        VerticalEffect(MessageBox("Romuald", "portrait-player", "I love you too")),
+                                    ]
+                                )
+                            )
+                        case 2:
+
+                            def give_gift(game=game, character=character):
+                                assert game.quest_gem_to_collect is not None
+                                game.hero.inventory.drop(game.hero.inventory.index(game.quest_gem_to_collect))
+                                game.particles.append(Feary(character.pos, Item(*ITEM_DATABASE[3]), game.hero))
+
                             game.widgets.append(
                                 DialogEffect(
                                     [
@@ -160,53 +191,42 @@ def update(dt: float) -> None:
                                         ),
                                         VerticalEffect(MessageBox("Romuald", "portrait-player", "Thank you")),
                                     ]
-                                )
+                                ).on_close(give_gift)
                             )
-                        else:
-                            game.widgets.append(
-                                DialogEffect(
-                                    [
-                                        VerticalEffect(MessageBox("Grace", "portrait-grace", MESSAGE_GRACE)),
-                                        VerticalEffect(MessageBox("Romuald", "portrait-player", MESSAGE_PLAYER)),
-                                    ]
-                                )
-                            )
-                            game.particles.append(Feary("sword", character.pos, game.hero, Item(*ITEM_DATABASE[0])))
-                            game.particles.append(Feary("shield", character.pos, game.hero, Item(*ITEM_DATABASE[1])))
-                        game.hero.start_talk()
-                        character.start_talk()
 
-        for object in game.objects:
-            for event in object.events:
-                match (object.id, event.name):
-                    case ("chest", "collide"):
+    for object in game.objects:
+        for event in object.events:
+            match (object.id, event.name):
+                case ("chest", "collide"):
+                    if not object.is_open():
+                        game.quest_state = 2
                         game.quest_gem_to_collect = Item(*ITEM_DATABASE[2])
-                        game.particles.append(
-                            Feary(
-                                "gem",
-                                object.pos,
-                                game.hero,
-                                game.quest_gem_to_collect,
-                            )
-                        )
+                        game.particles.append(Feary(object.pos, game.quest_gem_to_collect, game.hero))
                         object.open()
 
-    # User interface
-
-    if len(game.widgets) == 0:
-        if is_action_pressed(INPUT_OPEN_INVENTORY):
-            game.widgets.append(VerticalEffect(InventoryBox()))
-    if is_action_pressed(INPUT_TAKE_SCREENSHOT):
-        pr.take_screenshot("screenshot.png")
+    if is_action_pressed(INPUT_OPEN_INVENTORY):
+        game.widgets.append(VerticalEffect(InventoryBox()))
 
     # Garbage collect dead entities
 
     game.characters = [character for character in game.characters if not character.should_be_free()]
     game.particles = [particle for particle in game.particles if not particle.should_be_free()]
-    game.widgets = [widget for widget in game.widgets if not widget.shoudl_be_free()]
 
 
-def draw() -> None:
+def update_widgets(dt: float):
+    game = get_game("level1")
+    # Physic updates
+
+    for entity in game.particles + game.widgets:
+        entity.update(dt)
+
+    # Garbage collect dead entities
+
+    game.widgets = [widget for widget in game.widgets if not widget.should_be_free()]
+    game.particles = [particle for particle in game.particles if not particle.should_be_free()]
+
+
+def draw():
     game = get_game("level1")
     pr.update_music_stream(game.music)
 
