@@ -64,6 +64,9 @@ class CharacterAction(Flag):
     DYING = auto()
 
 
+CHARACTER_NO_RESET_MASK = CharacterAction.TALKING | CharacterAction.DYING
+
+
 class Character(AnimatedSprite):
     def __init__(
         self,
@@ -88,6 +91,9 @@ class Character(AnimatedSprite):
         self.events: list[CharacterEvent] = []
         self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
         self.inventory = Inventory()
+
+    def should_be_free(self) -> bool:
+        return self.health <= 0 and self.free_timer.is_elapsed()
 
     def get_layer(self):
         return 1
@@ -117,27 +123,23 @@ class Character(AnimatedSprite):
     def is_alive(self) -> bool:
         return self.health > 0
 
-    def should_be_free(self) -> bool:
-        return self.health <= 0 and self.free_timer.is_elapsed()
-
     def set_position_and_boundary(self, pos: pr.Vector2, boundary: pr.BoundingBox):
         self.pos = pos
         self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
 
-    def start_talk(self):
-        self.dir = pr.vector2_zero()
-        self.speed = 0
-        self.actions = CharacterAction.TALKING
-        self.events.clear()
-        self.reset_triggers()
-
-    def stop_talk(self):
-        self.actions &= ~CharacterAction.TALKING
+    def set_nearest_target(self, other: Character):
+        dist = pr.vector2_distance(self.pos, other.pos)
+        if dist < self.trigger_near.dist and dist < self.stats.trigger_near:
+            self.trigger_near.dist = dist
+            self.trigger_near.curr = other
+        if dist < self.trigger_far.dist and dist < self.stats.trigger_far:
+            self.trigger_far.dist = dist
+            self.trigger_far.curr = other
 
     def handle_ai(self):
         self.dir = pr.vector2_zero()
         self.speed = 0
-        self.actions = CharacterAction.IDLING
+        self.actions |= CharacterAction.IDLING
 
     def handle_attack(self):
         if self.attack_timer.is_elapsed():
@@ -171,13 +173,13 @@ class Character(AnimatedSprite):
 
     def play_sound_effect(self) -> None:
         match self.actions:
-            case CharacterAction.WALKING if int(self.animation.frame) in (1, 4):
+            case a if CharacterAction.WALKING in a and int(self.animation.frame) in (1, 4):
                 if not pr.is_sound_playing(load_sound("step")):
                     pr.play_sound(load_sound("step"))
-            case CharacterAction.ATTACKING if int(self.animation.frame) in (0, 1):
+            case a if CharacterAction.ATTACKING in a and int(self.animation.frame) in (0, 1):
                 if not pr.is_sound_playing(load_sound("hit")):
                     pr.play_sound(load_sound("hit"))
-            case CharacterAction.DYING if int(self.animation.frame) in (0, 1):
+            case a if CharacterAction.DYING in a and int(self.animation.frame) in (0, 1):
                 if not pr.is_sound_playing(load_sound("hurt")):
                     pr.play_sound(load_sound("hurt"))
 
@@ -199,55 +201,71 @@ class Character(AnimatedSprite):
                 self.set_animation("AttackUp")
             case CharacterAction.ATTACKING if self.dir.y > 0:
                 self.set_animation("AttackDown")
-            case CharacterAction.ATTACKING:
+            case a if CharacterAction.ATTACKING in a:
                 self.set_animation("AttackDown")
-            case CharacterAction.DYING:
+            case a if CharacterAction.DYING in a:
                 self.set_animation("Die")
             case _:
                 self.set_animation("Idle")
+
+    def start_talk(self):
+        self.dir = pr.vector2_zero()
+        self.speed = 0
+        self.actions |= CharacterAction.TALKING
+        self.events.clear()
+        self.reset_triggers()
+
+    def stop_talk(self):
+        self.actions &= ~CharacterAction.TALKING
 
     def collide(self, collision_vector: pr.Vector2, other: Optional[Entity] = None):
         super().collide(collision_vector, other)
         self.actions |= CharacterAction.COLLIDING
         self.events.append(CharacterEvent("collide", other))
 
-    def set_nearest_target(self, other: Character):
-        dist = pr.vector2_distance(self.pos, other.pos)
-        if dist < self.trigger_near.dist and dist < self.stats.trigger_near:
-            self.trigger_near.dist = dist
-            self.trigger_near.curr = other
-        if dist < self.trigger_far.dist and dist < self.stats.trigger_far:
-            self.trigger_far.dist = dist
-            self.trigger_far.curr = other
-
     def hit(self, damage: int):
+        if not self.is_alive():
+            return
+
         damage = max(0, damage - math.floor(uniform(0, self.get_armor() + 1)))
         if damage > 0:
             self.health -= damage
             self.events.append(CharacterEvent("hit", self, damage))
 
+        if not self.is_alive():
+            self.force = pr.vector2_zero()
+            self.vel = pr.vector2_zero()
+            self.dir = pr.vector2_zero()
+            self.speed = 0
+            self.actions = CharacterAction.DYING
+            self.free_timer.set(CHARACTER_FREE_TIMER)
+
     def think(self):
-        if CharacterAction.TALKING not in self.actions:
-            if self.is_alive():
-                self.handle_triggers()
-                self.handle_ai()
-                if CharacterAction.ATTACKING in self.actions:
-                    self.handle_attack()
-            else:
-                self.actions = CharacterAction.DYING
-                self.free_timer.set(CHARACTER_FREE_TIMER)
+        self.stop_talk()
+
+        if not self.is_alive():
+            return
+
+        self.handle_triggers()
+        self.handle_ai()
+
+        if CharacterAction.ATTACKING in self.actions:
+            self.handle_attack()
 
     def update(self, dt: float):
-        if CharacterAction.TALKING not in self.actions:
-            self.attack_timer.update(dt)
-            self.free_timer.update(dt)
+        if CharacterAction.TALKING in self.actions:
+            return
 
-            self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
-            self.constrain_to_boundary(self.boundary)
-            super().update(dt)
+        self.attack_timer.update(dt)
+        self.free_timer.update(dt)
 
-            self.events.clear()
-            self.reset_triggers()
+        self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
+        self.constrain_to_boundary(self.boundary)
+        super().update(dt)
+
+        self.actions &= CHARACTER_NO_RESET_MASK
+        self.events.clear()
+        self.reset_triggers()
 
     def draw(self):
         self.play_sound_effect()

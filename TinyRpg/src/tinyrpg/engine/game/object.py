@@ -62,6 +62,9 @@ class Object(AnimatedSprite):
         rect = self.get_dest(self.pos.x, self.pos.y)
         return adjust_bbox(get_bbox_from_rect(rect), OBJECT_BBOX_ADJUST)
 
+    def is_open(self):
+        return self.actions == ObjectAction.OPENING
+
     def open(self):
         if self.actions == ObjectAction.IDLING:
             self.actions = ObjectAction.OPENING

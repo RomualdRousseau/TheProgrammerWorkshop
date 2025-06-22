@@ -1,6 +1,7 @@
 import pyray as pr
 
 from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterAction, CharacterStats
+from tinyrpg.engine.game.character import CHARACTER_NO_RESET_MASK
 
 ENEMY_ANIMATIONS = lambda: {
     "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
@@ -29,15 +30,12 @@ class Enemy(Character):
         super().__init__(name, name, pos, ENEMY_STATS(), ENEMY_ANIMATIONS(), boundary)
 
     def handle_ai(self):
+        super().handle_ai()
         if self.trigger_near.curr is not None:
             self.dir = pr.vector2_normalize(pr.vector2_subtract(self.trigger_near.curr.pos, self.pos))
             self.speed = 0
-            self.actions = CharacterAction.ATTACKING
+            self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.ATTACKING
         elif self.trigger_far.curr is not None:
             self.dir = pr.vector2_normalize(pr.vector2_subtract(self.trigger_far.curr.pos, self.pos))
             self.speed = self.stats.speed
-            self.actions = CharacterAction.WALKING
-        else:
-            self.dir = pr.vector2_zero()
-            self.speed = 0
-            self.actions = CharacterAction.IDLING
+            self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.WALKING

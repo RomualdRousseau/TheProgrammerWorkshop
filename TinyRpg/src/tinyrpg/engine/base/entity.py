@@ -9,14 +9,16 @@ import pyray as pr
 from tinyrpg.constants import ENTITY_DENSITY_DEFAULT, ENTITY_MASS_DEFAULT, EPSILON, MAX_AVOID_FORCE
 from tinyrpg.engine.utils.bbox import get_bbox_center, get_bbox_from_rect
 
+GRAVITY_FORCE = pr.Vector2(0, -9.81)
+
 
 class Entity:
     def __init__(self, id: str, pos: pr.Vector2):
         self.id = id
         self.mass = ENTITY_MASS_DEFAULT
         self.force = pr.vector2_zero()
-        self.pos = pos
         self.vel = pr.vector2_zero()
+        self.pos = pos
 
     def should_be_free(self) -> bool:
         return False
@@ -31,16 +33,15 @@ class Entity:
         friction = pr.vector2_add(pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu))
         self.force = pr.vector2_add(self.force, pr.vector2_add(speed, friction))
 
-    def constrain_to_boundary(self, boundary: pr.BoundingBox):
-        self.pos.x = max(boundary.min.x, min(self.pos.x, boundary.max.x))
-        self.pos.y = max(boundary.min.y, min(self.pos.y, boundary.max.y))
-
     def random_force(self, max_force: float, min_angle: float, max_angle: float):
-        angle = uniform(0, 2 * math.pi)
+        angle = uniform(min_angle, max_angle)
         self.force = pr.Vector2(max_force * math.cos(angle), -max_force * math.sin(angle))
 
     def clamp_force(self, min_force: float, max_force: float):
         self.force = pr.vector2_clamp_value(self.force, min_force, max_force)
+
+    def gravity(self):
+        self.force = pr.vector2_add(self.force, GRAVITY_FORCE)
 
     def seek(self, target: pr.Vector2, max_force: float, slowing_radius: float):
         desired_dir = pr.vector2_subtract(target, self.pos)
@@ -51,12 +52,13 @@ class Entity:
             desired_force = max_force
         self.force = pr.vector2_add(self.force, pr.vector2_scale(pr.vector2_normalize(desired_dir), desired_force))
 
-    def gravity(self):
-        self.force = pr.vector2_add(self.force, (0, 10))
-
     def collide(self, collision_vector: pr.Vector2, other: Optional[Entity] = None):
         avoidance = pr.vector2_scale(collision_vector, MAX_AVOID_FORCE)
         self.force = pr.vector2_add(self.force, avoidance)
+
+    def constrain_to_boundary(self, boundary: pr.BoundingBox):
+        self.pos.x = max(boundary.min.x, min(self.pos.x, boundary.max.x))
+        self.pos.y = max(boundary.min.y, min(self.pos.y, boundary.max.y))
 
     def check_collision(
         self, bbox: pr.BoundingBox, collision_vector: Optional[pr.Vector2] = None
