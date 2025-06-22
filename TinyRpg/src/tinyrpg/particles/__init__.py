@@ -1,2 +1,2 @@
-from tinyrpg.particles.feary import Feary as Feary
+from tinyrpg.particles.pick import Pick as Pick
 from tinyrpg.particles.toast import Toast as Toast

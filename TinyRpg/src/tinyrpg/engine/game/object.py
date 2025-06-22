@@ -72,8 +72,8 @@ class Object(AnimatedSprite):
     def play_sound_effect(self) -> None:
         match self.actions:
             case ObjectAction.OPENING if int(self.animation.frame) == 0:
-                if not pr.is_sound_playing(load_sound("hit")):
-                    pr.play_sound(load_sound("hit"))
+                if not pr.is_sound_playing(load_sound("open")):
+                    pr.play_sound(load_sound("open"))
 
     def set_animation_effect(self) -> None:
         match self.actions:
