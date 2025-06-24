@@ -3,7 +3,7 @@ from typing import Optional
 import pyray as pr
 
 from tinyrpg.engine.game.inventory import Item
-from tinyrpg.engine.gui.component import COMPONENT_BORDER, Component
+from tinyrpg.engine.gui.component import Component
 from tinyrpg.resources import load_texture
 
 
@@ -12,12 +12,16 @@ class ItemBox(Component):
         super().__init__()
         self.item = item
         self.selected = False
+        self.texture = load_texture("gui")
+        self.textureNPatch = pr.NPatchInfo(pr.Rectangle(0, 32, 32, 32), 2, 2, 2, 2, pr.NPatchLayout.NPATCH_NINE_PATCH)
+        self.textureNPatchSel = pr.NPatchInfo(
+            pr.Rectangle(32, 32, 32, 32), 2, 2, 2, 2, pr.NPatchLayout.NPATCH_NINE_PATCH
+        )
 
     def draw(self):
+        pr.draw_texture_n_patch(self.texture, self.textureNPatch, self.get_rect(), (0, 0), 0, pr.WHITE)
         if self.selected:
-            pr.draw_rectangle_lines_ex(self.get_rect(), COMPONENT_BORDER, pr.YELLOW)
-        else:
-            pr.draw_rectangle_lines_ex(self.get_rect(), COMPONENT_BORDER, pr.RAYWHITE)
+            pr.draw_texture_n_patch(self.texture, self.textureNPatchSel, self.get_rect(), (0, 0), 0, pr.WHITE)
 
         if self.item:
             texture = load_texture(self.item.texture)

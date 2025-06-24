@@ -1,16 +1,10 @@
 import pyray as pr
 
 from tinyrpg.engine import Widget
+from tinyrpg.engine.gui.window import WINDOW_BORDER
+from tinyrpg.resources import load_texture
 
-MESSAGE_HEIGHT = 200  # px
-MESSAGE_BORDER = 1  # px
-MESSAGE_MARGIN = 5  # px
-MESSAGE_PADDING = 2  # px
-MESSAGE_FONT_SIZE = 10  # px
-MESSAGE_FONT_SPACE = 2  # px
-MESSAGE_FADE_SPEED = 2  # px.s-1
-MESSAGE_STROKE_SPEED = 45  # ch.s-1
-MESSAGE_PORTRAIT_SIZE = 64  # px
+WINDOW_FADE_SPEED = 2  # px.s-1
 
 
 class VerticalEffect(Widget):
@@ -19,11 +13,20 @@ class VerticalEffect(Widget):
         self.widget = widget
         self.state = 0
         self.fade_time = 0
+        self.texture = load_texture("gui")
+        self.textureNPatch = pr.NPatchInfo(
+            pr.Rectangle(0, 0, 32, 32),
+            WINDOW_BORDER,
+            WINDOW_BORDER,
+            WINDOW_BORDER,
+            WINDOW_BORDER,
+            pr.NPatchLayout.NPATCH_NINE_PATCH,
+        )
 
     def update(self, dt: float):
         match self.state:
             case 0:
-                self.fade_time += MESSAGE_FADE_SPEED * dt
+                self.fade_time += WINDOW_FADE_SPEED * dt
                 if self.fade_time >= 1:
                     self.fade_time = 1
                     self.state = 1
@@ -32,7 +35,7 @@ class VerticalEffect(Widget):
                 if self.widget.closed:
                     self.state = 2
             case 2:
-                self.fade_time -= MESSAGE_FADE_SPEED * dt
+                self.fade_time -= WINDOW_FADE_SPEED * dt
                 if self.fade_time <= 0:
                     self.fade_time = 0
                     self.state = 3
@@ -48,5 +51,6 @@ class VerticalEffect(Widget):
             rect.y += rect.height * (1 - self.fade_time) // 2
             rect.height = rect.height * self.fade_time
 
-            pr.draw_rectangle_rec(rect, pr.color_alpha(pr.BLUE, self.fade_time * 0.8))
-            pr.draw_rectangle_lines_ex(rect, MESSAGE_BORDER, pr.color_alpha(pr.RAYWHITE, self.fade_time))
+            pr.draw_texture_n_patch(
+                self.texture, self.textureNPatch, rect, (0, 0), 0, pr.color_alpha(pr.WHITE, self.fade_time)
+            )

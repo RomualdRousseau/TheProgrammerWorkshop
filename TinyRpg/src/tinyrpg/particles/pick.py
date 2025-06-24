@@ -13,7 +13,7 @@ class Pick(Particle):
         self.target = target
         self.texture = load_texture(item.texture)
         self.time = 0
-        self.random_force(5000, 0, math.pi)
+        self.random_force(5000, math.pi / 4, 3 * math.pi / 4)
 
     def play_sound_effect(self) -> None:
         if pr.vector2_distance(self.pos, self.target.pos) < 5 and not pr.is_sound_playing(load_sound("pick")):
@@ -33,4 +33,6 @@ class Pick(Particle):
 
     def draw(self):
         self.play_sound_effect()
-        pr.draw_texture_pro(self.texture, (0, 0, 32, 32), (self.pos.x, self.pos.y, 8, 8), (0, 0), 0, pr.WHITE)
+        pr.draw_texture_pro(
+            self.texture, (0, 0, 32, 32), (self.pos.x, self.pos.y, 8, 8), (0, 0), 0, pr.color_alpha(pr.WHITE, 0.8)
+        )

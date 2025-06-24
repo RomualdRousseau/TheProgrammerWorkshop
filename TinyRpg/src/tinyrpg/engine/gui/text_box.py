@@ -4,7 +4,7 @@ import pyray as pr
 
 from tinyrpg.engine.gui.component import Component
 
-TEXTBOX_FONT_SIZE_DEFAULT = 10  # px
+TEXTBOX_FONT_SIZE_DEFAULT = 8  # px
 
 
 class TextBoxAlign(Enum):

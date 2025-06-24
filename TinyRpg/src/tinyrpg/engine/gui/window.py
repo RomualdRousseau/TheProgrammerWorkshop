@@ -7,11 +7,13 @@ import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine.base.widget import Widget
+from tinyrpg.resources import load_texture
 
 WINDOW_MARGIN = 5  # px
-WINDOW_PADDING = 2  # px
-WINDOW_BORDER = 1  # px
-WINDOW_TITLE_FONT_SIZE = 10  # px
+WINDOW_PADDING = -1  # px
+WINDOW_BORDER = 11  # px
+WINDOW_TITLE_FONT_SIZE = 8  # px
+WINDOW_TITLE_BORDER = 7  # px
 
 
 class WindowLocation(Enum):
@@ -35,13 +37,30 @@ class Window(Widget):
         super().__init__(pos, size)
         self.title: Optional[str] = None
         self.widget: Optional[Widget] = None
+        self.texture = load_texture("gui")
+        self.nPatchWindow = pr.NPatchInfo(
+            pr.Rectangle(0, 0, 32, 32),
+            WINDOW_BORDER,
+            WINDOW_BORDER,
+            WINDOW_BORDER,
+            WINDOW_BORDER,
+            pr.NPatchLayout.NPATCH_NINE_PATCH,
+        )
+        self.nPatchTitle = pr.NPatchInfo(
+            pr.Rectangle(0, 64, 64, 16),
+            7,
+            4,
+            7,
+            4,
+            pr.NPatchLayout.NPATCH_THREE_PATCH_HORIZONTAL,
+        )
 
     def get_inner_rect(self) -> pr.Rectangle:
         inner_rect = self.get_rect()
-        inner_rect.x += WINDOW_PADDING
-        inner_rect.y += WINDOW_PADDING
-        inner_rect.width -= 2 * WINDOW_PADDING
-        inner_rect.height -= 2 * WINDOW_PADDING
+        inner_rect.x += WINDOW_BORDER + WINDOW_PADDING
+        inner_rect.y += WINDOW_BORDER + WINDOW_PADDING
+        inner_rect.width -= 2 * (WINDOW_BORDER + WINDOW_PADDING)
+        inner_rect.height -= 2 * (WINDOW_BORDER + WINDOW_PADDING)
         return inner_rect
 
     def add(self, widget: Widget) -> Window:
@@ -65,23 +84,25 @@ class Window(Widget):
     def draw(self):
         rect = self.get_rect()
 
+        pr.draw_texture_n_patch(self.texture, self.nPatchWindow, rect, (0, 0), 0, pr.WHITE)
+
         if self.title:
             title_width = pr.measure_text(self.title, WINDOW_TITLE_FONT_SIZE)
-            pr.draw_rectangle_v(
-                (rect.x, rect.y - WINDOW_TITLE_FONT_SIZE - 1),
-                (title_width + WINDOW_PADDING * 3, WINDOW_TITLE_FONT_SIZE + 1),
-                pr.RAYWHITE,
+            pr.draw_texture_n_patch(
+                self.texture,
+                self.nPatchTitle,
+                (rect.x + WINDOW_BORDER, rect.y - WINDOW_TITLE_FONT_SIZE, title_width + WINDOW_TITLE_BORDER * 2, 16),
+                (0, 0),
+                0,
+                pr.WHITE,
             )
             pr.draw_text(
                 self.title,
-                int(rect.x + WINDOW_PADDING),
-                int(rect.y - WINDOW_TITLE_FONT_SIZE),
+                int(rect.x + WINDOW_BORDER + WINDOW_TITLE_BORDER),
+                int(rect.y - (WINDOW_TITLE_FONT_SIZE - 3)),
                 WINDOW_TITLE_FONT_SIZE,
-                pr.BLUE,
+                pr.WHITE,
             )
-
-        pr.draw_rectangle_rec(rect, pr.color_alpha(pr.BLUE, 0.8))
-        pr.draw_rectangle_lines_ex(rect, WINDOW_BORDER, pr.RAYWHITE)
 
         if self.widget:
             self.widget.draw()
