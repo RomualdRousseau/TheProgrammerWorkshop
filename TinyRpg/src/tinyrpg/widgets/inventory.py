@@ -20,6 +20,7 @@ from tinyrpg.engine import (
     WINDOW_MARGIN,
     WINDOW_PADDING,
     ImageBox,
+    ItemBox,
     Panel,
     TableLayout,
     TextBox,
@@ -28,13 +29,11 @@ from tinyrpg.engine import (
     WindowLocation,
     is_action_pressed,
 )
-from tinyrpg.engine.gui.item_box import ItemBox
 from tinyrpg.resources import load_texture
 
 INVENTORY_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
 INVENTORY_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
 INVENTORY_ICON_HEIGHT = (WORLD_WIDTH - 2 * WINDOW_MARGIN - 2 * WINDOW_PADDING - 2 * WINDOW_BORDER) / 6
-MESSAGE_PORTRAIT_SIZE = 64  # px
 
 
 class InventoryBox(Window):
@@ -45,14 +44,14 @@ class InventoryBox(Window):
         self.cursor = self.equipment_num
 
         self.title = "Inventory"
-        self.item_boxes: list[ItemBox] = []
+        self.bag: list[ItemBox] = []
         self.desc = TextBox("")
 
         equipments = TableLayout(1, self.equipment_num)
         for item in hero.inventory.equipment:
             item_box = ItemBox(item)
             equipments.add(item_box)
-            self.item_boxes.append(item_box)
+            self.bag.append(item_box)
 
         stats = TableLayout(4, 2)
         stats.add(TextBox("HP:"))
@@ -70,11 +69,11 @@ class InventoryBox(Window):
 
         bag_rows = int(math.sqrt(len(hero.inventory.bag)))
         bag_cols = int(math.sqrt(len(hero.inventory.bag)))
-        bag = TableLayout(bag_rows, bag_cols)
+        bag_panel = TableLayout(bag_rows, bag_cols)
         for item in hero.inventory.bag:
             item_box = ItemBox(item)
-            bag.add(item_box)
-            self.item_boxes.append(item_box)
+            bag_panel.add(item_box)
+            self.bag.append(item_box)
 
         self.add(
             TableLayout(1, 2)
@@ -88,7 +87,7 @@ class InventoryBox(Window):
                     )
                     .add(
                         ImageBox(load_texture("player"), pr.Rectangle(0, 0, 32, 32)).set_fixed_height(
-                            INVENTORY_ICON_HEIGHT * (bag_rows - 1)
+                            INVENTORY_ICON_HEIGHT * (bag_rows - 1) * 0.9
                         )
                     )
                     .add(equipments.set_fixed_height(INVENTORY_ICON_HEIGHT))
@@ -100,7 +99,7 @@ class InventoryBox(Window):
                 (
                     TableLayout(3, 1)
                     .add(TextBox("Bag", align=TextBoxAlign.CENTER).set_fixed_height(INVENTORY_TEXT_HEIGHT))
-                    .add(bag.set_fixed_height(INVENTORY_ICON_HEIGHT * bag_rows))
+                    .add(bag_panel.set_fixed_height(INVENTORY_ICON_HEIGHT * bag_rows))
                     .add(Panel().add(self.desc))
                 )
             )
@@ -108,7 +107,7 @@ class InventoryBox(Window):
 
     def handle_input(self):
         if is_action_pressed(INPUT_INVENTORY_NEXT):
-            self.cursor = min(self.cursor + 1, len(self.item_boxes) - 1)
+            self.cursor = min(self.cursor + 1, len(self.bag) - 1)
         if is_action_pressed(INPUT_INVENTORY_PREVIOUS):
             self.cursor = max(self.cursor - 1, 0)
         if is_action_pressed(INPUT_INVENTORY_CLOSE):
@@ -122,7 +121,7 @@ class InventoryBox(Window):
 
     def update_items(self):
         hero = get_hero()
-        for i, item_box in enumerate(self.item_boxes):
+        for i, item_box in enumerate(self.bag):
             item_box.selected = self.cursor == i
             if item_box.selected:
                 self.desc.text = f"{item_box.item.name}\n{item_box.item.description}" if item_box.item else ""
