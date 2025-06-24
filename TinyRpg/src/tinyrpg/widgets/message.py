@@ -4,7 +4,7 @@ from tinyrpg.constants import INPUT_MESSAGE_NEXT, WORLD_HEIGHT
 from tinyrpg.engine import ImageBox, TableLayout, TextBox, Window, WindowLocation, is_action_pressed
 from tinyrpg.resources import load_sound, load_texture
 
-MESSAGE_HEIGHT = int(WORLD_HEIGHT * 0.25)  # px
+MESSAGE_HEIGHT = int(WORLD_HEIGHT * 0.3)  # px
 MESSAGE_FONT_SIZE = 10  # px
 MESSAGE_FONT_SPACE = 2  # px
 MESSAGE_FADE_SPEED = 8  # px.s-1

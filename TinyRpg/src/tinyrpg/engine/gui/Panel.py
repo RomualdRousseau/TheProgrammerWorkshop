@@ -5,16 +5,26 @@ from typing import Optional
 import pyray as pr
 
 from tinyrpg.engine.base.widget import Widget
+from tinyrpg.resources import load_texture
 
 PANEL_MARGIN = 1  # px
-PANEL_PADDING = 1  # px
-PANEL_BORDER = 1  # px
+PANEL_PADDING = -1  # px
+PANEL_BORDER = 7  # px
 
 
 class Panel(Widget):
     def __init__(self):
         super().__init__(pr.vector2_zero(), pr.vector2_one())
         self.widget: Optional[Widget] = None
+        self.texture = load_texture("gui")
+        self.textureNPatch = pr.NPatchInfo(
+            pr.Rectangle(32, 0, 32, 32),
+            PANEL_BORDER,
+            PANEL_BORDER,
+            PANEL_BORDER,
+            PANEL_BORDER,
+            pr.NPatchLayout.NPATCH_NINE_PATCH,
+        )
 
     def get_rect(self) -> pr.Rectangle:
         rect = super().get_rect()
@@ -45,7 +55,7 @@ class Panel(Widget):
             self.widget.resize(pos, size)
 
     def draw(self):
-        pr.draw_rectangle_lines_ex(self.get_rect(), PANEL_BORDER, pr.RAYWHITE)
+        pr.draw_texture_n_patch(self.texture, self.textureNPatch, self.get_rect(), (0, 0), 0, pr.WHITE)
 
         if self.widget:
             self.widget.draw()
