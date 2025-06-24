@@ -29,6 +29,7 @@ from tinyrpg.objects.chest import Chest
 from tinyrpg.particles import Pick, Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.widgets import InventoryBox, MessageBox
+from tinyrpg.widgets.shop import ShopBox
 
 
 @dataclass
@@ -206,6 +207,8 @@ def update(dt: float):
 
     if is_action_pressed(INPUT_OPEN_INVENTORY):
         game.widgets.append(VerticalEffect(InventoryBox()))
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_L):
+        game.widgets.append(VerticalEffect(ShopBox()))
 
     # Garbage collect dead entities
 
