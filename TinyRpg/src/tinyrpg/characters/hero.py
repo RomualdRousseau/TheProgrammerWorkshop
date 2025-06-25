@@ -2,6 +2,7 @@ from functools import cache
 
 import pyray as pr
 
+from tinyrpg import rules
 from tinyrpg.constants import INPUT_ATTACK
 from tinyrpg.engine import (
     CHARACTER_SIZE,
@@ -38,8 +39,8 @@ HERO_STATS = lambda: CharacterStats(
 
 
 class Hero(Character):
-    def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
-        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary)
+    def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox):
+        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, rules)
 
     def handle_ai(self) -> None:
         super().handle_ai()

@@ -3,8 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from enum import Flag, auto
-from random import uniform
-from typing import Any, Optional
+from typing import Any, Optional, Protocol
 
 import pyray as pr
 
@@ -64,6 +63,10 @@ class CharacterAction(Flag):
     DYING = auto()
 
 
+class CharacterRules(Protocol):
+    def get_hits(self, damage: float, armor: float) -> float: ...
+
+
 CHARACTER_NO_RESET_MASK = CharacterAction.TALKING | CharacterAction.DYING
 
 
@@ -76,6 +79,7 @@ class Character(AnimatedSprite):
         stats: CharacterStats,
         animations: dict[str, Animation],
         boundary: pr.BoundingBox,
+        rules: CharacterRules,
     ):
         super().__init__(id, pos, load_texture(id), animations)
         self.name = name
@@ -91,6 +95,7 @@ class Character(AnimatedSprite):
         self.events: list[CharacterEvent] = []
         self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
         self.inventory = Inventory()
+        self.rules: CharacterRules = rules
 
     def should_be_free(self) -> bool:
         return self.health <= 0 and self.free_timer.is_elapsed()
@@ -227,10 +232,10 @@ class Character(AnimatedSprite):
         if not self.is_alive():
             return
 
-        damage = max(0, damage - math.floor(uniform(0, self.get_armor() + 1)))
-        if damage > 0:
-            self.health -= damage
-            self.events.append(CharacterEvent("hit", self, damage))
+        hits = self.rules.get_hits(damage, self.get_armor())
+        if hits > 0:
+            self.health -= hits
+            self.events.append(CharacterEvent("hit", self, hits))
 
         if not self.is_alive():
             self.force = pr.vector2_zero()

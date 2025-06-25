@@ -18,8 +18,8 @@ WORLD_DEBUG_LAYER = 2
 ENTITY_MASS_DEFAULT = 1.0  # kg
 ENTITY_DENSITY_DEFAULT = 8  # px.kg-1
 
-CHARACTER_TRIGGER_NEAR_DEFAULT = 16
-CHARACTER_TRIGGER_FAR_DEFAULT = 64
+CHARACTER_TRIGGER_NEAR_DEFAULT = 16  # px
+CHARACTER_TRIGGER_FAR_DEFAULT = 64  # px
 CHARACTER_FREE_TIMER = 60  # s
 
 INPUT_TAKE_SCREENSHOT = "START"
@@ -59,21 +59,3 @@ DIR8 = [
     (-1, 0),
     (-1, -1),
 ]
-
-ITEM_DATABASE = [
-    ("Sword", 0, "sword", 1, 0, 10, "+1 Damage"),
-    ("Shield", 2, "shield", 0, 1, 10, "+1 Armor"),
-    ("Potion", 3, "potion", 0, 0, 10, "Restore 5 HP"),
-    ("Gem", 3, "gem", 0, 0, 0, "Grace's gem"),
-]
-
-MESSAGE_GRACE = """Hello Romuald! How are you?
-Help me to find my treasure?
-I give you a sword and a shield.
-I love you ...
-"""
-
-MESSAGE_PLAYER = """Hello Grace, I a good and you!
-Yes, sure. Thank you!
-I love you too ...
-"""
