@@ -118,7 +118,7 @@ class ShopBox(Window):
         for i, item_box in enumerate(self.cart + self.bag):
             item_box.selected = self.cursor == i
             if i >= CART_SIZE:
-                item_box.item = hero.inventory.bag[i]
+                item_box.item = hero.inventory.bag[i - CART_SIZE]
                 if item_box.selected:
                     self.desc.text = f"{item_box.item.name}\n{item_box.item.description}" if item_box.item else ""
 
