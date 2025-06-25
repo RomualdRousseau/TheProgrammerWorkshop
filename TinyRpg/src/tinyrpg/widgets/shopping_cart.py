@@ -38,7 +38,7 @@ SHOP_ICON_HEIGHT = (WORLD_WIDTH - 2 * WINDOW_MARGIN - 2 * WINDOW_PADDING - 2 * W
 CART_SIZE = 3
 
 
-class ShopBox(Window):
+class ShoppingCart(Window):
     def __init__(self):
         super().__init__(SHOP_HEIGHT, WindowLocation.MIDDLE, "SHOP")
         hero = get_hero()
