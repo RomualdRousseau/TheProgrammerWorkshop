@@ -1,7 +1,7 @@
 import pyray as pr
 
 from tinyrpg.constants import INPUT_MESSAGE_NEXT, WORLD_HEIGHT
-from tinyrpg.engine import ImageBox, TableLayout, TextBox, Window, WindowLocation, is_action_pressed
+from tinyrpg.engine import ImageBox, TableLayout, TextBox, TitlePosition, Window, WindowLocation, is_action_pressed
 from tinyrpg.resources import load_sound, load_texture
 
 MESSAGE_HEIGHT = int(WORLD_HEIGHT * 0.3)  # px
@@ -13,8 +13,7 @@ MESSAGE_STROKE_SPEED = 45  # ch.s-1
 
 class MessageBox(Window):
     def __init__(self, name: str, portrait: str, text: str):
-        super().__init__(MESSAGE_HEIGHT, WindowLocation.BOTTOM)
-        self.title = name
+        super().__init__(MESSAGE_HEIGHT, WindowLocation.BOTTOM, name, TitlePosition.LEFT)
         self.text = text
         self.stroke_time = 0
         self.text_box = TextBox("")

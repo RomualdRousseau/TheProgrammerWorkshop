@@ -17,6 +17,7 @@ class Item:
     texture: str
     damage: int
     armor: int
+    cost: int
     description: str
 
 

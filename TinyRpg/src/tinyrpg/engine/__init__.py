@@ -25,6 +25,7 @@ from tinyrpg.engine.gui.component import COMPONENT_PADDING as COMPONENT_PADDING
 from tinyrpg.engine.gui.component import Component as Component
 from tinyrpg.engine.gui.image_box import ImageBox as ImageBox
 from tinyrpg.engine.gui.item_box import ItemBox as ItemBox
+from tinyrpg.engine.gui.item_list import ItemList as ItemList
 from tinyrpg.engine.gui.Panel import Panel as Panel
 from tinyrpg.engine.gui.table_layout import TableLayout as TableLayout
 from tinyrpg.engine.gui.text_box import TEXTBOX_FONT_SIZE_DEFAULT as TEXTBOX_FONT_SIZE_DEFAULT
@@ -33,6 +34,7 @@ from tinyrpg.engine.gui.text_box import TextBoxAlign as TextBoxAlign
 from tinyrpg.engine.gui.window import WINDOW_BORDER as WINDOW_BORDER
 from tinyrpg.engine.gui.window import WINDOW_MARGIN as WINDOW_MARGIN
 from tinyrpg.engine.gui.window import WINDOW_PADDING as WINDOW_PADDING
+from tinyrpg.engine.gui.window import TitlePosition as TitlePosition
 from tinyrpg.engine.gui.window import Window as Window
 from tinyrpg.engine.gui.window import WindowLocation as WindowLocation
 from tinyrpg.engine.utils.bbox import adjust_bbox as adjust_bbox

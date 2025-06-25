@@ -38,12 +38,11 @@ INVENTORY_ICON_HEIGHT = (WORLD_WIDTH - 2 * WINDOW_MARGIN - 2 * WINDOW_PADDING - 
 
 class InventoryBox(Window):
     def __init__(self):
-        super().__init__(INVENTORY_HEIGHT, WindowLocation.MIDDLE)
+        super().__init__(INVENTORY_HEIGHT, WindowLocation.MIDDLE, "INVENTORY")
         hero = get_hero()
         self.equipment_num = len(hero.inventory.equipment)
         self.cursor = self.equipment_num
 
-        self.title = "Inventory"
         self.bag: list[ItemBox] = []
         self.desc = TextBox("")
 
@@ -91,14 +90,14 @@ class InventoryBox(Window):
                         )
                     )
                     .add(equipments.set_fixed_height(INVENTORY_ICON_HEIGHT))
-                    .add(TextBox("Stats", align=TextBoxAlign.CENTER).set_fixed_height(INVENTORY_TEXT_HEIGHT))
+                    .add(TextBox("STATS", align=TextBoxAlign.CENTER).set_fixed_height(INVENTORY_TEXT_HEIGHT))
                     .add(Panel().add(stats))
                 )
             )
             .add(
                 (
                     TableLayout(3, 1)
-                    .add(TextBox("Bag", align=TextBoxAlign.CENTER).set_fixed_height(INVENTORY_TEXT_HEIGHT))
+                    .add(TextBox("BAG", align=TextBoxAlign.CENTER).set_fixed_height(INVENTORY_TEXT_HEIGHT))
                     .add(bag_panel.set_fixed_height(INVENTORY_ICON_HEIGHT * bag_rows))
                     .add(Panel().add(self.desc))
                 )

@@ -21,10 +21,10 @@ class Component(Widget):
 
     def get_inner_rect(self) -> pr.Rectangle:
         inner_rect = self.get_rect()
-        inner_rect.x += COMPONENT_PADDING
-        inner_rect.y += COMPONENT_PADDING
-        inner_rect.width -= 2 * COMPONENT_PADDING
-        inner_rect.height -= 2 * COMPONENT_PADDING
+        inner_rect.x += COMPONENT_BORDER + COMPONENT_PADDING
+        inner_rect.y += COMPONENT_BORDER + COMPONENT_PADDING
+        inner_rect.width -= 2 * (COMPONENT_BORDER + COMPONENT_PADDING)
+        inner_rect.height -= 2 * (COMPONENT_BORDER + COMPONENT_PADDING)
         return inner_rect
 
     def draw(self):

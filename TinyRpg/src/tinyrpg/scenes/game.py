@@ -26,7 +26,7 @@ from tinyrpg.engine import (
     is_action_pressed,
 )
 from tinyrpg.objects.chest import Chest
-from tinyrpg.particles import Pick, Toast
+from tinyrpg.particles import PickUp, Toast
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.widgets import InventoryBox, MessageBox
 from tinyrpg.widgets.shop import ShopBox
@@ -155,8 +155,12 @@ def update(dt: float):
 
                             def give_sword_and_shield(game=game, character=character):
                                 game.quest_state = 1
-                                game.particles.append(Pick(character.pos, Item(*ITEM_DATABASE[0]), game.hero))
-                                game.particles.append(Pick(character.pos, Item(*ITEM_DATABASE[1]), game.hero))
+                                game.particles.append(
+                                    PickUp(game.hero.pos, pr.Vector2(1, -1), Item(*ITEM_DATABASE[0]), game.hero)
+                                )
+                                game.particles.append(
+                                    PickUp(game.hero.pos, pr.Vector2(-1, -1), Item(*ITEM_DATABASE[1]), game.hero)
+                                )
 
                             game.widgets.append(
                                 DialogEffect(
@@ -179,8 +183,11 @@ def update(dt: float):
 
                             def give_gift(game=game, character=character):
                                 assert game.quest_gem_to_collect is not None
+                                game.quest_state = 3
                                 game.hero.inventory.drop(game.hero.inventory.index(game.quest_gem_to_collect))
-                                game.particles.append(Pick(character.pos, Item(*ITEM_DATABASE[3]), game.hero))
+                                game.particles.append(
+                                    PickUp(game.hero.pos, pr.Vector2(0, -1), Item(*ITEM_DATABASE[2]), game.hero)
+                                )
 
                             game.widgets.append(
                                 DialogEffect(
@@ -201,12 +208,15 @@ def update(dt: float):
                 case ("chest", "collide"):
                     if not object.is_open():
                         game.quest_state = 2
-                        game.quest_gem_to_collect = Item(*ITEM_DATABASE[2])
-                        game.particles.append(Pick(object.pos, game.quest_gem_to_collect, game.hero))
+                        game.quest_gem_to_collect = Item(*ITEM_DATABASE[3])
+                        game.particles.append(
+                            PickUp(game.hero.pos, pr.Vector2(0, -1), game.quest_gem_to_collect, game.hero)
+                        )
                         object.open()
 
     if is_action_pressed(INPUT_OPEN_INVENTORY):
         game.widgets.append(VerticalEffect(InventoryBox()))
+
     if pr.is_key_pressed(pr.KeyboardKey.KEY_L):
         game.widgets.append(VerticalEffect(ShopBox()))
 

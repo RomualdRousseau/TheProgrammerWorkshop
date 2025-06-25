@@ -31,11 +31,11 @@ INPUT_INVENTORY_CLOSE = "CIRCLE"
 INPUT_INVENTORY_EQUIP = "CROSS"
 INPUT_INVENTORY_UNEQUIP = "CROSS"
 INPUT_INVENTORY_DROP = "TRIANGLE"
-INPUT_SHOP_CART_NEXT = "DOWN"
-INPUT_SHOP_CART_PREVIOUS = "UP"
-INPUT_SHOP_BAG_NEXT = "RIGHT"
-INPUT_SHOP_BAG_PREVIOUS = "LEFT"
+INPUT_SHOP_NEXT = "RIGHT"
+INPUT_SHOP_PREVIOUS = "LEFT"
 INPUT_SHOP_CLOSE = "CIRCLE"
+INPUT_SHOP_BUY = "CROSS"
+INPUT_SHOP_SELL = "CROSS"
 INPUT_MESSAGE_NEXT = "CROSS"
 
 MAX_AVOID_FORCE = 2000  # N
@@ -61,10 +61,10 @@ DIR8 = [
 ]
 
 ITEM_DATABASE = [
-    ("Sword", 0, "sword", 1, 0, "+1 Damage"),
-    ("Shield", 2, "shield", 0, 1, "+1 Armor"),
-    ("Gem", 3, "gem", 0, 0, "Grace's gem"),
-    ("Potion", 3, "potion", 0, 0, "Restore 5 HP"),
+    ("Sword", 0, "sword", 1, 0, 10, "+1 Damage"),
+    ("Shield", 2, "shield", 0, 1, 10, "+1 Armor"),
+    ("Potion", 3, "potion", 0, 0, 10, "Restore 5 HP"),
+    ("Gem", 3, "gem", 0, 0, 0, "Grace's gem"),
 ]
 
 MESSAGE_GRACE = """Hello Romuald! How are you?
