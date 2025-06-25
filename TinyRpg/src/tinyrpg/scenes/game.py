@@ -202,6 +202,9 @@ def update(dt: float):
                                 ).on_close(give_gift)
                             )
 
+                        case 3:
+                            game.widgets.append(VerticalEffect(ShopBox()))
+
     for object in game.objects:
         for event in object.events:
             match (object.id, event.name):
@@ -216,9 +219,6 @@ def update(dt: float):
 
     if is_action_pressed(INPUT_OPEN_INVENTORY):
         game.widgets.append(VerticalEffect(InventoryBox()))
-
-    if pr.is_key_pressed(pr.KeyboardKey.KEY_L):
-        game.widgets.append(VerticalEffect(ShopBox()))
 
     # Garbage collect dead entities
 
