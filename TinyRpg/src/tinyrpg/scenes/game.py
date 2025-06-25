@@ -156,10 +156,10 @@ def update(dt: float):
                             def give_sword_and_shield(game=game, character=character):
                                 game.quest_state = 1
                                 game.particles.append(
-                                    PickUp(game.hero.pos, pr.Vector2(1, -1), Item(*ITEM_DATABASE[0]), game.hero)
+                                    PickUp(game.hero.pos, pr.Vector2(0.25, -1), Item(*ITEM_DATABASE[0]), game.hero)
                                 )
                                 game.particles.append(
-                                    PickUp(game.hero.pos, pr.Vector2(-1, -1), Item(*ITEM_DATABASE[1]), game.hero)
+                                    PickUp(game.hero.pos, pr.Vector2(-0.25, -1), Item(*ITEM_DATABASE[1]), game.hero)
                                 )
 
                             game.widgets.append(

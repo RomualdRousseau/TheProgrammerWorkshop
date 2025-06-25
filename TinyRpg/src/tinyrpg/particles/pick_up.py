@@ -16,7 +16,11 @@ class PickUp(Particle):
         self.force = pr.vector2_scale(pr.vector2_normalize(dir), 5000)
 
     def play_sound_effect(self) -> None:
-        if pr.vector2_distance(self.pos, self.target.pos) < 5 and not pr.is_sound_playing(load_sound("pick")):
+        if (
+            pr.vector2_distance(self.pos, self.target.pos) < 5
+            and self.time > 1.0
+            and not pr.is_sound_playing(load_sound("pick"))
+        ):
             pr.play_sound(load_sound("pick"))
 
     def update(self, dt: float):
