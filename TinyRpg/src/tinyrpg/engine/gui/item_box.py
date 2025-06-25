@@ -6,6 +6,9 @@ from tinyrpg.engine.game.inventory import Item
 from tinyrpg.engine.gui.component import Component
 from tinyrpg.resources import load_texture
 
+ITEMBOX_BORDER = 2  # px
+ITEMBOX_BORDER_SEL = 7  # px
+
 
 class ItemBox(Component):
     def __init__(self, item: Optional[Item] = None):
@@ -13,15 +16,25 @@ class ItemBox(Component):
         self.item = item
         self.selected = False
         self.texture = load_texture("gui")
-        self.textureNPatch = pr.NPatchInfo(pr.Rectangle(0, 32, 32, 32), 2, 2, 2, 2, pr.NPatchLayout.NPATCH_NINE_PATCH)
+        self.textureNPatch = pr.NPatchInfo(
+            pr.Rectangle(0, 32, 32, 32),
+            ITEMBOX_BORDER,
+            ITEMBOX_BORDER,
+            ITEMBOX_BORDER,
+            ITEMBOX_BORDER,
+            pr.NPatchLayout.NPATCH_NINE_PATCH,
+        )
         self.textureNPatchSel = pr.NPatchInfo(
-            pr.Rectangle(32, 32, 32, 32), 2, 2, 2, 2, pr.NPatchLayout.NPATCH_NINE_PATCH
+            pr.Rectangle(32, 32, 32, 32),
+            ITEMBOX_BORDER_SEL,
+            ITEMBOX_BORDER_SEL,
+            ITEMBOX_BORDER_SEL,
+            ITEMBOX_BORDER_SEL,
+            pr.NPatchLayout.NPATCH_NINE_PATCH,
         )
 
     def draw(self):
         pr.draw_texture_n_patch(self.texture, self.textureNPatch, self.get_rect(), (0, 0), 0, pr.WHITE)
-        if self.selected:
-            pr.draw_texture_n_patch(self.texture, self.textureNPatchSel, self.get_rect(), (0, 0), 0, pr.WHITE)
 
         if self.item:
             texture = load_texture(self.item.texture)
@@ -53,3 +66,6 @@ class ItemBox(Component):
                 0.0,
                 pr.WHITE,
             )
+
+        if self.selected:
+            pr.draw_texture_n_patch(self.texture, self.textureNPatchSel, self.get_rect(), (0, 0), 0, pr.WHITE)

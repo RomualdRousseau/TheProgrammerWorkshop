@@ -22,8 +22,20 @@ class WindowLocation(Enum):
     BOTTOM = auto()
 
 
+class TitlePosition(Enum):
+    LEFT = auto()
+    CENTER = auto()
+    RIGHT = auto()
+
+
 class Window(Widget):
-    def __init__(self, height: int, location: WindowLocation):
+    def __init__(
+        self,
+        height: int,
+        location: WindowLocation,
+        title: Optional[str] = None,
+        title_position: TitlePosition = TitlePosition.CENTER,
+    ):
         pos = pr.Vector2(WINDOW_MARGIN, 0)
         size = pr.Vector2(WORLD_WIDTH - 2 * WINDOW_MARGIN, min(height, WORLD_HEIGHT - 2 * WINDOW_MARGIN))
         match location:
@@ -35,7 +47,8 @@ class Window(Widget):
                 pos.y = WORLD_HEIGHT - WINDOW_MARGIN - height
 
         super().__init__(pos, size)
-        self.title: Optional[str] = None
+        self.title = title
+        self.title_position = title_position
         self.widget: Optional[Widget] = None
         self.texture = load_texture("gui")
         self.nPatchWindow = pr.NPatchInfo(
@@ -88,18 +101,25 @@ class Window(Widget):
 
         if self.title:
             title_width = pr.measure_text(self.title, WINDOW_TITLE_FONT_SIZE)
+            match self.title_position:
+                case TitlePosition.LEFT:
+                    offset = 0
+                case TitlePosition.CENTER:
+                    offset = (rect.width - title_width - WINDOW_TITLE_BORDER * 2) / 2
+                case TitlePosition.RIGHT:
+                    offset = rect.width - title_width + WINDOW_TITLE_BORDER * 2
             pr.draw_texture_n_patch(
                 self.texture,
                 self.nPatchTitle,
-                (rect.x + WINDOW_BORDER, rect.y - WINDOW_TITLE_FONT_SIZE, title_width + WINDOW_TITLE_BORDER * 2, 16),
+                (rect.x + offset, rect.y - WINDOW_TITLE_FONT_SIZE / 2, title_width + WINDOW_TITLE_BORDER * 2, 16),
                 (0, 0),
                 0,
                 pr.WHITE,
             )
             pr.draw_text(
                 self.title,
-                int(rect.x + WINDOW_BORDER + WINDOW_TITLE_BORDER),
-                int(rect.y - (WINDOW_TITLE_FONT_SIZE - 3)),
+                int(rect.x + offset + WINDOW_TITLE_BORDER),
+                int(rect.y - (WINDOW_TITLE_FONT_SIZE / 2 - 3)),
                 WINDOW_TITLE_FONT_SIZE,
                 pr.WHITE,
             )
