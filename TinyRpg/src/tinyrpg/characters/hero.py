@@ -33,8 +33,8 @@ HERO_STATS = lambda: CharacterStats(
     speed=20,  # pixel * s-1
     attack_speed=0.5,  # s
     damage=1,
-    armor=1,
-    hp=10,
+    armor=0,
+    hp=5,
 )
 
 

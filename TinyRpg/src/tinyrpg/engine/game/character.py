@@ -11,7 +11,6 @@ from tinyrpg.constants import (
     CHARACTER_FREE_TIMER,
     CHARACTER_TRIGGER_FAR_DEFAULT,
     CHARACTER_TRIGGER_NEAR_DEFAULT,
-    DEBUG_ENABLED,
 )
 from tinyrpg.engine.base.animation import Animation
 from tinyrpg.engine.base.entity import Entity
@@ -277,5 +276,4 @@ class Character(AnimatedSprite):
         self.set_animation_effect()
         super().draw()
 
-        if DEBUG_ENABLED:
-            BoundingBoxRenderer(self.get_bbox()).draw()
+        BoundingBoxRenderer(self.get_bbox()).draw()
