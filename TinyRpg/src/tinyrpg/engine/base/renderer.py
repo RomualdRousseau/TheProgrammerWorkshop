@@ -92,7 +92,7 @@ def begin_mode_sorted_2d(camera: pr.Camera2D):
     yield None
 
     for i in range(WORLD_LAYER_COUNT):
-        if not DEBUG_ENABLED or i != WORLD_DEBUG_LAYER:
+        if DEBUG_ENABLED or i != WORLD_DEBUG_LAYER:
             callers = sorted(RendererHeap.layers[i]) if RendererHeap.sorted_mask[i] else RendererHeap.layers[i]
             for caller in callers:
                 caller.draw()
@@ -100,7 +100,7 @@ def begin_mode_sorted_2d(camera: pr.Camera2D):
     pr.end_mode_2d()
 
     for i in range(WORLD_LAYER_COUNT):
-        if not DEBUG_ENABLED or i != WORLD_DEBUG_LAYER:
+        if DEBUG_ENABLED or i != WORLD_DEBUG_LAYER:
             RendererHeap.layers[i].clear()
 
 
