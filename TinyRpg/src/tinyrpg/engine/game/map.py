@@ -146,6 +146,7 @@ class Map:
         for bbox2, _ in self.bboxes.find_bbox(bbox1):
             if pr.check_collision_boxes(bbox1, bbox2):
                 BoundingBoxRenderer(bbox2).draw()
+
                 if pr.check_collision_boxes(bbox, bbox2):
                     reaction = pr.vector3_subtract(get_bbox_center(bbox), get_bbox_center(bbox2))
                     sum_reaction = pr.vector3_add(sum_reaction, reaction)

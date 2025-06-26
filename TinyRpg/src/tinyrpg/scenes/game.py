@@ -5,9 +5,8 @@ from itertools import combinations
 
 import pyray as pr
 
-from tinyrpg.characters import Enemy, Hero, Npc
-from tinyrpg.characters.hero import get_hero
-from tinyrpg.constants import INPUT_OPEN_INVENTORY, INPUT_TAKE_SCREENSHOT
+from tinyrpg.characters import Enemy, Hero, Npc, get_hero
+from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY, INPUT_TAKE_SCREENSHOT
 from tinyrpg.engine import (
     Character,
     FixedCamera,
@@ -20,9 +19,9 @@ from tinyrpg.engine import (
     begin_mode_sorted_2d,
     is_action_pressed,
 )
-from tinyrpg.objects.chest import Chest
+from tinyrpg.objects import Chest
 from tinyrpg.particles import PickUp, Toast
-from tinyrpg.quests.grace_quest import GraceQuest
+from tinyrpg.quests import GraceQuest
 from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.widgets import InventoryBox
 
@@ -200,6 +199,7 @@ def draw():
         widget.draw()
     pr.end_mode_2d()
 
-    # Display some stats
+    # Display some debug stats
 
-    pr.draw_fps(10, 10)
+    if DEBUG_ENABLED:
+        pr.draw_fps(10, 10)

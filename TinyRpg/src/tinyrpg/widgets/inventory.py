@@ -29,7 +29,7 @@ from tinyrpg.engine import (
     WindowLocation,
     is_action_pressed,
 )
-from tinyrpg.resources import load_texture
+from tinyrpg.resources import load_sound, load_texture
 
 INVENTORY_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
 INVENTORY_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
@@ -45,6 +45,7 @@ class InventoryBox(Window):
 
         self.bag: list[ItemBox] = []
         self.desc = TextBox("")
+        self.action = "IDLE"
 
         equipments = TableLayout(1, self.equipment_num)
         for item in hero.inventory.equipment:
@@ -104,6 +105,14 @@ class InventoryBox(Window):
             )
         ).pack()
 
+    def play_sound_effect(self) -> None:
+        if self.action == "EQUIP" and not pr.is_sound_playing(load_sound("equip")):
+            pr.play_sound(load_sound("equip"))
+        if self.action == "UNEQUIP" and not pr.is_sound_playing(load_sound("unequip")):
+            pr.play_sound(load_sound("unequip"))
+        if self.action == "DROP" and not pr.is_sound_playing(load_sound("drop")):
+            pr.play_sound(load_sound("drop"))
+
     def handle_input(self):
         if is_action_pressed(INPUT_INVENTORY_NEXT):
             self.cursor = min(self.cursor + 1, len(self.bag) - 1)
@@ -113,10 +122,13 @@ class InventoryBox(Window):
             self.close()
         if is_action_pressed(INPUT_INVENTORY_EQUIP) and self.cursor >= self.equipment_num:
             get_hero().inventory.equip(self.cursor - 3)
-        if is_action_pressed(INPUT_INVENTORY_DROP) and self.cursor >= self.equipment_num:
-            get_hero().inventory.drop(self.cursor - 3)
+            self.action = "EQUIP"
         if is_action_pressed(INPUT_INVENTORY_UNEQUIP) and self.cursor < self.equipment_num:
             get_hero().inventory.unequip(self.cursor)
+            self.action = "UNEQUIP"
+        if is_action_pressed(INPUT_INVENTORY_DROP) and self.cursor >= self.equipment_num:
+            get_hero().inventory.drop(self.cursor - 3)
+            self.action = "DROP"
 
     def update_items(self):
         hero = get_hero()
@@ -138,7 +150,12 @@ class InventoryBox(Window):
         self.stats_coin.text = f"{hero.inventory.coin}"
 
     def update(self, dt: float):
+        self.action = "IDLE"
         self.handle_input()
         self.update_items()
         self.update_stats()
         super().update(dt)
+
+    def draw(self):
+        self.play_sound_effect()
+        super().draw()

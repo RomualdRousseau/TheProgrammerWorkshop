@@ -1,6 +1,8 @@
 import math
 from random import uniform
 
+import pyray as pr
+
 from tinyrpg.characters import get_hero
 from tinyrpg.constants import (
     INPUT_SHOP_BUY,
@@ -8,7 +10,6 @@ from tinyrpg.constants import (
     INPUT_SHOP_NEXT,
     INPUT_SHOP_PREVIOUS,
     INPUT_SHOP_SELL,
-    ITEM_DATABASE,
     WORLD_HEIGHT,
     WORLD_WIDTH,
 )
@@ -29,6 +30,8 @@ from tinyrpg.engine import (
     WindowLocation,
     is_action_pressed,
 )
+from tinyrpg.items import ITEM_DATABASE
+from tinyrpg.resources import load_sound
 
 SHOP_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
 SHOP_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
@@ -48,6 +51,7 @@ class ShoppingCart(Window):
         self.bag: list[ItemBox] = []
         self.stats_coin = TextBox(f"{hero.inventory.coin}", align=TextBoxAlign.LEFT)
         self.desc = TextBox("")
+        self.action = "IDLE"
 
         cart_panel = TableLayout(CART_SIZE, 1)
         for _ in range(CART_SIZE):
@@ -86,6 +90,12 @@ class ShoppingCart(Window):
             )
         ).pack()
 
+    def play_sound_effect(self) -> None:
+        if self.action == "BUY" and not pr.is_sound_playing(load_sound("buy")):
+            pr.play_sound(load_sound("buy"))
+        if self.action == "SELL" and not pr.is_sound_playing(load_sound("sell")):
+            pr.play_sound(load_sound("sell"))
+
     def buy_item(self, slot: int):
         hero = get_hero()
         cart_item = self.cart[slot].item
@@ -110,8 +120,10 @@ class ShoppingCart(Window):
             self.close()
         if is_action_pressed(INPUT_SHOP_BUY) and self.cursor < CART_SIZE:
             self.buy_item(self.cursor)
+            self.action = "BUY"
         if is_action_pressed(INPUT_SHOP_SELL) and self.cursor >= CART_SIZE:
             self.sell_item(self.cursor - CART_SIZE)
+            self.action = "SELL"
 
     def update_items(self):
         hero = get_hero()
@@ -127,7 +139,12 @@ class ShoppingCart(Window):
         self.stats_coin.text = f"{hero.inventory.coin}"
 
     def update(self, dt: float):
+        self.action = "IDLE"
         self.handle_input()
         self.update_items()
         self.update_stats()
         super().update(dt)
+
+    def draw(self):
+        self.play_sound_effect()
+        super().draw()

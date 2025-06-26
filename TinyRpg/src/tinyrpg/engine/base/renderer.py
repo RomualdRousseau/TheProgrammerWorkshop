@@ -43,9 +43,6 @@ class BoundingBoxRenderer:
         return 0
 
     def draw(self):
-        if not DEBUG_ENABLED:
-            return
-
         def draw_method(self):
             pr.draw_bounding_box(self.bbox, pr.GREEN)
 
@@ -64,11 +61,26 @@ class LineRenderer:
         return 0
 
     def draw(self):
-        if not DEBUG_ENABLED:
-            return
-
         def draw_method(self):
             pr.draw_line_v(self.p1, self.p2, pr.GREEN)
+
+        RendererHeap.layers[self.get_layer()].append(RendererCaller(self, draw_method))
+
+
+class CircleRenderer:
+    def __init__(self, point: pr.Vector2, radius: float):
+        self.point = point
+        self.radius = radius
+
+    def get_layer(self) -> int:
+        return WORLD_DEBUG_LAYER
+
+    def get_depth(self) -> float:
+        return 0
+
+    def draw(self):
+        def draw_method(self):
+            pr.draw_circle_lines_v(self.point, self.radius, pr.GREEN)
 
         RendererHeap.layers[self.get_layer()].append(RendererCaller(self, draw_method))
 
@@ -80,14 +92,16 @@ def begin_mode_sorted_2d(camera: pr.Camera2D):
     yield None
 
     for i in range(WORLD_LAYER_COUNT):
-        callers = sorted(RendererHeap.layers[i]) if RendererHeap.sorted_mask[i] else RendererHeap.layers[i]
-        for caller in callers:
-            caller.draw()
+        if not DEBUG_ENABLED or i != WORLD_DEBUG_LAYER:
+            callers = sorted(RendererHeap.layers[i]) if RendererHeap.sorted_mask[i] else RendererHeap.layers[i]
+            for caller in callers:
+                caller.draw()
 
     pr.end_mode_2d()
 
     for i in range(WORLD_LAYER_COUNT):
-        RendererHeap.layers[i].clear()
+        if not DEBUG_ENABLED or i != WORLD_DEBUG_LAYER:
+            RendererHeap.layers[i].clear()
 
 
 def renderer(draw_method: Callable[[Any], None]) -> Callable[[Renderer], None]:

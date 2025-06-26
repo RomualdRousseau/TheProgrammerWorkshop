@@ -23,6 +23,11 @@ RESOURCES = {
     "key": "data/sounds/key.wav",
     "pick": "data/sounds/pick.wav",
     "open": "data/sounds/open.wav",
+    "equip": "data/sounds/pick.wav",
+    "unequip": "data/sounds/pick.wav",
+    "drop": "data/sounds/hurt.wav",
+    "buy": "data/sounds/pick.wav",
+    "sell": "data/sounds/pick.wav",
 }
 
 
