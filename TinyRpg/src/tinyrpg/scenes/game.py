@@ -28,6 +28,7 @@ from tinyrpg.widgets import InventoryBox
 
 @dataclass
 class Game:
+    initialized = False
     fixed_camera: FixedCamera
     follow_camera: FollowCamera
     music: pr.Music
@@ -57,6 +58,9 @@ def get_game(level_name: str) -> Game:
 
 def init():
     game = get_game("level1")
+    if game.initialized:
+        return
+
     game.characters.append(game.hero)
     for obj in game.map_data.objects:
         match obj.type:
@@ -66,11 +70,14 @@ def init():
                 game.characters.append(Enemy(obj.name, obj.pos, game.map_data.get_world_boundary()))
             case "object":
                 game.objects.append(Chest(obj.pos))
+    game.initialized = True
+
     pr.play_music_stream(game.music)
 
 
 def release():
     get_game.cache_clear()
+    get_hero.cache_clear()
     unload_resources()
 
 
@@ -153,6 +160,7 @@ def garbage_collect(game: Game) -> None:
 
 def update(dt: float):
     game = get_game("level1")
+    assert game.initialized, "Game not initialized"
 
     if is_action_pressed(INPUT_TAKE_SCREENSHOT):
         pr.take_screenshot("screenshot.png")
@@ -170,6 +178,8 @@ def update(dt: float):
 
 def draw():
     game = get_game("level1")
+    assert game.initialized, "Game not initialized"
+
     pr.update_music_stream(game.music)
 
     # Setup follow camera
@@ -203,3 +213,10 @@ def draw():
 
     if DEBUG_ENABLED:
         pr.draw_fps(10, 10)
+
+
+def get_state_and_input() -> tuple[str, str]:
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_Q):
+        return ("game", "gameover")
+    else:
+        return ("game", "self")

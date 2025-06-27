@@ -1,7 +1,15 @@
 import pyray as pr
 
 from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
-from tinyrpg.scenes import game
+from tinyrpg.engine import Scene, change_scene
+from tinyrpg.scenes import FadeInOut, game, intro
+
+t: dict[str, dict[str, Scene]] = {
+    "intro": {"keypress": FadeInOut("transition1", intro, game)},
+    "transition1": {"complete": game},
+    "game": {"gameover": FadeInOut("transition2", game, intro)},
+    "transition2": {"complete": intro},
+}
 
 
 def main():
@@ -10,7 +18,7 @@ def main():
     pr.init_audio_device()
     pr.set_exit_key(pr.KeyboardKey.KEY_END)
 
-    scene = game
+    scene: Scene = intro
     scene.init()
 
     while not pr.window_should_close():
@@ -19,6 +27,8 @@ def main():
         pr.begin_drawing()
         scene.draw()
         pr.end_drawing()
+
+        scene = change_scene(scene, t)
 
     scene.release()
 
