@@ -12,7 +12,7 @@ from tinyrpg.constants import (
 )
 from tinyrpg.engine.base.animation import Animation
 from tinyrpg.engine.base.entity import Entity
-from tinyrpg.engine.base.renderer import BoundingBoxRenderer
+from tinyrpg.engine.base.renderer import BoundingBoxRenderer, renderer
 from tinyrpg.engine.base.sprite import AnimatedSprite
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
 from tinyrpg.resources import load_sound, load_texture
@@ -90,6 +90,7 @@ class Object(AnimatedSprite):
         super().update(dt)
         self.events.clear()
 
+    @renderer
     def draw(self):
         self.play_sound_effect()
         self.set_animation_effect()

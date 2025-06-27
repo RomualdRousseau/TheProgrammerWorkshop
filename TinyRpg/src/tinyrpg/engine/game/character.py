@@ -11,10 +11,11 @@ from tinyrpg.constants import (
     CHARACTER_FREE_TIMER,
     CHARACTER_TRIGGER_FAR_DEFAULT,
     CHARACTER_TRIGGER_NEAR_DEFAULT,
+    DEBUG_ENABLED,
 )
 from tinyrpg.engine.base.animation import Animation
 from tinyrpg.engine.base.entity import Entity
-from tinyrpg.engine.base.renderer import BoundingBoxRenderer
+from tinyrpg.engine.base.renderer import renderer
 from tinyrpg.engine.base.sprite import AnimatedSprite
 from tinyrpg.engine.game.inventory import Inventory
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
@@ -271,9 +272,11 @@ class Character(AnimatedSprite):
         self.events.clear()
         self.reset_triggers()
 
+    @renderer
     def draw(self):
         self.play_sound_effect()
         self.set_animation_effect()
         super().draw()
 
-        BoundingBoxRenderer(self.get_bbox()).draw()
+        if DEBUG_ENABLED:
+            pr.draw_bounding_box(self.get_bbox(), pr.GREEN)
