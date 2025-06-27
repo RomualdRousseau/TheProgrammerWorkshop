@@ -11,7 +11,7 @@ from tinyrpg.engine.utils.quad_tree import QuadTreeBuilder
 
 @pytest.fixture
 def quad_tree():
-    builder = QuadTreeBuilder[float](size=4, spacing=1.0)
+    builder = QuadTreeBuilder[float](size=16, spacing=1.0)
     return builder.build()
 
 
@@ -25,8 +25,8 @@ def test_walk_tree(quad_tree):
     point = pr.Vector2(0.5, 0.5)
     nodes = list(quad_tree.walk_tree(partial(check_collision_bbox_point, point=point)))
     assert len(nodes) == 1
-    assert nodes[0].bbox.min == (-0.5, -0.5, -1)
-    assert nodes[0].bbox.max == (0.5, 0.5, 1)
+    assert pr.vector3_equals(nodes[0].bbox.min, (0.0, 0.0, -1))
+    assert pr.vector3_equals(nodes[0].bbox.max, (2.0, 2.0, 1))
 
 
 def test_find_point(quad_tree):

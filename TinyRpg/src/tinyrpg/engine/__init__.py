@@ -8,6 +8,8 @@ from tinyrpg.engine.base.input import is_action_down as is_action_down
 from tinyrpg.engine.base.input import is_action_pressed as is_action_pressed
 from tinyrpg.engine.base.particle import Particle as Particle
 from tinyrpg.engine.base.renderer import begin_mode_sorted_2d as begin_mode_sorted_2d
+from tinyrpg.engine.base.scene import Scene as Scene
+from tinyrpg.engine.base.scene import change_scene as change_scene
 from tinyrpg.engine.base.widget import Widget as Widget
 from tinyrpg.engine.effects.dialog import DialogEffect as DialogEffect
 from tinyrpg.engine.effects.vertical import VerticalEffect as VerticalEffect
