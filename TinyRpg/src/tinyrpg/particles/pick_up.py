@@ -2,14 +2,14 @@ import math
 
 import pyray as pr
 
+from tinyrpg.constants import DEBUG_ENABLED
 from tinyrpg.engine import Character, Item, Particle
-from tinyrpg.engine.base.renderer import CircleRenderer
 from tinyrpg.resources import load_sound, load_texture
 
 PICKUP_FORCE_INITIAL = 5000  # N
-PICKUP_FORCE_SEEK = 1000  # N
+PICKUP_FORCE_SEEK = 1100  # N
 PICKUP_WIDTH = 16  # px
-PICKUP_RADIUS1 = 4  # px
+PICKUP_RADIUS1 = 8  # px
 PICKUP_RADIUS2 = 16  # px
 
 
@@ -48,20 +48,22 @@ class PickUp(Particle):
     def draw(self):
         self.play_sound_effect()
 
-        if self.time < 2.0:
+        if self.time < 1.2:
             size = PICKUP_WIDTH * abs(math.sin(self.time * math.pi / 2))
+            width, height = size * math.sin(self.time * math.pi * 2), size
         else:
             size = PICKUP_WIDTH * 0.1
+            width, height = size, size
 
-        pr.draw_circle_v(self.pos, size * 0.75, pr.color_alpha(pr.WHITE, 0.5))
         pr.draw_texture_pro(
             self.texture,
-            (0, 0, 32, 32),
-            (self.pos.x - size * 0.5, self.pos.y - size * 0.5, size, size),
+            (0, 0, 32 if width >= 0 else -32, 32),
+            (self.pos.x - abs(width) * 0.5, self.pos.y - abs(height) * 0.5, abs(width), abs(height)),
             (0, 0),
             0,
             pr.WHITE,
         )
 
-        CircleRenderer(self.target.pos, PICKUP_RADIUS1).draw()
-        CircleRenderer(self.target.pos, PICKUP_RADIUS2).draw()
+        if DEBUG_ENABLED:
+            pr.draw_circle_lines_v(self.target.pos, PICKUP_RADIUS1, pr.GREEN)
+            pr.draw_circle_lines_v(self.target.pos, PICKUP_RADIUS2, pr.GREEN)

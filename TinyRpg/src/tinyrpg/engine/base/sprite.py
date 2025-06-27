@@ -5,7 +5,6 @@ import pyray as pr
 from tinyrpg.constants import WORLD_FOREGROUND_LAYER
 from tinyrpg.engine.base.animation import Animation
 from tinyrpg.engine.base.entity import Entity
-from tinyrpg.engine.base.renderer import renderer
 from tinyrpg.engine.utils.bbox import get_bbox_from_rect
 
 
@@ -31,7 +30,6 @@ class Sprite(Entity):
             self.texture.height,
         )
 
-    @renderer
     def draw(self):
         pr.draw_texture_pro(
             self.texture,
@@ -80,7 +78,6 @@ class AnimatedSprite(Sprite):
         super().update(dt)
         self.animation.update(dt)
 
-    @renderer
     def draw(self):
         pr.draw_texture_pro(
             self.texture,
