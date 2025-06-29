@@ -1,8 +1,8 @@
 import pyray as pr
 
 from tinyrpg.engine import Widget
+from tinyrpg.engine.base.resources import load_texture
 from tinyrpg.engine.gui.window import WINDOW_BORDER
-from tinyrpg.resources import load_texture
 
 WINDOW_FADE_SPEED = 2  # px.s-1
 
@@ -13,7 +13,7 @@ class VerticalEffect(Widget):
         self.widget = widget
         self.state = 0
         self.fade_time = 0
-        self.texture = load_texture("gui")
+        self.texture = load_texture("skin-gui")
         self.textureNPatch = pr.NPatchInfo(
             pr.Rectangle(0, 0, 32, 32),
             WINDOW_BORDER,

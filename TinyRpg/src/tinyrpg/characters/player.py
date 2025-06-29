@@ -1,5 +1,3 @@
-from functools import cache
-
 import pyray as pr
 
 from tinyrpg import rules
@@ -14,7 +12,7 @@ from tinyrpg.engine import (
     is_action_down,
 )
 from tinyrpg.engine.game.character import CHARACTER_NO_RESET_MASK
-from tinyrpg.engine.game.inventory import EquipmentType
+from tinyrpg.engine.game.inventory import EquipmentType, get_player_inventory
 
 HERO_ANIMATIONS = lambda: {
     "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
@@ -38,9 +36,9 @@ HERO_STATS = lambda: CharacterStats(
 )
 
 
-class Hero(Character):
+class Player(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox):
-        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, rules)
+        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, rules, get_player_inventory())
 
     def handle_ai(self) -> None:
         super().handle_ai()
@@ -63,8 +61,3 @@ class Hero(Character):
         if is_action_down(INPUT_ATTACK) and self.inventory.is_equiped_with(EquipmentType.WEAPON):
             self.speed = 0
             self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.ATTACKING
-
-
-@cache
-def get_hero() -> Hero:
-    return Hero("Romuald", pr.vector2_zero(), pr.BoundingBox((0, 0), (0, 0)))

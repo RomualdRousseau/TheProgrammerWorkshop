@@ -16,11 +16,12 @@ from tinyrpg.constants import (
 from tinyrpg.engine.base.animation import Animation
 from tinyrpg.engine.base.entity import Entity
 from tinyrpg.engine.base.renderer import renderer
+from tinyrpg.engine.base.resources import load_texture
+from tinyrpg.engine.base.sound import play_sound
 from tinyrpg.engine.base.sprite import AnimatedSprite
 from tinyrpg.engine.game.inventory import Inventory
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
 from tinyrpg.engine.utils.timer import Timer
-from tinyrpg.resources import load_sound, load_texture
 
 CHARACTER_SIZE = pr.Vector2(32, 32)  # pixels
 CHARACTER_BOUNDARY_ADJUST = pr.BoundingBox((8, 0), (-8, -8))  # pixels
@@ -80,8 +81,9 @@ class Character(AnimatedSprite):
         animations: dict[str, Animation],
         boundary: pr.BoundingBox,
         rules: CharacterRules,
+        inventory: Optional[Inventory] = None,
     ):
-        super().__init__(id, pos, load_texture(id), animations)
+        super().__init__(id, pos, load_texture(f"skin-{id}"), animations)
         self.name = name
         self.stats = stats
         self.health = self.stats.hp
@@ -94,7 +96,7 @@ class Character(AnimatedSprite):
         self.trigger_far = CharacterTrigger()
         self.events: list[CharacterEvent] = []
         self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
-        self.inventory = Inventory()
+        self.inventory = inventory if inventory else Inventory()
         self.rules: CharacterRules = rules
 
     def should_be_free(self) -> bool:
@@ -179,14 +181,11 @@ class Character(AnimatedSprite):
     def play_sound_effect(self) -> None:
         match self.actions:
             case a if CharacterAction.WALKING in a and int(self.animation.frame) in (1, 4):
-                if not pr.is_sound_playing(load_sound("step")):
-                    pr.play_sound(load_sound("step"))
+                play_sound("step")
             case a if CharacterAction.ATTACKING in a and int(self.animation.frame) in (0, 1):
-                if not pr.is_sound_playing(load_sound("hit")):
-                    pr.play_sound(load_sound("hit"))
+                play_sound("hit")
             case a if CharacterAction.DYING in a and int(self.animation.frame) in (0, 1):
-                if not pr.is_sound_playing(load_sound("hurt")):
-                    pr.play_sound(load_sound("hurt"))
+                play_sound("hurt")
 
     def set_animation_effect(self) -> None:
         match self.actions:

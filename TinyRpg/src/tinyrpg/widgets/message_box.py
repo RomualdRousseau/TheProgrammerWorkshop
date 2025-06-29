@@ -1,8 +1,18 @@
 import pyray as pr
 
 from tinyrpg.constants import INPUT_MESSAGE_NEXT, WORLD_HEIGHT
-from tinyrpg.engine import ImageBox, TableLayout, TextBox, TitlePosition, Window, WindowLocation, is_action_pressed
-from tinyrpg.resources import load_sound, load_texture
+from tinyrpg.engine import (
+    ImageBox,
+    TableLayout,
+    TextBox,
+    TitlePosition,
+    Window,
+    WindowLocation,
+    is_action_pressed,
+    load_texture,
+    play_sound,
+    stop_sound,
+)
 
 MESSAGE_HEIGHT = int(WORLD_HEIGHT * 0.3)  # px
 MESSAGE_FONT_SIZE = 10  # px
@@ -13,14 +23,15 @@ MESSAGE_LINE_COUNT = 4
 
 
 class MessageBox(Window):
-    def __init__(self, name: str, portrait: str, text: str):
-        super().__init__(MESSAGE_HEIGHT, WindowLocation.BOTTOM, name, TitlePosition.LEFT)
+    def __init__(self, name: str, text: str):
+        super().__init__(MESSAGE_HEIGHT, WindowLocation.BOTTOM, name.upper(), TitlePosition.LEFT)
         self.text = [s for s in text.split("\n") if len(s) > 0]
         self.text_box = TextBox("")
         self.cursor = 0
         self.stroke_time = [0.0 for _ in range(len(self.text))]
         self.stroke_line = 0
 
+        portrait = f"portrait-{name}".lower()
         self.add(
             TableLayout(1, 2).add(self.text_box).add(ImageBox(load_texture(portrait)).set_fixed_width(MESSAGE_HEIGHT))
         ).pack()
@@ -70,10 +81,9 @@ class MessageBox(Window):
 
     def play_sound_effect(self):
         if self.stroke_line >= 0:
-            if not pr.is_sound_playing(load_sound("key")):
-                pr.play_sound(load_sound("key"))
+            play_sound("key")
         else:
-            pr.stop_sound(load_sound("key"))
+            stop_sound("key")
 
     def update(self, dt: float):
         self.handle_input()

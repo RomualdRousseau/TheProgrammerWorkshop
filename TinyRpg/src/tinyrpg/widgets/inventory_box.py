@@ -1,8 +1,9 @@
 import math
+from enum import Enum, auto
 
 import pyray as pr
 
-from tinyrpg.characters import get_hero
+from tinyrpg.characters.player import Player
 from tinyrpg.constants import (
     INPUT_INVENTORY_CLOSE,
     INPUT_INVENTORY_DROP,
@@ -28,49 +29,57 @@ from tinyrpg.engine import (
     Window,
     WindowLocation,
     is_action_pressed,
+    load_texture,
+    play_sound,
 )
-from tinyrpg.resources import load_sound, load_texture
 
 INVENTORY_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
 INVENTORY_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
 INVENTORY_ICON_HEIGHT = (WORLD_WIDTH - 2 * WINDOW_MARGIN - 2 * WINDOW_PADDING - 2 * WINDOW_BORDER) / 6
 
 
+class InventoryBoxAction(Enum):
+    NONE = auto()
+    EQUIPING = auto()
+    UNEQUIPING = auto()
+    DROPPING = auto()
+
+
 class InventoryBox(Window):
-    def __init__(self):
+    def __init__(self, player: Player):
         super().__init__(INVENTORY_HEIGHT, WindowLocation.MIDDLE, "INVENTORY")
-        hero = get_hero()
-        self.equipment_num = len(hero.inventory.equipment)
+        self.player = player
+        self.equipment_num = len(player.inventory.equipment)
         self.cursor = self.equipment_num
 
         self.bag: list[ItemBox] = []
         self.desc = TextBox("")
-        self.action = "IDLE"
+        self.action = InventoryBoxAction.NONE
 
         equipments = TableLayout(1, self.equipment_num)
-        for item in hero.inventory.equipment:
+        for item in player.inventory.equipment:
             item_box = ItemBox(item)
             equipments.add(item_box)
             self.bag.append(item_box)
 
         stats = TableLayout(4, 2)
         stats.add(TextBox("HP:"))
-        self.stats_hp = TextBox(f"{hero.health}/{hero.stats.hp}", align=TextBoxAlign.RIGHT)
+        self.stats_hp = TextBox(f"{player.health}/{player.stats.hp}", align=TextBoxAlign.RIGHT)
         stats.add(self.stats_hp)
         stats.add(TextBox("DMG:"))
-        self.stats_damage = TextBox(f"{hero.get_damage()}", align=TextBoxAlign.RIGHT)
+        self.stats_damage = TextBox(f"{player.get_damage()}", align=TextBoxAlign.RIGHT)
         stats.add(self.stats_damage)
         stats.add(TextBox("ARM:"))
-        self.stats_armor = TextBox(f"{hero.get_armor()}", align=TextBoxAlign.RIGHT)
+        self.stats_armor = TextBox(f"{player.get_armor()}", align=TextBoxAlign.RIGHT)
         stats.add(self.stats_armor)
         stats.add(TextBox("COIN:"))
-        self.stats_coin = TextBox(f"{hero.inventory.coin}", align=TextBoxAlign.RIGHT)
+        self.stats_coin = TextBox(f"{player.inventory.coin}", align=TextBoxAlign.RIGHT)
         stats.add(self.stats_coin)
 
-        bag_rows = int(math.sqrt(len(hero.inventory.bag)))
-        bag_cols = int(math.sqrt(len(hero.inventory.bag)))
+        bag_rows = int(math.sqrt(len(player.inventory.bag)))
+        bag_cols = int(math.sqrt(len(player.inventory.bag)))
         bag_panel = TableLayout(bag_rows, bag_cols)
-        for item in hero.inventory.bag:
+        for item in player.inventory.bag:
             item_box = ItemBox(item)
             bag_panel.add(item_box)
             self.bag.append(item_box)
@@ -81,12 +90,12 @@ class InventoryBox(Window):
                 (
                     TableLayout(5, 1)
                     .add(
-                        TextBox(f"Romuald - Lvl {hero.stats.xp}", align=TextBoxAlign.CENTER).set_fixed_height(
+                        TextBox(f"Romuald - Lvl {player.stats.xp}", align=TextBoxAlign.CENTER).set_fixed_height(
                             INVENTORY_TEXT_HEIGHT
                         )
                     )
                     .add(
-                        ImageBox(load_texture("player"), pr.Rectangle(0, 0, 32, 32)).set_fixed_height(
+                        ImageBox(load_texture("skin-player"), pr.Rectangle(0, 0, 32, 32)).set_fixed_height(
                             INVENTORY_ICON_HEIGHT * (bag_rows - 1) * 0.9
                         )
                     )
@@ -106,14 +115,16 @@ class InventoryBox(Window):
         ).pack()
 
     def play_sound_effect(self) -> None:
-        if self.action == "EQUIP" and not pr.is_sound_playing(load_sound("equip")):
-            pr.play_sound(load_sound("equip"))
-        if self.action == "UNEQUIP" and not pr.is_sound_playing(load_sound("unequip")):
-            pr.play_sound(load_sound("unequip"))
-        if self.action == "DROP" and not pr.is_sound_playing(load_sound("drop")):
-            pr.play_sound(load_sound("drop"))
+        match self.action:
+            case InventoryBoxAction.EQUIPING:
+                play_sound("equip")
+            case InventoryBoxAction.UNEQUIPING:
+                play_sound("unequip")
+            case InventoryBoxAction.DROPPING:
+                play_sound("drop")
 
     def handle_input(self):
+        self.action = InventoryBoxAction.NONE
         if is_action_pressed(INPUT_INVENTORY_NEXT):
             self.cursor = min(self.cursor + 1, len(self.bag) - 1)
         if is_action_pressed(INPUT_INVENTORY_PREVIOUS):
@@ -121,36 +132,33 @@ class InventoryBox(Window):
         if is_action_pressed(INPUT_INVENTORY_CLOSE):
             self.close()
         if is_action_pressed(INPUT_INVENTORY_EQUIP) and self.cursor >= self.equipment_num:
-            get_hero().inventory.equip(self.cursor - 3)
-            self.action = "EQUIP"
+            self.player.inventory.equip(self.cursor - 3)
+            self.action = InventoryBoxAction.EQUIPING
         if is_action_pressed(INPUT_INVENTORY_UNEQUIP) and self.cursor < self.equipment_num:
-            get_hero().inventory.unequip(self.cursor)
-            self.action = "UNEQUIP"
+            self.player.inventory.unequip(self.cursor)
+            self.action = InventoryBoxAction.UNEQUIPING
         if is_action_pressed(INPUT_INVENTORY_DROP) and self.cursor >= self.equipment_num:
-            get_hero().inventory.drop(self.cursor - 3)
-            self.action = "DROP"
+            self.player.inventory.drop(self.cursor - 3)
+            self.action = InventoryBoxAction.DROPPING
 
     def update_items(self):
-        hero = get_hero()
         for i, item_box in enumerate(self.bag):
             item_box.selected = self.cursor == i
             if item_box.selected:
                 self.desc.text = f"{item_box.item.name}\n{item_box.item.description}" if item_box.item else ""
 
             if i < self.equipment_num:
-                item_box.item = hero.inventory.equipment[i]
+                item_box.item = self.player.inventory.equipment[i]
             else:
-                item_box.item = hero.inventory.bag[i - self.equipment_num]
+                item_box.item = self.player.inventory.bag[i - self.equipment_num]
 
     def update_stats(self):
-        hero = get_hero()
-        self.stats_hp.text = f"{hero.health}/{hero.stats.hp}"
-        self.stats_damage.text = f"{hero.get_damage()}"
-        self.stats_armor.text = f"{hero.get_armor()}"
-        self.stats_coin.text = f"{hero.inventory.coin}"
+        self.stats_hp.text = f"{self.player.health}/{self.player.stats.hp}"
+        self.stats_damage.text = f"{self.player.get_damage()}"
+        self.stats_armor.text = f"{self.player.get_armor()}"
+        self.stats_coin.text = f"{self.player.inventory.coin}"
 
     def update(self, dt: float):
-        self.action = "IDLE"
         self.handle_input()
         self.update_items()
         self.update_stats()

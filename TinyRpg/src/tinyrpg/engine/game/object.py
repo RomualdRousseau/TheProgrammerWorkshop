@@ -13,9 +13,10 @@ from tinyrpg.constants import (
 from tinyrpg.engine.base.animation import Animation
 from tinyrpg.engine.base.entity import Entity
 from tinyrpg.engine.base.renderer import BoundingBoxRenderer, renderer
+from tinyrpg.engine.base.resources import load_texture
+from tinyrpg.engine.base.sound import play_sound
 from tinyrpg.engine.base.sprite import AnimatedSprite
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
-from tinyrpg.resources import load_sound, load_texture
 
 OBJECT_SIZE = pr.Vector2(16, 16)  # pixels
 OBJECT_BBOX_ADJUST = pr.BoundingBox((0, 0), (0, 0))  # pixels
@@ -47,7 +48,7 @@ class Object(AnimatedSprite):
         pos: pr.Vector2,
         animations: dict[str, Animation],
     ):
-        super().__init__(id, pos, load_texture(id), animations)
+        super().__init__(id, pos, load_texture(f"object-{id}"), animations)
         self.actions = ObjectAction.IDLING
         self.events: list[ObjectEvent] = []
 
@@ -72,8 +73,7 @@ class Object(AnimatedSprite):
     def play_sound_effect(self) -> None:
         match self.actions:
             case ObjectAction.OPENING if int(self.animation.frame) == 0:
-                if not pr.is_sound_playing(load_sound("open")):
-                    pr.play_sound(load_sound("open"))
+                play_sound("open")
 
     def set_animation_effect(self) -> None:
         match self.actions:

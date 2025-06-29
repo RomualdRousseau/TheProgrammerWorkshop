@@ -4,8 +4,8 @@ from typing import Optional
 
 import pyray as pr
 
+from tinyrpg.engine.base.resources import load_texture
 from tinyrpg.engine.base.widget import Widget
-from tinyrpg.resources import load_texture
 
 PANEL_MARGIN = 1  # px
 PANEL_PADDING = -1  # px
@@ -16,7 +16,7 @@ class Panel(Widget):
     def __init__(self):
         super().__init__(pr.vector2_zero(), pr.vector2_one())
         self.widget: Optional[Widget] = None
-        self.texture = load_texture("gui")
+        self.texture = load_texture("skin-gui")
         self.textureNPatch = pr.NPatchInfo(
             pr.Rectangle(32, 0, 32, 32),
             PANEL_BORDER,

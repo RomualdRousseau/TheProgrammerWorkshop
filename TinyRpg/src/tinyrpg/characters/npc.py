@@ -1,9 +1,7 @@
-from typing import Optional
-
 import pyray as pr
 
 from tinyrpg import rules
-from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterStats, Entity
+from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterStats
 
 NPC_ANIMATIONS = lambda: {
     "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
@@ -25,6 +23,3 @@ NPC_STATS = lambda: CharacterStats(
 class Npc(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
         super().__init__(name, name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary, rules)
-
-    def collide(self, collision_vector: pr.Vector2, other: Optional[Entity] = None):
-        pass

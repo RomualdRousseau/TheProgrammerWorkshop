@@ -4,7 +4,8 @@ import pyray as pr
 
 from tinyrpg.constants import DEBUG_ENABLED
 from tinyrpg.engine import Character, Item, Particle
-from tinyrpg.resources import load_sound, load_texture
+from tinyrpg.engine.base.resources import load_texture
+from tinyrpg.engine.base.sound import play_sound
 
 PICKUP_FORCE_INITIAL = 5000  # N
 PICKUP_FORCE_SEEK = 1100  # N
@@ -23,12 +24,8 @@ class PickUp(Particle):
         self.time = 0
 
     def play_sound_effect(self) -> None:
-        if (
-            pr.vector2_distance(self.pos, self.target.pos) < PICKUP_RADIUS2
-            and self.time >= 1.0
-            and not pr.is_sound_playing(load_sound("pick"))
-        ):
-            pr.play_sound(load_sound("pick"))
+        if pr.vector2_distance(self.pos, self.target.pos) < PICKUP_RADIUS2 and self.time >= 1.0:
+            play_sound("pick")
 
     def update(self, dt: float):
         self.time += dt

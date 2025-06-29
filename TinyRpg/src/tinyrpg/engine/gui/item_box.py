@@ -2,9 +2,9 @@ from typing import Optional
 
 import pyray as pr
 
+from tinyrpg.engine.base.resources import load_texture
 from tinyrpg.engine.game.inventory import Item
 from tinyrpg.engine.gui.component import Component
-from tinyrpg.resources import load_texture
 
 ITEMBOX_BORDER = 2  # px
 ITEMBOX_BORDER_SEL = 7  # px
@@ -15,7 +15,7 @@ class ItemBox(Component):
         super().__init__()
         self.item = item
         self.selected = False
-        self.texture = load_texture("gui")
+        self.texture = load_texture("skin-gui")
         self.textureNPatch = pr.NPatchInfo(
             pr.Rectangle(0, 32, 32, 32),
             ITEMBOX_BORDER,

@@ -1,34 +1,8 @@
 import pyray as pr
 from pytmx import TiledMap
 
+from tinyrpg.engine.base.database import get_database
 from tinyrpg.engine.game.map import Map, MapTile
-
-RESOURCES = {
-    "level1_map": "data/maps/levels/level1.tmx",
-    "level1_music": "data/maps/musics/level1.wav",
-    "skeleton": "data/textures/enemies/skeleton.png",
-    "player": "data/textures/characters/player.png",
-    "portrait-player": "data/textures/portraits/player.png",
-    "grace": "data/textures/characters/grace.png",
-    "portrait-grace": "data/textures/portraits/grace.png",
-    "sword": "data/textures/objects/sword.png",
-    "shield": "data/textures/objects/shield.png",
-    "gem": "data/textures/objects/gem.png",
-    "chest": "data/textures/objects/chest.png",
-    "potion": "data/textures/objects/potion.png",
-    "gui": "data/textures/objects/gui.png",
-    "step": "data/sounds/step.wav",
-    "hit": "data/sounds/hit.wav",
-    "hurt": "data/sounds/hurt.wav",
-    "key": "data/sounds/key.wav",
-    "pick": "data/sounds/pick.wav",
-    "open": "data/sounds/open.wav",
-    "equip": "data/sounds/pick.wav",
-    "unequip": "data/sounds/pick.wav",
-    "drop": "data/sounds/hurt.wav",
-    "buy": "data/sounds/pick.wav",
-    "sell": "data/sounds/pick.wav",
-}
 
 
 class CachedResources:
@@ -49,7 +23,8 @@ def load_map(name: str) -> Map:
 
     value = CachedResources.maps.get(name)
     if not value:
-        value = Map(TiledMap(RESOURCES[name], image_loader=image_loader, allow_duplicate_names=True))
+        file_path = get_database().select_dict("resources")["maps"][name]
+        value = Map(TiledMap(file_path, image_loader=image_loader, allow_duplicate_names=True))
         CachedResources.maps[name] = value
     return value
 
@@ -65,7 +40,8 @@ def load_tile_texture(name: str) -> pr.Texture:
 def load_texture(name: str) -> pr.Texture:
     value = CachedResources.textures.get(name)
     if not value:
-        value = pr.load_texture(RESOURCES[name])
+        file_path = get_database().select_dict("resources")["textures"][name]
+        value = pr.load_texture(file_path)
         CachedResources.textures[name] = value
     return value
 
@@ -73,7 +49,8 @@ def load_texture(name: str) -> pr.Texture:
 def load_music(name: str) -> pr.Music:
     value = CachedResources.musics.get(name)
     if not value:
-        value = pr.load_music_stream(RESOURCES[name])
+        file_path = get_database().select_dict("resources")["musics"][name]
+        value = pr.load_music_stream(file_path)
         CachedResources.musics[name] = value
     return value
 
@@ -81,7 +58,8 @@ def load_music(name: str) -> pr.Music:
 def load_sound(name: str) -> pr.Sound:
     value = CachedResources.sounds.get(name)
     if not value:
-        value = pr.load_sound(RESOURCES[name])
+        file_path = get_database().select_dict("resources")["sounds"][name]
+        value = pr.load_sound(file_path)
         CachedResources.sounds[name] = value
     return value
 

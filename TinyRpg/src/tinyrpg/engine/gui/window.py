@@ -6,8 +6,8 @@ from typing import Optional
 import pyray as pr
 
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
+from tinyrpg.engine.base.resources import load_texture
 from tinyrpg.engine.base.widget import Widget
-from tinyrpg.resources import load_texture
 
 WINDOW_MARGIN = 5  # px
 WINDOW_PADDING = -1  # px
@@ -50,7 +50,7 @@ class Window(Widget):
         self.title = title
         self.title_position = title_position
         self.widget: Optional[Widget] = None
-        self.texture = load_texture("gui")
+        self.texture = load_texture("skin-gui")
         self.nPatchWindow = pr.NPatchInfo(
             pr.Rectangle(0, 0, 32, 32),
             WINDOW_BORDER,

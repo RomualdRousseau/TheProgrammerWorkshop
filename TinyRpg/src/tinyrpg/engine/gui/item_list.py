@@ -2,10 +2,10 @@ from typing import Optional
 
 import pyray as pr
 
+from tinyrpg.engine.base.resources import load_texture
 from tinyrpg.engine.game.inventory import Item
 from tinyrpg.engine.gui.component import Component
 from tinyrpg.engine.gui.text_box import TEXTBOX_COLOR_DEFAULT, TEXTBOX_FONT_SIZE_DEFAULT, TextBoxAlign
-from tinyrpg.resources import load_texture
 
 ITEMLIST_BORDER = 2  # px
 ITEMLIST_BORDER_SEL = 7  # px
@@ -25,7 +25,7 @@ class ItemList(Component):
         self.font_color = font_color
         self.align = align
         self.selected = False
-        self.texture = load_texture("gui")
+        self.texture = load_texture("skin-gui")
         self.textureNPatch = pr.NPatchInfo(
             pr.Rectangle(0, 32, 32, 32),
             ITEMLIST_BORDER,

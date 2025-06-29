@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#3e8948" nextlayerid="4" nextobjectid="9">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#3e8948" nextlayerid="4" nextobjectid="10">
  <tileset firstgid="1" source="../tilesets/tilesets.tsx"/>
  <tileset firstgid="257" source="../tilesets/decorations.tsx"/>
  <layer id="1" name="Terrain" width="20" height="20">
@@ -51,44 +51,52 @@
 </data>
  </layer>
  <objectgroup id="3" name="Things">
-  <object id="2" x="184" y="152">
+  <object id="2" name="start" type="start" x="184" y="152">
    <properties>
     <property name="type" value="start"/>
    </properties>
    <point/>
   </object>
-  <object id="3" x="40" y="280">
+  <object id="3" name="chest" type="object" x="40" y="280">
    <properties>
     <property name="name" value="chest"/>
     <property name="type" value="object"/>
    </properties>
    <point/>
   </object>
-  <object id="7" x="264" y="104">
+  <object id="7" name="grace" type="npc" x="263.736" y="111.662">
    <properties>
     <property name="name" value="grace"/>
     <property name="type" value="npc"/>
    </properties>
    <point/>
   </object>
-  <object id="4" x="56" y="232">
+  <object id="4" name="skeleton" type="enemy" x="56" y="232">
    <properties>
     <property name="name" value="skeleton"/>
     <property name="type" value="enemy"/>
    </properties>
    <point/>
   </object>
-  <object id="5" x="88" y="248">
+  <object id="5" name="skeleton" type="enemy" x="88" y="248">
    <properties>
     <property name="name" value="skeleton"/>
     <property name="type" value="enemy"/>
    </properties>
    <point/>
   </object>
-  <object id="6" x="72" y="280">
+  <object id="6" name="skeleton" type="enemy" x="72" y="280">
    <properties>
     <property name="name" value="skeleton"/>
     <property name="type" value="enemy"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="9" name="goto_level2" type="trigger" x="231.959" y="319.67">
+   <properties>
+    <property name="name" value="goto_level2"/>
+    <property name="size" type="int" value="16"/>
+    <property name="type" value="trigger"/>
    </properties>
    <point/>
   </object>

@@ -1,0 +1,38 @@
+{
+    "Sword": [
+        "Sword",
+        0,
+        "object-sword",
+        1,
+        0,
+        10,
+        "+1 Damage"
+    ],
+   "Shield": [
+        "Shield",
+        2,
+        "object-shield",
+        0,
+        1,
+        10,
+        "+1 Armor"
+    ],
+    "Potion": [
+        "Potion",
+        3,
+        "object-potion",
+        0,
+        0,
+        10,
+        "Restore 5 HP"
+    ],
+    "Grace_Gem": [
+        "Gem",
+        3,
+        "object-gem",
+        0,
+        0,
+        0,
+        "Grace's gem"
+    ]
+}

@@ -1,5 +1,6 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
+from functools import cache
 from typing import Optional
 
 
@@ -7,7 +8,7 @@ class EquipmentType(Enum):
     WEAPON = 0
     CLOTHE = 1
     SHIELD = 2
-    ONE_SHOT = 3
+    CONSUMABLE = 3
 
 
 @dataclass
@@ -21,11 +22,11 @@ class Item:
     description: str
 
 
-@dataclass
 class Inventory:
-    equipment: list[Optional[Item]] = field(default_factory=lambda: [None] * 3)
-    bag: list[Optional[Item]] = field(default_factory=lambda: [None] * 9)
-    coin: int = 0
+    def __init__(self):
+        self.equipment: list[Optional[Item]] = [None] * 3
+        self.bag: list[Optional[Item]] = [None] * 9
+        self.coin: int = 0
 
     def is_equiped_with(self, type: EquipmentType) -> bool:
         slot = type.value
@@ -55,7 +56,7 @@ class Inventory:
 
     def equip(self, slot: int) -> Optional[Item]:
         item_to_equip = self.bag[slot]
-        if item_to_equip and item_to_equip.slot != EquipmentType.ONE_SHOT.value:
+        if item_to_equip and item_to_equip.slot != EquipmentType.CONSUMABLE.value:
             self.equipment[item_to_equip.slot] = item_to_equip
             self.bag[slot] = None
         return item_to_equip
@@ -66,3 +67,8 @@ class Inventory:
             self.equipment[slot] = None
             self.append(item_to_unequip)
         return item_to_unequip
+
+
+@cache
+def get_player_inventory() -> Inventory:
+    return Inventory()

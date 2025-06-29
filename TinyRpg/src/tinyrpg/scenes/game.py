@@ -1,222 +1,201 @@
 import math
-from dataclasses import dataclass, field
 from functools import cache
 from itertools import combinations
 
 import pyray as pr
 
-from tinyrpg.characters import Enemy, Hero, Npc, get_hero
+from tinyrpg.characters import Enemy, Npc
+from tinyrpg.characters.player import Player
 from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY, INPUT_TAKE_SCREENSHOT
 from tinyrpg.engine import (
     Character,
     FixedCamera,
     FollowCamera,
-    Map,
     Object,
     Particle,
     VerticalEffect,
     Widget,
     begin_mode_sorted_2d,
     is_action_pressed,
+    load_map,
+    load_music,
 )
+from tinyrpg.engine.base.resources import unload_resources
 from tinyrpg.objects import Chest
 from tinyrpg.particles import PickUp, Toast
 from tinyrpg.quests import GraceQuest
-from tinyrpg.resources import load_map, load_music, unload_resources
 from tinyrpg.widgets import InventoryBox
 
 
-@dataclass
 class Game:
-    initialized = False
-    fixed_camera: FixedCamera
-    follow_camera: FollowCamera
-    music: pr.Music
-    map_data: Map
-    hero: Hero
-    characters: list[Character] = field(default_factory=list)
-    objects: list[Object] = field(default_factory=list)
-    particles: list[Particle] = field(default_factory=list)
-    widgets: list[Widget] = field(default_factory=list)
-    quest = GraceQuest()
+    def __init__(self, level_name: str):
+        self.level_name = level_name
+        self.initialized = False
+
+    def init(self):
+        if self.initialized:
+            return
+
+        self.map_data = load_map(f"map-{self.level_name}")
+        self.music = load_music(f"music-{self.level_name}")
+        self.player = Player("Romuald", self.map_data.start_location, self.map_data.get_world_boundary())
+        self.fixed_camera = FixedCamera()
+        self.follow_camera = FollowCamera(self.map_data.get_world_boundary())
+        self.characters: list[Character] = [self.player]
+        self.objects: list[Object] = []
+        self.particles: list[Particle] = []
+        self.widgets: list[Widget] = []
+        self.quest = GraceQuest()
+
+        for obj in self.map_data.objects:
+            match obj.type:
+                case "npc":
+                    self.characters.append(Npc(obj.name, obj.pos, self.map_data.get_world_boundary()))
+                case "enemy":
+                    self.characters.append(Enemy(obj.name, obj.pos, self.map_data.get_world_boundary()))
+                case "object":
+                    self.objects.append(Chest(obj.pos))
+
+        self.initialized = True
+
+    def release(self):
+        self.initialized = False
+        unload_resources()
+
+    def update_widgets(self, dt: float):
+        for entity in self.particles + self.widgets:
+            entity.update(dt)
+
+    def update_physics(self, dt: float) -> None:
+        for entity in self.characters + self.objects + self.particles:
+            entity.update(dt)
+
+    def update_collisions(self) -> None:
+        for character in self.characters:
+            has_collision, collision_vector = self.map_data.check_collision(character.get_bbox())
+            if has_collision:
+                character.collide(collision_vector)
+
+        for character, other in combinations(self.characters + self.objects, 2):
+            has_collision, collision_vector = other.check_collision(character.get_bbox())
+            if has_collision:
+                character.collide(collision_vector, other)
+                other.collide(pr.vector2_scale(collision_vector, -1), character)
+
+        for character in self.characters:
+            has_los = (
+                character.id != "player"
+                and self.player.is_alive()
+                and character.is_alive()
+                and self.map_data.check_los(character.pos, self.player.pos)
+            )
+            if has_los:
+                self.player.set_nearest_target(character)
+                character.set_nearest_target(self.player)
+
+    def update_ai(self) -> None:
+        for character in self.characters:
+            character.think()
+
+    def update_gameplay(self) -> None:
+        if is_action_pressed(INPUT_OPEN_INVENTORY):
+            self.widgets.append(VerticalEffect(InventoryBox(self.player)))
+
+        for character in self.characters:
+            for event in character.events:
+                match (character.id, event.name):
+                    case ("player", "hit"):
+                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                    case ("skeleton", "trigger_far_enter"):
+                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
+                    case ("skeleton", "trigger_far_leave"):
+                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "?"))
+                    case ("skeleton", "hit"):
+                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                    case ("grace", "trigger_near_enter"):
+                        self.particles.append(Toast(pr.vector2_add(self.player.pos, (0, -16)), "?"))
+                        self.player.start_talk()
+                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
+                        character.start_talk()
+                        self.quest.process_next_state(self)
+
+        for obj in self.objects:
+            for event in obj.events:
+                match (obj.id, event.name):
+                    case ("chest", "collide"):
+                        if not obj.is_open():
+                            gem = self.quest.collect_gem()
+                            self.particles.append(PickUp(self.player.pos, pr.Vector2(0, -1), gem, self.player))
+                            obj.open()
+
+    def garbage_collect(self) -> None:
+        self.characters = [character for character in self.characters if not character.should_be_free()]
+        self.particles = [particle for particle in self.particles if not particle.should_be_free()]
+        self.widgets = [widget for widget in self.widgets if not widget.should_be_free()]
+
+    def update(self, dt: float):
+        assert self.initialized, "Game not initialized"
+
+        if is_action_pressed(INPUT_TAKE_SCREENSHOT):
+            pr.take_screenshot("screenshot.png")
+
+        if self.widgets:
+            self.update_widgets(dt)
+        else:
+            self.update_physics(dt)
+            self.update_collisions()
+            self.update_ai()
+            self.update_gameplay()
+
+        self.garbage_collect()
+
+    def draw(self):
+        assert self.initialized, "Game not initialized"
+
+        if pr.is_music_stream_playing(self.music):
+            pr.update_music_stream(self.music)
+        else:
+            pr.play_music_stream(self.music)
+
+        # Setup follow camera
+
+        self.follow_camera.set_boundary(self.map_data.get_world_boundary())
+        if self.widgets:  # Give bottom screen estate to a message box
+            self.follow_camera.boundary.max.y = math.inf
+        self.follow_camera.set_follower(self.player)
+        self.follow_camera.update(pr.get_frame_time())
+
+        # Draw all objects in different layers
+
+        pr.clear_background(self.map_data.background_color)
+
+        with begin_mode_sorted_2d(self.follow_camera.camera):
+            self.map_data.draw()
+            for character in self.characters + self.objects:
+                character.draw()
+
+        pr.begin_mode_2d(self.follow_camera.camera)
+        for particle in self.particles:
+            particle.draw()
+        pr.end_mode_2d()
+
+        pr.begin_mode_2d(self.fixed_camera.camera)
+        for widget in self.widgets:
+            widget.draw()
+        pr.end_mode_2d()
+
+        # Display some debug stats
+
+        if DEBUG_ENABLED:
+            pr.draw_fps(10, 10)
+
+    def get_state_and_input(self) -> tuple[str, str]:
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_Q):
+            return (self.level_name, "gameover")
+        else:
+            return (self.level_name, "self")
 
 
 @cache
-def get_game(level_name: str) -> Game:
-    music = load_music(f"{level_name}_music")
-    map_data = load_map(f"{level_name}_map")
-    hero = get_hero()
-    hero.set_position_and_boundary(map_data.start_location, map_data.get_world_boundary())
-    return Game(
-        FixedCamera(),
-        FollowCamera(map_data.get_world_boundary()),
-        music,
-        map_data,
-        hero,
-    )
-
-
-def init():
-    game = get_game("level1")
-    if game.initialized:
-        return
-
-    game.characters.append(game.hero)
-    for obj in game.map_data.objects:
-        match obj.type:
-            case "npc":
-                game.characters.append(Npc(obj.name, obj.pos, game.map_data.get_world_boundary()))
-            case "enemy":
-                game.characters.append(Enemy(obj.name, obj.pos, game.map_data.get_world_boundary()))
-            case "object":
-                game.objects.append(Chest(obj.pos))
-    game.initialized = True
-
-    pr.play_music_stream(game.music)
-
-
-def release():
-    get_game.cache_clear()
-    get_hero.cache_clear()
-    unload_resources()
-
-
-def update_widgets(game: Game, dt: float):
-    for entity in game.particles + game.widgets:
-        entity.update(dt)
-
-
-def update_physics(game: Game, dt: float) -> None:
-    for entity in game.characters + game.objects + game.particles:
-        entity.update(dt)
-
-
-def update_collisions(game: Game) -> None:
-    for character in game.characters:
-        has_collision, collision_vector = game.map_data.check_collision(character.get_bbox())
-        if has_collision:
-            character.collide(collision_vector)
-
-    for character, other in combinations(game.characters + game.objects, 2):
-        has_collision, collision_vector = other.check_collision(character.get_bbox())
-        if has_collision:
-            character.collide(collision_vector, other)
-            other.collide(pr.vector2_scale(collision_vector, -1), character)
-
-    for character in game.characters:
-        has_los = (
-            character.id != "player"
-            and game.hero.is_alive()
-            and character.is_alive()
-            and game.map_data.check_los(character.pos, game.hero.pos)
-        )
-        if has_los:
-            game.hero.set_nearest_target(character)
-            character.set_nearest_target(game.hero)
-
-
-def update_ai(game: Game) -> None:
-    for character in game.characters:
-        character.think()
-
-
-def update_gameplay(game: Game) -> None:
-    if is_action_pressed(INPUT_OPEN_INVENTORY):
-        game.widgets.append(VerticalEffect(InventoryBox()))
-
-    for character in game.characters:
-        for event in character.events:
-            match (character.id, event.name):
-                case ("player", "hit"):
-                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
-                case ("skeleton", "trigger_far_enter"):
-                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
-                case ("skeleton", "trigger_far_leave"):
-                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "?"))
-                case ("skeleton", "hit"):
-                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
-                case ("grace", "trigger_near_enter"):
-                    game.particles.append(Toast(pr.vector2_add(game.hero.pos, (0, -16)), "?"))
-                    game.hero.start_talk()
-                    game.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
-                    character.start_talk()
-                    game.quest.process_next_state(game)
-
-    for obj in game.objects:
-        for event in obj.events:
-            match (obj.id, event.name):
-                case ("chest", "collide"):
-                    if not obj.is_open():
-                        gem = game.quest.collect_gem()
-                        game.particles.append(PickUp(game.hero.pos, pr.Vector2(0, -1), gem, game.hero))
-                        obj.open()
-
-
-def garbage_collect(game: Game) -> None:
-    game.characters = [character for character in game.characters if not character.should_be_free()]
-    game.particles = [particle for particle in game.particles if not particle.should_be_free()]
-    game.widgets = [widget for widget in game.widgets if not widget.should_be_free()]
-
-
-def update(dt: float):
-    game = get_game("level1")
-    assert game.initialized, "Game not initialized"
-
-    if is_action_pressed(INPUT_TAKE_SCREENSHOT):
-        pr.take_screenshot("screenshot.png")
-
-    if game.widgets:
-        update_widgets(game, dt)
-    else:
-        update_physics(game, dt)
-        update_collisions(game)
-        update_ai(game)
-        update_gameplay(game)
-
-    garbage_collect(game)
-
-
-def draw():
-    game = get_game("level1")
-    assert game.initialized, "Game not initialized"
-
-    pr.update_music_stream(game.music)
-
-    # Setup follow camera
-
-    game.follow_camera.set_boundary(game.map_data.get_world_boundary())
-    if game.widgets:  # Give bottom screen estate to a message box
-        game.follow_camera.boundary.max.y = math.inf
-    game.follow_camera.set_follower(game.hero)
-    game.follow_camera.update(pr.get_frame_time())
-
-    # Draw all objects in different layers
-
-    pr.clear_background(game.map_data.background_color)
-
-    with begin_mode_sorted_2d(game.follow_camera.camera):
-        game.map_data.draw()
-        for character in game.characters + game.objects:
-            character.draw()
-
-    pr.begin_mode_2d(game.follow_camera.camera)
-    for particle in game.particles:
-        particle.draw()
-    pr.end_mode_2d()
-
-    pr.begin_mode_2d(game.fixed_camera.camera)
-    for widget in game.widgets:
-        widget.draw()
-    pr.end_mode_2d()
-
-    # Display some debug stats
-
-    if DEBUG_ENABLED:
-        pr.draw_fps(10, 10)
-
-
-def get_state_and_input() -> tuple[str, str]:
-    if pr.is_key_pressed(pr.KeyboardKey.KEY_Q):
-        return ("game", "gameover")
-    else:
-        return ("game", "self")
+def get_game(level_name: str):
+    return Game(level_name)

@@ -1,0 +1,31 @@
+{
+  "quest_grace": {
+    "1": [
+      ["GRACE", "It's gone… The gem.\nStolen from my chamber\nwhile I slept.\nOh — it's you!\nI was about to send for you."],
+      ["PLAYER", "Then the wind favors me today.\nI came as soon as I heard.\nAre you hurt?"],
+      ["GRACE", "No... only my heart aches.\nThe gem isn't just a trinket.\nIt belonged to my mother.\nI keep it close always.\nWhoever took it must know\nits value."],
+      ["PLAYER", "Then I'll find them.\nNo matter where they hide.\nI swear it on my blade...\nAnd on my love for you."],
+      ["GRACE", "You always say the right\nthings, Romuald.\nBut this time...\nPlease come back safe.\nPromise me that."],
+      ["PLAYER", "Only if you promise to be\nhere when I return\nwith your gem, and your smile."]
+    ],
+    "2": [
+      ["GRACE", "Romuald! You're hurt!\nI feared...\nWhere's the gem?\nDid you find it?"],
+      ["PLAYER", "Not yet.\nI tracked the thief to the\nforest. Fought his men.\nHe escaped with the gem...\nFor now."],
+      ["GRACE", "Then why did you return?"],
+      ["PLAYER", "Because you're more\nprecious than any gem.\nI needed to see you...\nTo be reminded why I fight."],
+      ["GRACE", "You reckless, beautiful fool...\nYou came all this way,\nempty-handed, just for me?"],
+      ["PLAYER", "Never empty-handed.\nThis grows at the cliff's\nedge where I last saw him.\nEven there, I thought of you."],
+      ["GRACE", "Bring the gem home, Romuald...\nBut promise you'll come home\ntoo.\nThat's the treasure I care\nfor most."]
+    ],
+    "3": [
+      ["GRACE", "Is it…? Romuald?"],
+      ["PLAYER", "It is.\nAnd this time,\nI didn't come empty-handed."],
+      ["GRACE", "You found it...\nYou truly found it."],
+      ["PLAYER", "It was buried deep in the forest.\nBut nothing could keep it\nfrom you."],
+      ["GRACE", "You always say such things...\nAnd yet I always believe you."],
+      ["PLAYER", "Because I always return.\nFor you. Always."],
+      ["GRACE", "Then stay.\nNot as a hero.\nNot as a knight.\nBut as the man I love."],
+      ["PLAYER", "Then let this be our new quest...\nOne we walk together."]
+    ]
+  }
+}
