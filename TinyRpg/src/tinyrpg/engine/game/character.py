@@ -81,7 +81,6 @@ class Character(AnimatedSprite):
         animations: dict[str, Animation],
         boundary: pr.BoundingBox,
         rules: CharacterRules,
-        inventory: Optional[Inventory] = None,
     ):
         super().__init__(id, pos, load_texture(f"skin-{id}"), animations)
         self.name = name
@@ -96,8 +95,8 @@ class Character(AnimatedSprite):
         self.trigger_far = CharacterTrigger()
         self.events: list[CharacterEvent] = []
         self.boundary = adjust_bbox(boundary, CHARACTER_BOUNDARY_ADJUST)
-        self.inventory = inventory if inventory else Inventory()
         self.rules: CharacterRules = rules
+        self.inventory: Optional[Inventory] = None
 
     def should_be_free(self) -> bool:
         return self.health <= 0 and self.free_timer.is_elapsed()
@@ -115,15 +114,15 @@ class Character(AnimatedSprite):
 
     def get_damage(self):
         damage = self.stats.damage
-        for item in self.inventory.equipment:
-            if item:
+        if self.inventory:
+            for item in (i for i in self.inventory.equipment if i):
                 damage += item.damage
         return damage
 
     def get_armor(self):
         armor = self.stats.armor
-        for item in self.inventory.equipment:
-            if item:
+        if self.inventory:
+            for item in (i for i in self.inventory.equipment if i):
                 armor += item.armor
         return armor
 

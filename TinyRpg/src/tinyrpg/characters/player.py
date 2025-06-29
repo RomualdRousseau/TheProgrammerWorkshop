@@ -3,16 +3,18 @@ import pyray as pr
 from tinyrpg import rules
 from tinyrpg.constants import INPUT_ATTACK
 from tinyrpg.engine import (
+    CHARACTER_NO_RESET_MASK,
     CHARACTER_SIZE,
     Animation,
     AnimationFlag,
     Character,
     CharacterAction,
     CharacterStats,
+    EquipmentType,
+    Quest,
+    get_player_inventory,
     is_action_down,
 )
-from tinyrpg.engine.game.character import CHARACTER_NO_RESET_MASK
-from tinyrpg.engine.game.inventory import EquipmentType, get_player_inventory
 
 HERO_ANIMATIONS = lambda: {
     "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
@@ -38,9 +40,12 @@ HERO_STATS = lambda: CharacterStats(
 
 class Player(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox):
-        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, rules, get_player_inventory())
+        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, rules)
+        self.inventory = get_player_inventory()
+        self.quests: list[Quest] = []
 
     def handle_ai(self) -> None:
+        assert self.inventory is not None, "Inventory is None"
         super().handle_ai()
         if is_action_down("UP"):
             self.dir.y = -1

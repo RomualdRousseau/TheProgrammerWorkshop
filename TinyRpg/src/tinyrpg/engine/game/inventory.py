@@ -3,6 +3,8 @@ from enum import Enum
 from functools import cache
 from typing import Optional
 
+from tinyrpg.engine.base.database import get_database
+
 
 class EquipmentType(Enum):
     WEAPON = 0
@@ -72,3 +74,8 @@ class Inventory:
 @cache
 def get_player_inventory() -> Inventory:
     return Inventory()
+
+
+@cache
+def get_inventory_item(name: str) -> Item:
+    return Item(*get_database().select_dict("items")[name])

@@ -1,8 +1,16 @@
+from typing import Protocol
+
 import pyray as pr
 
-from tinyrpg.engine import DialogEffect, Item, VerticalEffect, get_database
+from tinyrpg.engine import Character, DialogEffect, Particle, VerticalEffect, Widget, get_database, get_inventory_item
 from tinyrpg.particles import PickUp
 from tinyrpg.widgets import MessageBox, ShoppingCart
+
+
+class Game(Protocol):
+    player: Character
+    particles: list[Particle] = []
+    widgets: list[Widget] = []
 
 
 class GraceQuest:
@@ -10,49 +18,54 @@ class GraceQuest:
         self.quest_name = "Grace's Quest"
         self.quest_description = "Help Grace find her lost gem."
         self.quest_state = 0
-        self.gem_to_collect = Item(*get_database().select_dict("items")["Grace_Gem"])
 
-    def is_quest_completed(self) -> bool:
+    def is_completed(self) -> bool:
         return self.quest_state == 3
 
-    def provide_equipment(self, game):
+    def provide_equipment(self, game: Game):
         self.quest_state = 1
-        sword = Item(*get_database().select_dict("items")["Sword"])
+        sword = get_inventory_item("Sword")
         game.particles.append(PickUp(game.player.pos, pr.Vector2(0.25, -1), sword, game.player))
-        shield = Item(*get_database().select_dict("items")["Shield"])
+        shield = get_inventory_item("Shield")
         game.particles.append(PickUp(game.player.pos, pr.Vector2(-0.25, -1), shield, game.player))
 
-    def collect_gem(self) -> Item:
-        self.quest_state = 2
-        return self.gem_to_collect
-
-    def provide_reward(self, game):
+    def provide_reward(self, game: Game):
+        assert game.player.inventory is not None, "Inventory must exist"
         self.quest_state = 3
-        game.player.inventory.drop(game.player.inventory.index(self.gem_to_collect))
-        potion = Item(*get_database().select_dict("items")["Potion"])
-        game.particles.append(PickUp(game.player.pos, pr.Vector2(0, -1), potion, game.player))
+        game.player.inventory.drop(game.player.inventory.index(get_inventory_item("Grace_Gem")))
+        game.particles.append(PickUp(game.player.pos, pr.Vector2(0, -1), get_inventory_item("Potion"), game.player))
 
-    def process_next_state(self, game):
-        match self.quest_state:
-            case 0:
-                messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["1"]
-                game.widgets.append(
-                    VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])).on_close(
-                        lambda: self.provide_equipment(game)
+    def process_next_state(self, game: Game):
+        assert game.player.inventory is not None, "Inventory must exist"
+        should_return = False
+        while not should_return:
+            match self.quest_state:
+                case 0:
+                    messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["1"]
+                    game.widgets.append(
+                        VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])).on_close(
+                            lambda: self.provide_equipment(game)
+                        )
                     )
-                )
+                    should_return = True
 
-            case 1:
-                messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["2"]
-                game.widgets.append(VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])))
+                case 1:
+                    if game.player.inventory.index(get_inventory_item("Grace_Gem")) >= 0:
+                        self.quest_state = 2
+                    else:
+                        messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["2"]
+                        game.widgets.append(VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])))
+                        should_return = True
 
-            case 2:
-                messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["3"]
-                game.widgets.append(
-                    VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])).on_close(
-                        lambda: self.provide_reward(game)
+                case 2:
+                    messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["3"]
+                    game.widgets.append(
+                        VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])).on_close(
+                            lambda: self.provide_reward(game)
+                        )
                     )
-                )
+                    should_return = True
 
-            case 3:
-                game.widgets.append(VerticalEffect(ShoppingCart(game.player)))
+                case 3:
+                    game.widgets.append(VerticalEffect(ShoppingCart(game.player)))
+                    should_return = True

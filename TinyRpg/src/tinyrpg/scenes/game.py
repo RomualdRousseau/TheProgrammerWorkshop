@@ -16,14 +16,15 @@ from tinyrpg.engine import (
     VerticalEffect,
     Widget,
     begin_mode_sorted_2d,
+    get_inventory_item,
     is_action_pressed,
     load_map,
     load_music,
+    unload_resources,
 )
-from tinyrpg.engine.base.resources import unload_resources
 from tinyrpg.objects import Chest
 from tinyrpg.particles import PickUp, Toast
-from tinyrpg.quests import GraceQuest
+from tinyrpg.quests.grace_quest import GraceQuest
 from tinyrpg.widgets import InventoryBox
 
 
@@ -45,7 +46,6 @@ class Game:
         self.objects: list[Object] = []
         self.particles: list[Particle] = []
         self.widgets: list[Widget] = []
-        self.quest = GraceQuest()
 
         for obj in self.map_data.objects:
             match obj.type:
@@ -103,28 +103,31 @@ class Game:
 
         for character in self.characters:
             for event in character.events:
-                match (character.id, event.name):
-                    case ("player", "hit"):
+                match (character, event.name):
+                    case Player(), "hit":
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
-                    case ("skeleton", "trigger_far_enter"):
+                    case Enemy(), "trigger_far_enter":
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
-                    case ("skeleton", "trigger_far_leave"):
+                    case Enemy(), "trigger_far_leave":
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "?"))
-                    case ("skeleton", "hit"):
+                    case Enemy(), "hit":
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
-                    case ("grace", "trigger_near_enter"):
+                    case Npc(), "trigger_near_enter":
                         self.particles.append(Toast(pr.vector2_add(self.player.pos, (0, -16)), "?"))
                         self.player.start_talk()
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
                         character.start_talk()
-                        self.quest.process_next_state(self)
+                        if len(self.player.quests) == 0:
+                            self.player.quests.append(GraceQuest())
+                        for quest in self.player.quests:
+                            quest.process_next_state(self)
 
         for obj in self.objects:
             for event in obj.events:
                 match (obj.id, event.name):
                     case ("chest", "collide"):
                         if not obj.is_open():
-                            gem = self.quest.collect_gem()
+                            gem = get_inventory_item("Grace_Gem")
                             self.particles.append(PickUp(self.player.pos, pr.Vector2(0, -1), gem, self.player))
                             obj.open()
 
