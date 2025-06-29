@@ -11,19 +11,25 @@
     ],
     "fileStates": {
         "levels/level1.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
             "scale": 3.78515625,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 317.0278637770897,
-                "y": 159.8348813209494
+                "x": 183.87616099071207,
+                "y": 151.9091847265222
             }
         },
         "levels/level2.tmx": {
-            "scale": 3.7821875,
-            "selectedLayer": 0,
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 2.3712890625,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 159.96034041146822,
-                "y": 158.9027513839544
+                "x": 167.41948768635206,
+                "y": 253.8703566427807
             }
         },
         "tilesets/Basic_Furniture.tsx": {
@@ -80,19 +86,20 @@
         }
     },
     "last.imagePath": "/home/test/Projects/TheProgrammerWorkshop/TinyRpg/data/maps/textures",
+    "map.height": 32,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
-    "map.width": 20,
+    "map.width": 32,
     "openFiles": [
     ],
     "project": "tinyrpg.tiled-project",
-    "property.type": "string",
+    "property.type": "int",
     "recentFiles": [
+        "levels/level2.tmx",
         "levels/level1.tmx",
         "tilesets/tilesets.tsx",
         "tilesets/decorations.tsx",
-        "levels/level2.tmx",
         "tilesets/Basic_Furniture.tsx",
         "tilesets/Basic_Grass.tsx",
         "tilesets/Dirt_Wide.tsx",

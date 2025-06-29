@@ -2,14 +2,7 @@ import pyray as pr
 
 from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from tinyrpg.engine import Scene, change_scene
-from tinyrpg.scenes import FadeInOut, game, intro
-
-t: dict[str, dict[str, Scene]] = {
-    "intro": {"keypress": FadeInOut("transition1", intro, game)},
-    "transition1": {"complete": game},
-    "game": {"gameover": FadeInOut("transition2", game, intro)},
-    "transition2": {"complete": intro},
-}
+from tinyrpg.scenes import FadeInOut, get_game, intro
 
 
 def main():
@@ -20,6 +13,15 @@ def main():
 
     scene: Scene = intro
     scene.init()
+
+    t: dict[str, dict[str, Scene]] = {
+        "intro": {"keypress": FadeInOut("transition1", intro, get_game("level1"))},
+        "transition1": {"complete": get_game("level1")},
+        "level1": {"gameover": FadeInOut("transition2", get_game("level1"), get_game("level2"))},
+        "transition2": {"complete": get_game("level2")},
+        "level2": {"gameover": FadeInOut("transition3", get_game("level2"), intro)},
+        "transition3": {"complete": intro},
+    }
 
     while not pr.window_should_close():
         scene.update(pr.get_frame_time())

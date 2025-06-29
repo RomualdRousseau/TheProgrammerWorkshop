@@ -1,9 +1,7 @@
 import math
-from random import uniform
+from random import choice
 
-import pyray as pr
-
-from tinyrpg.characters import get_hero
+from tinyrpg.characters.player import Player
 from tinyrpg.constants import (
     INPUT_SHOP_BUY,
     INPUT_SHOP_CLOSE,
@@ -28,42 +26,43 @@ from tinyrpg.engine import (
     TextBoxAlign,
     Window,
     WindowLocation,
+    get_database,
     is_action_pressed,
 )
-from tinyrpg.items import ITEM_DATABASE
-from tinyrpg.resources import load_sound
+from tinyrpg.engine.base.sound import play_sound
 
-SHOP_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
-SHOP_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
-SHOP_ICON_HEIGHT = (WORLD_WIDTH - 2 * WINDOW_MARGIN - 2 * WINDOW_PADDING - 2 * WINDOW_BORDER) / 6
+SHOPPING_CART_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
+SHOPPING_CART_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
+SHOPPING_CART_ICON_HEIGHT = (WORLD_WIDTH - 2 * WINDOW_MARGIN - 2 * WINDOW_PADDING - 2 * WINDOW_BORDER) / 6
 
 
 CART_SIZE = 3
 
 
 class ShoppingCart(Window):
-    def __init__(self):
-        super().__init__(SHOP_HEIGHT, WindowLocation.MIDDLE, "SHOP")
-        hero = get_hero()
+    def __init__(self, player: Player):
+        super().__init__(SHOPPING_CART_HEIGHT, WindowLocation.MIDDLE, "SHOP")
+        self.player = player
         self.cursor = 0
 
         self.cart: list[ItemList] = []
         self.bag: list[ItemBox] = []
-        self.stats_coin = TextBox(f"{hero.inventory.coin}", align=TextBoxAlign.LEFT)
+        self.stats_coin = TextBox(f"{player.inventory.coin}", align=TextBoxAlign.LEFT)
         self.desc = TextBox("")
         self.action = "IDLE"
 
         cart_panel = TableLayout(CART_SIZE, 1)
         for _ in range(CART_SIZE):
-            item = Item(*ITEM_DATABASE[int(uniform(0, 3))])
+            item_key = choice(list(get_database().select_dict("items").keys()))
+            item = Item(*get_database().select_dict("items")[item_key])
             item_box = ItemList(item)
             cart_panel.add(item_box)
             self.cart.append(item_box)
 
-        bag_rows = int(math.sqrt(len(hero.inventory.bag)))
-        bag_cols = int(math.sqrt(len(hero.inventory.bag)))
+        bag_rows = int(math.sqrt(len(player.inventory.bag)))
+        bag_cols = int(math.sqrt(len(player.inventory.bag)))
         bag = TableLayout(bag_rows, bag_cols)
-        for item in hero.inventory.bag:
+        for item in player.inventory.bag:
             item_box = ItemBox(item)
             bag.add(item_box)
             self.bag.append(item_box)
@@ -73,43 +72,44 @@ class ShoppingCart(Window):
             .add(
                 (
                     TableLayout(3, 1)
-                    .add(TextBox("CART", align=TextBoxAlign.CENTER).set_fixed_height(SHOP_TEXT_HEIGHT))
+                    .add(TextBox("CART", align=TextBoxAlign.CENTER).set_fixed_height(SHOPPING_CART_TEXT_HEIGHT))
                     .add(cart_panel)
                     .add(
-                        TableLayout(1, 2).add(TextBox("COIN:")).add(self.stats_coin).set_fixed_height(SHOP_TEXT_HEIGHT)
+                        TableLayout(1, 2)
+                        .add(TextBox("COIN:"))
+                        .add(self.stats_coin)
+                        .set_fixed_height(SHOPPING_CART_TEXT_HEIGHT)
                     )
                 )
             )
             .add(
                 (
                     TableLayout(3, 1)
-                    .add(TextBox("BAG", align=TextBoxAlign.CENTER).set_fixed_height(SHOP_TEXT_HEIGHT))
-                    .add(bag.set_fixed_height(SHOP_ICON_HEIGHT * bag_rows))
+                    .add(TextBox("BAG", align=TextBoxAlign.CENTER).set_fixed_height(SHOPPING_CART_TEXT_HEIGHT))
+                    .add(bag.set_fixed_height(SHOPPING_CART_ICON_HEIGHT * bag_rows))
                     .add(Panel().add(self.desc))
                 )
             )
         ).pack()
 
     def play_sound_effect(self) -> None:
-        if self.action == "BUY" and not pr.is_sound_playing(load_sound("buy")):
-            pr.play_sound(load_sound("buy"))
-        if self.action == "SELL" and not pr.is_sound_playing(load_sound("sell")):
-            pr.play_sound(load_sound("sell"))
+        if self.action == "BUY":
+            play_sound("buy")
+        if self.action == "SELL":
+            play_sound("sell")
 
     def buy_item(self, slot: int):
-        hero = get_hero()
         cart_item = self.cart[slot].item
-        if cart_item and cart_item.cost <= hero.inventory.coin:
-            hero.inventory.append(cart_item)
-            hero.inventory.coin -= cart_item.cost
+        if cart_item and cart_item.cost <= self.player.inventory.coin:
+            self.player.inventory.append(cart_item)
+            self.player.inventory.coin -= cart_item.cost
             self.cart[slot].item = None  # TODO: Put a new random item?
 
     def sell_item(self, slot: int):
-        hero = get_hero()
         bag_item = self.bag[slot].item
         if bag_item:
-            hero.inventory.drop(slot)
-            hero.inventory.coin += bag_item.cost // 2
+            self.player.inventory.drop(slot)
+            self.player.inventory.coin += bag_item.cost // 2
 
     def handle_input(self):
         if is_action_pressed(INPUT_SHOP_NEXT):
@@ -126,17 +126,15 @@ class ShoppingCart(Window):
             self.action = "SELL"
 
     def update_items(self):
-        hero = get_hero()
         for i, item_box in enumerate(self.cart + self.bag):
             item_box.selected = self.cursor == i
             if i >= CART_SIZE:
-                item_box.item = hero.inventory.bag[i - CART_SIZE]
+                item_box.item = self.player.inventory.bag[i - CART_SIZE]
                 if item_box.selected:
                     self.desc.text = f"{item_box.item.name}\n{item_box.item.description}" if item_box.item else ""
 
     def update_stats(self):
-        hero = get_hero()
-        self.stats_coin.text = f"{hero.inventory.coin}"
+        self.stats_coin.text = f"{self.player.inventory.coin}"
 
     def update(self, dt: float):
         self.action = "IDLE"

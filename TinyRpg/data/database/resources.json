@@ -1,0 +1,36 @@
+{
+    "maps": {
+        "map-level1": "data/maps/levels/level1.tmx",
+        "map-level2": "data/maps/levels/level2.tmx"
+    },
+    "musics": {
+        "music-level1": "data/maps/musics/level1.wav",
+        "music-level2": "data/maps/musics/level1.wav"
+    },
+    "textures": {
+        "skin-skeleton": "data/textures/enemies/skeleton.png",
+        "skin-player": "data/textures/characters/player.png",
+        "skin-grace": "data/textures/characters/grace.png",
+        "portrait-player": "data/textures/portraits/player.png",
+        "portrait-grace": "data/textures/portraits/grace.png",
+        "object-sword": "data/textures/objects/sword.png",
+        "object-shield": "data/textures/objects/shield.png",
+        "object-gem": "data/textures/objects/gem.png",
+        "object-chest": "data/textures/objects/chest.png",
+        "object-potion": "data/textures/objects/potion.png",
+        "skin-gui": "data/textures/gui.png"
+    },
+    "sounds": {
+        "sound-step": "data/sounds/step.wav",
+        "sound-hit": "data/sounds/hit.wav",
+        "sound-hurt": "data/sounds/hurt.wav",
+        "sound-key": "data/sounds/key.wav",
+        "sound-pick": "data/sounds/pick.wav",
+        "sound-open": "data/sounds/open.wav",
+        "sound-equip": "data/sounds/pick.wav",
+        "sound-unequip": "data/sounds/pick.wav",
+        "sound-drop": "data/sounds/hurt.wav",
+        "sound-buy": "data/sounds/pick.wav",
+        "sound-sell": "data/sounds/pick.wav"
+    }
+}

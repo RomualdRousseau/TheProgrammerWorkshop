@@ -29,8 +29,8 @@ class MapTrigger:
 @dataclass
 class MapObject:
     pos: pr.Vector2
-    type: str
     name: str
+    type: str
 
 
 MapBoundingBox = tuple[pr.BoundingBox, MapTile]
@@ -93,19 +93,16 @@ class Map:
 
                         self.tiles.append(MapTileRenderer(tile, self._get_tilexy_dest(x, y), layer.id - 1))
                 case TiledObjectGroup():
-                    for object in layer:
-                        match object.properties["type"]:
+                    for obj in layer:
+                        print(obj)
+                        match obj.type:
                             case "start":
-                                self.start_location = self._get_xy_to_world_2d(object.x, object.y)
+                                self.start_location = self._get_xy_to_world_2d(obj.x, obj.y)
                             case "trigger":
-                                name = object.properties["name"]
-                                size = object.properties["size"]
-                                self.triggers.append(
-                                    MapTrigger(self._get_xy_to_world_2d(object.x, object.y), name, size)
-                                )
+                                size = obj.properties["size"]
+                                self.triggers.append(MapTrigger(self._get_xy_to_world_2d(obj.x, obj.y), obj.name, size))
                             case "enemy" | "npc" | "object" as type:
-                                name = object.properties["name"]
-                                self.objects.append(MapObject(self._get_xy_to_world_2d(object.x, object.y), type, name))
+                                self.objects.append(MapObject(self._get_xy_to_world_2d(obj.x, obj.y), obj.name, type))
 
     def get_world_boundary(self) -> pr.BoundingBox:
         x = (self.tiledmap.width * self.tiledmap.tilewidth) // 2

@@ -4,7 +4,7 @@ WINDOW_WIDTH = 1024  # px
 WINDOW_HEIGHT = 1024  # px
 FRAME_RATE = 60  # fps
 
-DEBUG_ENABLED = False
+DEBUG_ENABLED = True
 
 CAMERA_SPEED = 5  # px.s-1
 
