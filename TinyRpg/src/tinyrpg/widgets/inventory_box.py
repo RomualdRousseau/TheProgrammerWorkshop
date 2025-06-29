@@ -3,7 +3,6 @@ from enum import Enum, auto
 
 import pyray as pr
 
-from tinyrpg.characters.player import Player
 from tinyrpg.constants import (
     INPUT_INVENTORY_CLOSE,
     INPUT_INVENTORY_DROP,
@@ -20,6 +19,7 @@ from tinyrpg.engine import (
     WINDOW_BORDER,
     WINDOW_MARGIN,
     WINDOW_PADDING,
+    Character,
     ImageBox,
     ItemBox,
     Panel,
@@ -46,11 +46,14 @@ class InventoryBoxAction(Enum):
 
 
 class InventoryBox(Window):
-    def __init__(self, player: Player):
+    def __init__(self, player: Character):
+        assert player.inventory is not None, "Inventory must exist"
         super().__init__(INVENTORY_HEIGHT, WindowLocation.MIDDLE, "INVENTORY")
+
         self.player = player
         self.equipment_num = len(player.inventory.equipment)
         self.cursor = self.equipment_num
+        self.inventory = player.inventory
 
         self.bag: list[ItemBox] = []
         self.desc = TextBox("")
@@ -64,22 +67,22 @@ class InventoryBox(Window):
 
         stats = TableLayout(4, 2)
         stats.add(TextBox("HP:"))
-        self.stats_hp = TextBox(f"{player.health}/{player.stats.hp}", align=TextBoxAlign.RIGHT)
+        self.stats_hp = TextBox(f"{self.player.health}/{self.player.stats.hp}", align=TextBoxAlign.RIGHT)
         stats.add(self.stats_hp)
         stats.add(TextBox("DMG:"))
-        self.stats_damage = TextBox(f"{player.get_damage()}", align=TextBoxAlign.RIGHT)
+        self.stats_damage = TextBox(f"{self.player.get_damage()}", align=TextBoxAlign.RIGHT)
         stats.add(self.stats_damage)
         stats.add(TextBox("ARM:"))
-        self.stats_armor = TextBox(f"{player.get_armor()}", align=TextBoxAlign.RIGHT)
+        self.stats_armor = TextBox(f"{self.player.get_armor()}", align=TextBoxAlign.RIGHT)
         stats.add(self.stats_armor)
         stats.add(TextBox("COIN:"))
-        self.stats_coin = TextBox(f"{player.inventory.coin}", align=TextBoxAlign.RIGHT)
+        self.stats_coin = TextBox(f"{self.inventory.coin}", align=TextBoxAlign.RIGHT)
         stats.add(self.stats_coin)
 
-        bag_rows = int(math.sqrt(len(player.inventory.bag)))
-        bag_cols = int(math.sqrt(len(player.inventory.bag)))
+        bag_rows = int(math.sqrt(len(self.inventory.bag)))
+        bag_cols = int(math.sqrt(len(self.inventory.bag)))
         bag_panel = TableLayout(bag_rows, bag_cols)
-        for item in player.inventory.bag:
+        for item in self.inventory.bag:
             item_box = ItemBox(item)
             bag_panel.add(item_box)
             self.bag.append(item_box)
@@ -132,13 +135,13 @@ class InventoryBox(Window):
         if is_action_pressed(INPUT_INVENTORY_CLOSE):
             self.close()
         if is_action_pressed(INPUT_INVENTORY_EQUIP) and self.cursor >= self.equipment_num:
-            self.player.inventory.equip(self.cursor - 3)
+            self.inventory.equip(self.cursor - 3)
             self.action = InventoryBoxAction.EQUIPING
         if is_action_pressed(INPUT_INVENTORY_UNEQUIP) and self.cursor < self.equipment_num:
-            self.player.inventory.unequip(self.cursor)
+            self.inventory.unequip(self.cursor)
             self.action = InventoryBoxAction.UNEQUIPING
         if is_action_pressed(INPUT_INVENTORY_DROP) and self.cursor >= self.equipment_num:
-            self.player.inventory.drop(self.cursor - 3)
+            self.inventory.drop(self.cursor - 3)
             self.action = InventoryBoxAction.DROPPING
 
     def update_items(self):
@@ -148,15 +151,15 @@ class InventoryBox(Window):
                 self.desc.text = f"{item_box.item.name}\n{item_box.item.description}" if item_box.item else ""
 
             if i < self.equipment_num:
-                item_box.item = self.player.inventory.equipment[i]
+                item_box.item = self.inventory.equipment[i]
             else:
-                item_box.item = self.player.inventory.bag[i - self.equipment_num]
+                item_box.item = self.inventory.bag[i - self.equipment_num]
 
     def update_stats(self):
         self.stats_hp.text = f"{self.player.health}/{self.player.stats.hp}"
         self.stats_damage.text = f"{self.player.get_damage()}"
         self.stats_armor.text = f"{self.player.get_armor()}"
-        self.stats_coin.text = f"{self.player.inventory.coin}"
+        self.stats_coin.text = f"{self.inventory.coin}"
 
     def update(self, dt: float):
         self.handle_input()

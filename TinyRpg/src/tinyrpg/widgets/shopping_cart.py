@@ -1,7 +1,6 @@
 import math
 from random import choice
 
-from tinyrpg.characters.player import Player
 from tinyrpg.constants import (
     INPUT_SHOP_BUY,
     INPUT_SHOP_CLOSE,
@@ -17,7 +16,7 @@ from tinyrpg.engine import (
     WINDOW_BORDER,
     WINDOW_MARGIN,
     WINDOW_PADDING,
-    Item,
+    Character,
     ItemBox,
     ItemList,
     Panel,
@@ -27,9 +26,10 @@ from tinyrpg.engine import (
     Window,
     WindowLocation,
     get_database,
+    get_inventory_item,
     is_action_pressed,
+    play_sound,
 )
-from tinyrpg.engine.base.sound import play_sound
 
 SHOPPING_CART_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
 SHOPPING_CART_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
@@ -40,11 +40,13 @@ CART_SIZE = 3
 
 
 class ShoppingCart(Window):
-    def __init__(self, player: Player):
+    def __init__(self, player: Character):
+        assert player.inventory is not None, "Inventory must exist"
         super().__init__(SHOPPING_CART_HEIGHT, WindowLocation.MIDDLE, "SHOP")
+
         self.player = player
         self.cursor = 0
-
+        self.inventory = player.inventory
         self.cart: list[ItemList] = []
         self.bag: list[ItemBox] = []
         self.stats_coin = TextBox(f"{player.inventory.coin}", align=TextBoxAlign.LEFT)
@@ -54,15 +56,15 @@ class ShoppingCart(Window):
         cart_panel = TableLayout(CART_SIZE, 1)
         for _ in range(CART_SIZE):
             item_key = choice(list(get_database().select_dict("items").keys()))
-            item = Item(*get_database().select_dict("items")[item_key])
+            item = get_inventory_item(item_key)
             item_box = ItemList(item)
             cart_panel.add(item_box)
             self.cart.append(item_box)
 
-        bag_rows = int(math.sqrt(len(player.inventory.bag)))
-        bag_cols = int(math.sqrt(len(player.inventory.bag)))
+        bag_rows = int(math.sqrt(len(self.inventory.bag)))
+        bag_cols = int(math.sqrt(len(self.inventory.bag)))
         bag = TableLayout(bag_rows, bag_cols)
-        for item in player.inventory.bag:
+        for item in self.inventory.bag:
             item_box = ItemBox(item)
             bag.add(item_box)
             self.bag.append(item_box)
@@ -100,16 +102,16 @@ class ShoppingCart(Window):
 
     def buy_item(self, slot: int):
         cart_item = self.cart[slot].item
-        if cart_item and cart_item.cost <= self.player.inventory.coin:
-            self.player.inventory.append(cart_item)
-            self.player.inventory.coin -= cart_item.cost
+        if cart_item and cart_item.cost <= self.inventory.coin:
+            self.inventory.append(cart_item)
+            self.inventory.coin -= cart_item.cost
             self.cart[slot].item = None  # TODO: Put a new random item?
 
     def sell_item(self, slot: int):
         bag_item = self.bag[slot].item
         if bag_item:
-            self.player.inventory.drop(slot)
-            self.player.inventory.coin += bag_item.cost // 2
+            self.inventory.drop(slot)
+            self.inventory.coin += bag_item.cost // 2
 
     def handle_input(self):
         if is_action_pressed(INPUT_SHOP_NEXT):
@@ -129,12 +131,12 @@ class ShoppingCart(Window):
         for i, item_box in enumerate(self.cart + self.bag):
             item_box.selected = self.cursor == i
             if i >= CART_SIZE:
-                item_box.item = self.player.inventory.bag[i - CART_SIZE]
+                item_box.item = self.inventory.bag[i - CART_SIZE]
                 if item_box.selected:
                     self.desc.text = f"{item_box.item.name}\n{item_box.item.description}" if item_box.item else ""
 
     def update_stats(self):
-        self.stats_coin.text = f"{self.player.inventory.coin}"
+        self.stats_coin.text = f"{self.inventory.coin}"
 
     def update(self, dt: float):
         self.action = "IDLE"
