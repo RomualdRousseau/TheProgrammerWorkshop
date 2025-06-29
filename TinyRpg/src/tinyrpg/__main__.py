@@ -15,12 +15,9 @@ def main():
     scene.init()
 
     t: dict[str, dict[str, Scene]] = {
-        "intro": {"keypress": FadeInOut("transition1", intro, get_game("level1"))},
-        "transition1": {"complete": get_game("level1")},
-        "level1": {"gameover": FadeInOut("transition2", get_game("level1"), get_game("level2"))},
-        "transition2": {"complete": get_game("level2")},
-        "level2": {"gameover": FadeInOut("transition3", get_game("level2"), intro)},
-        "transition3": {"complete": intro},
+        "intro": {"keypress": FadeInOut("intro", get_game("level1"))},
+        "level1": {"gameover": FadeInOut("level1", get_game("level2"))},
+        "level2": {"gameover": FadeInOut("level2", intro)},
     }
 
     while not pr.window_should_close():

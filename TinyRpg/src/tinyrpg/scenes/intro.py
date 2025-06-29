@@ -1,7 +1,11 @@
+from typing import Optional
+
 import pyray as pr
 
+from tinyrpg.engine import Scene
 
-def init():
+
+def init(previous_scene: Optional[Scene] = None):
     pass
 
 
