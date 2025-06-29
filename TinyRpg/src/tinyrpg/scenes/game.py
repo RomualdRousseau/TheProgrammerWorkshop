@@ -1,6 +1,7 @@
 import math
 from functools import cache
 from itertools import combinations
+from typing import Optional
 
 import pyray as pr
 
@@ -13,6 +14,7 @@ from tinyrpg.engine import (
     FollowCamera,
     Object,
     Particle,
+    Scene,
     VerticalEffect,
     Widget,
     begin_mode_sorted_2d,
@@ -33,7 +35,7 @@ class Game:
         self.level_name = level_name
         self.initialized = False
 
-    def init(self):
+    def init(self, previous_scene: Optional[Scene] = None):
         if self.initialized:
             return
 
