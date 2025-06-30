@@ -1,7 +1,10 @@
+from typing import Optional
+
 import pyray as pr
 
-from tinyrpg import rules
-from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterStats
+from tinyrpg.characters import rules
+from tinyrpg.characters.player import Player
+from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterStats, Quest
 
 NPC_ANIMATIONS = lambda: {
     "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
@@ -21,5 +24,9 @@ NPC_STATS = lambda: CharacterStats(
 
 
 class Npc(Character):
-    def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> None:
+    def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox, quests: list[Quest]) -> None:
         super().__init__(name, name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary, rules)
+        self.quests = quests
+
+    def get_next_quest(self, player: Player) -> Optional[Quest]:
+        return next((q for q in self.quests if q.is_assignable(player) and not q.is_completed()), None)

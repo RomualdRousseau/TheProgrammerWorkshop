@@ -16,6 +16,7 @@ from tinyrpg.engine.base.renderer import BoundingBoxRenderer, renderer
 from tinyrpg.engine.base.resources import load_texture
 from tinyrpg.engine.base.sound import play_sound
 from tinyrpg.engine.base.sprite import AnimatedSprite
+from tinyrpg.engine.game.inventory import Item
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
 
 OBJECT_SIZE = pr.Vector2(16, 16)  # pixels
@@ -47,8 +48,10 @@ class Object(AnimatedSprite):
         id: str,
         pos: pr.Vector2,
         animations: dict[str, Animation],
+        content: Optional[Item] = None,
     ):
         super().__init__(id, pos, load_texture(f"object-{id}"), animations)
+        self.item = content
         self.actions = ObjectAction.IDLING
         self.events: list[ObjectEvent] = []
 

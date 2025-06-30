@@ -18,18 +18,18 @@
             "selectedLayer": 2,
             "viewCenter": {
                 "x": 183.87616099071207,
-                "y": 151.9091847265222
+                "y": 183.61197110423115
             }
         },
         "levels/level2.tmx": {
             "expandedObjectLayers": [
                 3
             ],
-            "scale": 2.3712890625,
+            "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 167.41948768635206,
-                "y": 253.8703566427807
+                "x": 167.5,
+                "y": 248.5
             }
         },
         "tilesets/Basic_Furniture.tsx": {
@@ -94,7 +94,7 @@
     "openFiles": [
     ],
     "project": "tinyrpg.tiled-project",
-    "property.type": "int",
+    "property.type": "object",
     "recentFiles": [
         "levels/level2.tmx",
         "levels/level1.tmx",

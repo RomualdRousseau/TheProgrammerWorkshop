@@ -1,8 +1,8 @@
 import pyray as pr
 
 from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
-from tinyrpg.engine import Scene, change_scene
-from tinyrpg.scenes import FadeInOut, get_game, intro
+from tinyrpg.engine import FadeInOut, Scene, change_scene
+from tinyrpg.scenes import Game, intro, menu
 
 
 def main():
@@ -11,14 +11,15 @@ def main():
     pr.init_audio_device()
     pr.set_exit_key(pr.KeyboardKey.KEY_END)
 
+    transition_table: dict[str, dict[str, Scene]] = {
+        "intro": {"keypress": FadeInOut("menu", menu)},
+        "menu": {"keypress": FadeInOut("level1", Game("level1"))},
+        "level1": {"goto_level": FadeInOut("level1", Game("level2"))},
+        "level2": {"goto_level": FadeInOut("level2", Game("level1"))},
+    }
+
     scene: Scene = intro
     scene.init()
-
-    t: dict[str, dict[str, Scene]] = {
-        "intro": {"keypress": FadeInOut("intro", get_game("level1"))},
-        "level1": {"gameover": FadeInOut("level1", get_game("level2"))},
-        "level2": {"gameover": FadeInOut("level2", intro)},
-    }
 
     while not pr.window_should_close():
         scene.update(pr.get_frame_time())
@@ -27,7 +28,7 @@ def main():
         scene.draw()
         pr.end_drawing()
 
-        scene = change_scene(scene, t)
+        scene = change_scene(scene, transition_table)
 
     scene.release()
 

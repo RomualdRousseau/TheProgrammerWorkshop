@@ -18,11 +18,11 @@ def update(dt: float):
 
 
 def draw():
-    pr.clear_background(pr.BLUE)
+    pr.clear_background(pr.RED)
 
 
 def get_state_and_input() -> tuple[str, str]:
     if pr.is_key_pressed(pr.KeyboardKey.KEY_X):
-        return ("intro", "keypress")
+        return ("menu", "keypress")
     else:
-        return ("intro", "self")
+        return ("menu", "self")

@@ -2,7 +2,7 @@ from typing import Optional
 
 import pyray as pr
 
-from tinyrpg.engine import Scene
+from tinyrpg.engine.game.scene import Scene
 
 
 class FadeInOut:

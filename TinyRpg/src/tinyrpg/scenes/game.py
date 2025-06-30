@@ -24,9 +24,9 @@ from tinyrpg.engine import (
     load_music,
     unload_resources,
 )
-from tinyrpg.objects import Chest
+from tinyrpg.objects import OBJECTS
 from tinyrpg.particles import PickUp, Toast
-from tinyrpg.quests.grace_quest import GraceQuest
+from tinyrpg.quests import QUESTS
 from tinyrpg.widgets import InventoryBox
 
 
@@ -52,11 +52,13 @@ class Game:
         for obj in self.map_data.objects:
             match obj.type:
                 case "npc":
-                    self.characters.append(Npc(obj.name, obj.pos, self.map_data.get_world_boundary()))
+                    quests = [QUESTS[q] for q in obj.quests]
+                    self.characters.append(Npc(obj.name, obj.pos, self.map_data.get_world_boundary(), quests))
                 case "enemy":
                     self.characters.append(Enemy(obj.name, obj.pos, self.map_data.get_world_boundary()))
                 case "object":
-                    self.objects.append(Chest(obj.pos))
+                    item = get_inventory_item(obj.item) if obj.item else None
+                    self.objects.append(OBJECTS[obj.name](obj.pos, item))
 
         self.initialized = True
 
@@ -119,18 +121,17 @@ class Game:
                         self.player.start_talk()
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
                         character.start_talk()
-                        if len(self.player.quests) == 0:
-                            self.player.quests.append(GraceQuest())
-                        for quest in self.player.quests:
+                        quest = character.get_next_quest(self.player)
+                        if quest:
+                            self.player.assign_quest(quest)
                             quest.process_next_state(self)
 
         for obj in self.objects:
             for event in obj.events:
-                match (obj.id, event.name):
-                    case ("chest", "collide"):
-                        if not obj.is_open():
-                            gem = get_inventory_item("Grace_Gem")
-                            self.particles.append(PickUp(self.player.pos, pr.Vector2(0, -1), gem, self.player))
+                match event.name:
+                    case "collide":
+                        if not obj.is_open() and obj.item:
+                            self.particles.append(PickUp(self.player.pos, pr.Vector2(0, -1), obj.item, self.player))
                             obj.open()
 
     def garbage_collect(self) -> None:
@@ -196,7 +197,7 @@ class Game:
 
     def get_state_and_input(self) -> tuple[str, str]:
         if pr.is_key_pressed(pr.KeyboardKey.KEY_Q):
-            return (self.level_name, "gameover")
+            return (self.level_name, "goto_level")
         else:
             return (self.level_name, "self")
 

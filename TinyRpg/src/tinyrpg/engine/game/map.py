@@ -31,6 +31,8 @@ class MapObject:
     pos: pr.Vector2
     name: str
     type: str
+    item: Optional[str]
+    quests: list[str]
 
 
 MapBoundingBox = tuple[pr.BoundingBox, MapTile]
@@ -94,7 +96,6 @@ class Map:
                         self.tiles.append(MapTileRenderer(tile, self._get_tilexy_dest(x, y), layer.id - 1))
                 case TiledObjectGroup():
                     for obj in layer:
-                        print(obj)
                         match obj.type:
                             case "start":
                                 self.start_location = self._get_xy_to_world_2d(obj.x, obj.y)
@@ -102,7 +103,18 @@ class Map:
                                 size = obj.properties["size"]
                                 self.triggers.append(MapTrigger(self._get_xy_to_world_2d(obj.x, obj.y), obj.name, size))
                             case "enemy" | "npc" | "object" as type:
-                                self.objects.append(MapObject(self._get_xy_to_world_2d(obj.x, obj.y), obj.name, type))
+                                x, y = obj.x + obj.width / 2, obj.y + obj.height / 2
+                                content = obj.properties.get("content")
+                                quests = obj.properties.get("quests")
+                                self.objects.append(
+                                    MapObject(
+                                        self._get_xy_to_world_2d(x, y),
+                                        obj.name,
+                                        type,
+                                        content,
+                                        quests.split(",") if quests else [],
+                                    )
+                                )
 
     def get_world_boundary(self) -> pr.BoundingBox:
         x = (self.tiledmap.width * self.tiledmap.tilewidth) // 2

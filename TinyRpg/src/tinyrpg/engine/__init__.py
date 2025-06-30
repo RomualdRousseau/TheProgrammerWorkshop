@@ -23,6 +23,7 @@ from tinyrpg.engine.game.character import CHARACTER_SIZE as CHARACTER_SIZE
 from tinyrpg.engine.game.character import Character as Character
 from tinyrpg.engine.game.character import CharacterAction as CharacterAction
 from tinyrpg.engine.game.character import CharacterStats as CharacterStats
+from tinyrpg.engine.game.fade_in_out import FadeInOut as FadeInOut
 from tinyrpg.engine.game.inventory import EquipmentType as EquipmentType
 from tinyrpg.engine.game.inventory import Item as Item
 from tinyrpg.engine.game.inventory import get_inventory_item as get_inventory_item
