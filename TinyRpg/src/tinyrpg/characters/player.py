@@ -45,7 +45,7 @@ class Player(Character):
         self.quests: list[Quest] = []
 
     def handle_ai(self) -> None:
-        assert self.inventory is not None, "Inventory is None"
+        assert self.inventory is not None, "Inventory must exist"
         super().handle_ai()
         if is_action_down("UP"):
             self.dir.y = -1
