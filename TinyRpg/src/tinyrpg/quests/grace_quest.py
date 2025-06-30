@@ -4,7 +4,7 @@ import pyray as pr
 
 from tinyrpg.engine import Character, DialogEffect, Particle, VerticalEffect, Widget, get_database, get_inventory_item
 from tinyrpg.particles import PickUp
-from tinyrpg.widgets import MessageBox, ShoppingCart
+from tinyrpg.widgets import MessageBox
 
 
 class Game(Protocol):
@@ -19,21 +19,24 @@ class GraceQuest:
         self.quest_description = "Help Grace find her lost gem."
         self.quest_state = 0
 
+    def is_assignable(self, character: Character) -> bool:
+        return True
+
     def is_completed(self) -> bool:
         return self.quest_state == 3
 
     def provide_equipment(self, game: Game):
-        self.quest_state = 1
         sword = get_inventory_item("Sword")
         game.particles.append(PickUp(game.player.pos, pr.Vector2(0.25, -1), sword, game.player))
         shield = get_inventory_item("Shield")
         game.particles.append(PickUp(game.player.pos, pr.Vector2(-0.25, -1), shield, game.player))
+        self.quest_state = 1
 
     def provide_reward(self, game: Game):
         assert game.player.inventory is not None, "Inventory must exist"
-        self.quest_state = 3
         game.player.inventory.drop(game.player.inventory.index(get_inventory_item("Grace_Gem")))
         game.particles.append(PickUp(game.player.pos, pr.Vector2(0, -1), get_inventory_item("Potion"), game.player))
+        self.quest_state = 3
 
     def process_next_state(self, game: Game):
         assert game.player.inventory is not None, "Inventory must exist"
@@ -64,8 +67,4 @@ class GraceQuest:
                             lambda: self.provide_reward(game)
                         )
                     )
-                    should_return = True
-
-                case 3:
-                    game.widgets.append(VerticalEffect(ShoppingCart(game.player)))
                     should_return = True

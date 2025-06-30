@@ -1,6 +1,6 @@
 import pyray as pr
 
-from tinyrpg import rules
+from tinyrpg.characters import rules
 from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterAction, CharacterStats
 from tinyrpg.engine.game.character import CHARACTER_NO_RESET_MASK
 

@@ -1,6 +1,6 @@
 import pyray as pr
 
-from tinyrpg import rules
+from tinyrpg.characters import rules
 from tinyrpg.constants import INPUT_ATTACK
 from tinyrpg.engine import (
     CHARACTER_NO_RESET_MASK,
@@ -66,3 +66,7 @@ class Player(Character):
         if is_action_down(INPUT_ATTACK) and self.inventory.is_equiped_with(EquipmentType.WEAPON):
             self.speed = 0
             self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.ATTACKING
+
+    def assign_quest(self, quest: Quest):
+        if quest not in self.quests:
+            self.quests.append(quest)

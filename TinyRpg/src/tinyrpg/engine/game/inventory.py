@@ -39,7 +39,7 @@ class Inventory:
         return self.equipment[slot]
 
     def index(self, item: Item) -> int:
-        return self.bag.index(item)
+        return item in self.bag
 
     def append(self, item_to_append: Item) -> int:
         free_slot = -1

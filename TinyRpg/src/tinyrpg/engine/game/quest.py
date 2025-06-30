@@ -1,7 +1,11 @@
 from typing import Protocol
 
+from tinyrpg.engine.game.character import Character
+
 
 class Quest(Protocol):
+    def is_assignable(self, character: Character) -> bool: ...
+
     def is_completed(self) -> bool: ...
 
     def process_next_state(self, game): ...
