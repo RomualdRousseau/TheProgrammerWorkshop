@@ -50,10 +50,10 @@ def test_resize_bbox(setup_data):
 
 
 def test_adjust_bbox(setup_data):
-    adjust = pr.BoundingBox(pr.Vector3(1, 1, 0), pr.Vector3(2, 2, 0))
+    adjust = pr.BoundingBox((1, 1, 0), (2, 2, 0))
     adjusted_bbox = bbox.adjust_bbox(setup_data["bbox"], adjust)
     assert pr.vector3_equals(adjusted_bbox.min, pr.Vector3(1, 1, -1))
-    assert pr.vector3_equals(adjusted_bbox.max, pr.Vector3(11, 11, -1))
+    assert pr.vector3_equals(adjusted_bbox.max, pr.Vector3(11, 11, 1))
 
 
 def test_check_collision_bbox_point(setup_data):

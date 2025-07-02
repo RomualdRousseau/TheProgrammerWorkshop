@@ -37,7 +37,7 @@ def test_find_point(quad_tree):
 
 
 def test_find_ray(quad_tree):
-    ray = pr.Ray(pr.Vector3(0, 0, 0), pr.Vector3(1, 1, 0))
+    ray = pr.Ray((0, 0, 0), (1, 1, 0))
     point = pr.Vector2(0.5, 0.5)
     quad_tree.append(point, 1.0)
     entities = quad_tree.find_ray(ray)
@@ -45,7 +45,7 @@ def test_find_ray(quad_tree):
 
 
 def test_find_bbox(quad_tree):
-    bbox = pr.BoundingBox(pr.Vector3(0, 0, 0), pr.Vector3(1, 1, 0))
+    bbox = pr.BoundingBox((0, 0, 0), (1, 1, 0))
     point = pr.Vector2(0.5, 0.5)
     quad_tree.append(point, 1.0)
     entities = quad_tree.find_bbox(bbox)

@@ -1,6 +1,6 @@
 import pyray as pr
 
-from tinyrpg.characters import rules
+from tinyrpg.characters.rules import Rules
 from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterAction, CharacterStats
 from tinyrpg.engine.game.character import CHARACTER_NO_RESET_MASK
 
@@ -28,7 +28,7 @@ ENEMY_STATS = lambda: CharacterStats(
 
 class Enemy(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox):
-        super().__init__(name, name, pos, ENEMY_STATS(), ENEMY_ANIMATIONS(), boundary, rules)
+        super().__init__(name, name, pos, ENEMY_STATS(), ENEMY_ANIMATIONS(), boundary, Rules())
 
     def handle_ai(self):
         super().handle_ai()

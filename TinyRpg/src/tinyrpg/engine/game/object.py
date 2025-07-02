@@ -20,7 +20,7 @@ from tinyrpg.engine.game.inventory import Item
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
 
 OBJECT_SIZE = pr.Vector2(16, 16)  # pixels
-OBJECT_BBOX_ADJUST = pr.BoundingBox((0, 0), (0, 0))  # pixels
+OBJECT_BBOX_ADJUST = pr.BoundingBox((0, 0, 0), (0, 0, 0))  # pixels
 
 
 @dataclass

@@ -2,8 +2,8 @@ from typing import Optional
 
 import pyray as pr
 
-from tinyrpg.characters import rules
 from tinyrpg.characters.player import Player
+from tinyrpg.characters.rules import Rules
 from tinyrpg.engine import CHARACTER_SIZE, Animation, AnimationFlag, Character, CharacterStats, Quest
 
 NPC_ANIMATIONS = lambda: {
@@ -25,7 +25,7 @@ NPC_STATS = lambda: CharacterStats(
 
 class Npc(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox, quests: list[Quest]) -> None:
-        super().__init__(name, name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary, rules)
+        super().__init__(name, name, pos, NPC_STATS(), NPC_ANIMATIONS(), boundary, Rules())
         self.quests = quests
 
     def get_next_quest(self, player: Player) -> Optional[Quest]:
