@@ -34,7 +34,7 @@ def resize_bbox(bbox: pr.BoundingBox, v: pr.Vector2) -> pr.BoundingBox:
 
 def adjust_bbox(bbox: pr.BoundingBox, adjust: pr.BoundingBox) -> pr.BoundingBox:
     min = pr.Vector3(bbox.min.x + adjust.min.x, bbox.min.y + adjust.min.y, -1)
-    max = pr.Vector3(bbox.max.x + adjust.max.x, bbox.max.y + adjust.max.y, -1)
+    max = pr.Vector3(bbox.max.x + adjust.max.x, bbox.max.y + adjust.max.y, 1)
     return pr.BoundingBox(min, max)
 
 

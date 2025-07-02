@@ -1,9 +1,12 @@
+import io
+import os
 from dataclasses import dataclass
 from enum import Enum
 from functools import cache
 from typing import Optional
 
 from tinyrpg.engine.base.database import get_database
+from tinyrpg.engine.utils.pickle import DBPickler, DBUnpickler
 
 
 class EquipmentType(Enum):
@@ -70,10 +73,23 @@ class Inventory:
             self.append(item_to_unequip)
         return item_to_unequip
 
+    def save(self, character_name: str):
+        file_data = io.BytesIO()
+        DBPickler(file_data).dump(self)
+        with open(f"saved/inventory_{character_name}.pkl", "wb") as fp:
+            fp.write(file_data.getvalue())
+
 
 @cache
-def get_player_inventory() -> Inventory:
-    return Inventory()
+def get_player_inventory(player_name: str) -> Inventory:
+    path = f"saved/inventory_{player_name}.pkl"
+    if not os.path.exists(path):
+        inventory = Inventory()
+    else:
+        with open(path, "rb") as fp:
+            file_data = io.BytesIO(fp.read())
+        inventory = DBUnpickler(file_data).load()
+    return inventory
 
 
 @cache

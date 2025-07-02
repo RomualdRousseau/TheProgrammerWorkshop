@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import math
 from dataclasses import dataclass
 from enum import Flag, auto
@@ -21,11 +22,12 @@ from tinyrpg.engine.base.sound import play_sound
 from tinyrpg.engine.base.sprite import AnimatedSprite
 from tinyrpg.engine.game.inventory import Inventory
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
+from tinyrpg.engine.utils.pickle import DBPickler
 from tinyrpg.engine.utils.timer import Timer
 
 CHARACTER_SIZE = pr.Vector2(32, 32)  # pixels
-CHARACTER_BOUNDARY_ADJUST = pr.BoundingBox((8, 0), (-8, -8))  # pixels
-CHARACTER_BBOX_ADJUST = pr.BoundingBox((12, 20), (-12, -8))  # pixels
+CHARACTER_BOUNDARY_ADJUST = pr.BoundingBox((8, 0, 0), (-8, -8, 0))  # pixels
+CHARACTER_BBOX_ADJUST = pr.BoundingBox((12, 20, 0), (-12, -8, 0))  # pixels
 CHARACTER_DEPTH_RATIO = 0.8  # %
 
 
@@ -278,3 +280,12 @@ class Character(AnimatedSprite):
 
         if DEBUG_ENABLED:
             pr.draw_bounding_box(self.get_bbox(), pr.GREEN)
+
+    def save(self, level_name: str):
+        file_data = io.BytesIO()
+        DBPickler(file_data).dump(self)
+        with open(f"saved/{level_name}_{self.name}.pkl", "wb") as fp:
+            fp.write(file_data.getvalue())
+
+        if self.inventory:
+            self.inventory.save(self.name)

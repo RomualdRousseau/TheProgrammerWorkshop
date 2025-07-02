@@ -1,6 +1,9 @@
+import io
+import os
+
 import pyray as pr
 
-from tinyrpg.characters import rules
+from tinyrpg.characters.rules import Rules
 from tinyrpg.constants import INPUT_ATTACK
 from tinyrpg.engine import (
     CHARACTER_NO_RESET_MASK,
@@ -11,10 +14,11 @@ from tinyrpg.engine import (
     CharacterAction,
     CharacterStats,
     EquipmentType,
-    Quest,
     get_player_inventory,
     is_action_down,
+    load_texture,
 )
+from tinyrpg.engine.utils.pickle import DBUnpickler
 
 HERO_ANIMATIONS = lambda: {
     "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
@@ -40,9 +44,8 @@ HERO_STATS = lambda: CharacterStats(
 
 class Player(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox):
-        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, rules)
-        self.inventory = get_player_inventory()
-        self.quests: list[Quest] = []
+        super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, Rules())
+        self.inventory = get_player_inventory(self.name)
 
     def handle_ai(self) -> None:
         assert self.inventory is not None, "Inventory must exist"
@@ -67,6 +70,15 @@ class Player(Character):
             self.speed = 0
             self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.ATTACKING
 
-    def assign_quest(self, quest: Quest):
-        if quest not in self.quests:
-            self.quests.append(quest)
+
+def get_player(level_name: str, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> Player:
+    path = f"saved/{level_name}_{name}.pkl"
+    if not os.path.exists(path):
+        player = Player(name, pos, boundary)
+    else:
+        with open(path, "rb") as fp:
+            file_data = io.BytesIO(fp.read())
+        player = DBUnpickler(file_data).load()
+        player.texture = load_texture(f"skin-{player.id}")
+        player.inventory = get_player_inventory(player.name)
+    return player

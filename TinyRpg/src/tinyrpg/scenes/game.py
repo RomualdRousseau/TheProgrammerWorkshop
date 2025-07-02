@@ -1,12 +1,10 @@
 import math
-from functools import cache
 from itertools import combinations
 from typing import Optional
 
 import pyray as pr
 
-from tinyrpg.characters import Enemy, Npc
-from tinyrpg.characters.player import Player
+from tinyrpg.characters import Enemy, Npc, Player, get_player
 from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY, INPUT_TAKE_SCREENSHOT
 from tinyrpg.engine import (
     Character,
@@ -41,7 +39,9 @@ class Game:
 
         self.map_data = load_map(f"map-{self.level_name}")
         self.music = load_music(f"music-{self.level_name}")
-        self.player = Player("Romuald", self.map_data.start_location, self.map_data.get_world_boundary())
+        self.player = get_player(
+            self.level_name, "Romuald", self.map_data.start_location, self.map_data.get_world_boundary()
+        )
         self.fixed_camera = FixedCamera()
         self.follow_camera = FollowCamera(self.map_data.get_world_boundary())
         self.characters: list[Character] = [self.player]
@@ -123,7 +123,6 @@ class Game:
                         character.start_talk()
                         quest = character.get_next_quest(self.player)
                         if quest:
-                            self.player.assign_quest(quest)
                             quest.process_next_state(self)
 
         for obj in self.objects:
@@ -195,13 +194,12 @@ class Game:
         if DEBUG_ENABLED:
             pr.draw_fps(10, 10)
 
+    def save(self):
+        self.player.save(self.level_name)
+
     def get_state_and_input(self) -> tuple[str, str]:
         if pr.is_key_pressed(pr.KeyboardKey.KEY_Q):
+            self.save()
             return (self.level_name, "goto_level")
         else:
             return (self.level_name, "self")
-
-
-@cache
-def get_game(level_name: str):
-    return Game(level_name)
