@@ -11,14 +11,23 @@ def main():
     pr.init_audio_device()
     pr.set_exit_key(pr.KeyboardKey.KEY_END)
 
-    transition_table: dict[str, dict[str, Scene]] = {
-        "intro": {"keypress": FadeInOut("menu", menu)},
-        "menu": {"keypress": FadeInOut("level1", Game("level1"))},
-        "level1": {"goto_level": FadeInOut("level1", Game("level2"))},
-        "level2": {"goto_level": FadeInOut("level2", Game("level1"))},
+    initial_state = intro
+
+    states = {
+        "intro": intro,
+        "menu": FadeInOut("menu", menu),
+        "level1": FadeInOut("level1", Game("level1")),
+        "level2": FadeInOut("level2", Game("level2")),
     }
 
-    scene: Scene = intro
+    transition_table = {
+        "intro": {"keypress": states["menu"]},
+        "menu": {"keypress": states["level1"]},
+        "level1": {"goto_level": states["level2"]},
+        "level2": {"goto_level": states["level1"]},
+    }
+
+    scene: Scene = initial_state
     scene.init()
 
     while not pr.window_should_close():

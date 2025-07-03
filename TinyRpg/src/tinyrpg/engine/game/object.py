@@ -101,3 +101,6 @@ class Object(AnimatedSprite):
 
         if DEBUG_ENABLED:
             BoundingBoxRenderer(self.get_bbox()).draw()
+
+    def reload_resources(self):
+        self.texture = load_texture(f"object-{self.id}")

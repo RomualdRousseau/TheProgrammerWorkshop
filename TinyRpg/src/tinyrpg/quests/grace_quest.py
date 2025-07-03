@@ -32,10 +32,17 @@ class GraceQuest:
         game.particles.append(PickUp(game.player.pos, pr.Vector2(-0.25, -1), shield, game.player))
         self.quest_state = 1
 
+    def give_gem(self, game: Game):
+        assert game.player.inventory is not None, "Inventory must exist"
+        gem = get_inventory_item("Grace_Gem")
+        game.player.inventory.remove(gem)
+        # game.particles.append(PickUp(game.player.pos, pr.Vector2(0, -1), gem, game.player))
+        self.quest_state = 2
+
     def provide_reward(self, game: Game):
         assert game.player.inventory is not None, "Inventory must exist"
-        game.player.inventory.drop(game.player.inventory.index(get_inventory_item("Grace_Gem")))
-        game.particles.append(PickUp(game.player.pos, pr.Vector2(0, -1), get_inventory_item("Potion"), game.player))
+        potion = get_inventory_item("Potion")
+        game.particles.append(PickUp(game.player.pos, pr.Vector2(0, -1), potion, game.player))
         self.quest_state = 3
 
     def process_next_state(self, game: Game):
@@ -53,8 +60,8 @@ class GraceQuest:
                     should_return = True
 
                 case 1:
-                    if game.player.inventory.index(get_inventory_item("Grace_Gem")) >= 0:
-                        self.quest_state = 2
+                    if game.player.inventory.contains(get_inventory_item("Grace_Gem")):
+                        self.give_gem(game)
                     else:
                         messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["2"]
                         game.widgets.append(VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])))

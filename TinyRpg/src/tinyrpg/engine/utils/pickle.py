@@ -3,7 +3,10 @@ import pickle
 import pyray as pr
 
 
-class DBPickler(pickle.Pickler):
+class PRPickler(pickle.Pickler):
+    def __init__(self, file):
+        super().__init__(file)
+
     def persistent_id(self, obj):
         match obj:
             case pr.ffi.CData():
@@ -24,7 +27,7 @@ class DBPickler(pickle.Pickler):
                 return None
 
 
-class DBUnpickler(pickle.Unpickler):
+class PRUnpickler(pickle.Unpickler):
     def __init__(self, file):
         super().__init__(file)
 

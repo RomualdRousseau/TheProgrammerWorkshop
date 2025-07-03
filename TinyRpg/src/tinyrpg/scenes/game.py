@@ -4,7 +4,7 @@ from typing import Optional
 
 import pyray as pr
 
-from tinyrpg.characters import Enemy, Npc, Player, get_player
+from tinyrpg.characters import Enemy, Npc, Player
 from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY, INPUT_TAKE_SCREENSHOT
 from tinyrpg.engine import (
     Character,
@@ -32,6 +32,7 @@ class Game:
     def __init__(self, level_name: str):
         self.level_name = level_name
         self.initialized = False
+        self.first_use = True
 
     def init(self, previous_scene: Optional[Scene] = None):
         if self.initialized:
@@ -39,27 +40,31 @@ class Game:
 
         self.map_data = load_map(f"map-{self.level_name}")
         self.music = load_music(f"music-{self.level_name}")
-        self.player = get_player(
-            self.level_name, "Romuald", self.map_data.start_location, self.map_data.get_world_boundary()
-        )
         self.fixed_camera = FixedCamera()
         self.follow_camera = FollowCamera(self.map_data.get_world_boundary())
-        self.characters: list[Character] = [self.player]
-        self.objects: list[Object] = []
         self.particles: list[Particle] = []
         self.widgets: list[Widget] = []
 
-        for obj in self.map_data.objects:
-            match obj.type:
-                case "npc":
-                    quests = [QUESTS[q] for q in obj.quests]
-                    self.characters.append(Npc(obj.name, obj.pos, self.map_data.get_world_boundary(), quests))
-                case "enemy":
-                    self.characters.append(Enemy(obj.name, obj.pos, self.map_data.get_world_boundary()))
-                case "object":
-                    item = get_inventory_item(obj.item) if obj.item else None
-                    self.objects.append(OBJECTS[obj.name](obj.pos, item))
+        if self.first_use:
+            self.player = Player("Romuald", self.map_data.start_location, self.map_data.get_world_boundary())
+            self.characters: list[Character] = [self.player]
+            self.objects: list[Object] = []
 
+            for obj in self.map_data.objects:
+                match obj.type:
+                    case "npc":
+                        quests = [QUESTS[q] for q in obj.quests]
+                        self.characters.append(Npc(obj.name, obj.pos, self.map_data.get_world_boundary(), quests))
+                    case "enemy":
+                        self.characters.append(Enemy(obj.name, obj.pos, self.map_data.get_world_boundary()))
+                    case "object":
+                        item = get_inventory_item(obj.item) if obj.item else None
+                        self.objects.append(OBJECTS[obj.name](obj.pos, item))
+        else:
+            for entity in self.characters + self.objects:
+                entity.reload_resources()
+
+        self.first_use = False
         self.initialized = True
 
     def release(self):
@@ -144,6 +149,10 @@ class Game:
         if is_action_pressed(INPUT_TAKE_SCREENSHOT):
             pr.take_screenshot("screenshot.png")
 
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_P):
+            p = get_inventory_item("Grace_Gem")
+            self.particles.append(PickUp(self.player.pos, pr.Vector2(0, -1), p, self.player))
+
         if self.widgets:
             self.update_widgets(dt)
         else:
@@ -194,12 +203,8 @@ class Game:
         if DEBUG_ENABLED:
             pr.draw_fps(10, 10)
 
-    def save(self):
-        self.player.save(self.level_name)
-
     def get_state_and_input(self) -> tuple[str, str]:
         if pr.is_key_pressed(pr.KeyboardKey.KEY_Q):
-            self.save()
             return (self.level_name, "goto_level")
         else:
             return (self.level_name, "self")
