@@ -1,12 +1,9 @@
-import io
-import os
 from dataclasses import dataclass
 from enum import Enum
 from functools import cache
 from typing import Optional
 
 from tinyrpg.engine.base.database import get_database
-from tinyrpg.engine.utils.pickle import DBPickler, DBUnpickler
 
 
 class EquipmentType(Enum):
@@ -41,8 +38,11 @@ class Inventory:
         slot = type.value
         return self.equipment[slot]
 
-    def index(self, item: Item) -> int:
+    def contains(self, item: Item) -> bool:
         return item in self.bag
+
+    def index(self, item: Item) -> int:
+        return self.bag.index(item)
 
     def append(self, item_to_append: Item) -> int:
         free_slot = -1
@@ -53,6 +53,9 @@ class Inventory:
         if free_slot >= 0:
             self.bag[free_slot] = item_to_append
         return free_slot
+
+    def remove(self, item_to_remove: Item):
+        self.bag.remove(item_to_remove)
 
     def drop(self, slot: int) -> Optional[Item]:
         item_to_drop = self.bag[slot]
@@ -73,23 +76,10 @@ class Inventory:
             self.append(item_to_unequip)
         return item_to_unequip
 
-    def save(self, character_name: str):
-        file_data = io.BytesIO()
-        DBPickler(file_data).dump(self)
-        with open(f"saved/inventory_{character_name}.pkl", "wb") as fp:
-            fp.write(file_data.getvalue())
-
 
 @cache
-def get_player_inventory(player_name: str) -> Inventory:
-    path = f"saved/inventory_{player_name}.pkl"
-    if not os.path.exists(path):
-        inventory = Inventory()
-    else:
-        with open(path, "rb") as fp:
-            file_data = io.BytesIO(fp.read())
-        inventory = DBUnpickler(file_data).load()
-    return inventory
+def get_player_inventory() -> Inventory:
+    return Inventory()
 
 
 @cache

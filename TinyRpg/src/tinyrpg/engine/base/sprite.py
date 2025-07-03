@@ -40,6 +40,9 @@ class Sprite(Entity):
             pr.WHITE,
         )
 
+    # def reload_resources(self):
+    #     pass
+
 
 class AnimatedSprite(Sprite):
     def __init__(

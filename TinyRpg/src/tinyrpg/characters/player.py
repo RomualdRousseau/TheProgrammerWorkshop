@@ -1,6 +1,3 @@
-import io
-import os
-
 import pyray as pr
 
 from tinyrpg.characters.rules import Rules
@@ -16,9 +13,7 @@ from tinyrpg.engine import (
     EquipmentType,
     get_player_inventory,
     is_action_down,
-    load_texture,
 )
-from tinyrpg.engine.utils.pickle import DBUnpickler
 
 HERO_ANIMATIONS = lambda: {
     "Idle": Animation(pr.Vector2(0, 0), CHARACTER_SIZE, 6, 3),
@@ -45,7 +40,7 @@ HERO_STATS = lambda: CharacterStats(
 class Player(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox):
         super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, Rules())
-        self.inventory = get_player_inventory(self.name)
+        self.inventory = get_player_inventory()
 
     def handle_ai(self) -> None:
         assert self.inventory is not None, "Inventory must exist"
@@ -69,16 +64,3 @@ class Player(Character):
         if is_action_down(INPUT_ATTACK) and self.inventory.is_equiped_with(EquipmentType.WEAPON):
             self.speed = 0
             self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.ATTACKING
-
-
-def get_player(level_name: str, name: str, pos: pr.Vector2, boundary: pr.BoundingBox) -> Player:
-    path = f"saved/{level_name}_{name}.pkl"
-    if not os.path.exists(path):
-        player = Player(name, pos, boundary)
-    else:
-        with open(path, "rb") as fp:
-            file_data = io.BytesIO(fp.read())
-        player = DBUnpickler(file_data).load()
-        player.texture = load_texture(f"skin-{player.id}")
-        player.inventory = get_player_inventory(player.name)
-    return player

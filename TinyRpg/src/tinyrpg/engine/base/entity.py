@@ -9,7 +9,7 @@ import pyray as pr
 from tinyrpg.constants import ENTITY_DENSITY_DEFAULT, ENTITY_MASS_DEFAULT, EPSILON, MAX_AVOID_FORCE
 from tinyrpg.engine.utils.bbox import get_bbox_center, get_bbox_from_rect
 
-GRAVITY_FORCE = pr.Vector2(0, -9.81)
+GRAVITY_FORCE = pr.Vector2(0, 200)
 
 
 class Entity:
@@ -30,18 +30,20 @@ class Entity:
 
     def move_constant(self, speed: pr.Vector2, dt: float):
         mu = self.mass / (dt + EPSILON)
-        friction = pr.vector2_add(pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu))
-        self.force = pr.vector2_add(self.force, pr.vector2_add(speed, friction))
+        friction_force = pr.vector2_add(pr.vector2_scale(speed, mu - 1), pr.vector2_scale(self.vel, -mu))
+        self.force = pr.vector2_add(self.force, pr.vector2_add(speed, friction_force))
 
     def random_force(self, max_force: float, min_angle: float, max_angle: float):
         angle = uniform(min_angle, max_angle)
-        self.force = pr.Vector2(max_force * math.cos(angle), -max_force * math.sin(angle))
+        some_force = pr.Vector2(max_force * math.cos(angle), -max_force * math.sin(angle))
+        self.force = pr.vector2_add(self.force, some_force)
 
     def clamp_force(self, min_force: float, max_force: float):
         self.force = pr.vector2_clamp_value(self.force, min_force, max_force)
 
     def gravity(self):
-        self.force = pr.vector2_add(self.force, GRAVITY_FORCE)
+        gravity_force = pr.vector2_scale(GRAVITY_FORCE, self.mass)
+        self.force = pr.vector2_add(self.force, gravity_force)
 
     def seek(self, target: pr.Vector2, max_force: float, slowing_radius: float):
         desired_dir = pr.vector2_subtract(target, self.pos)
