@@ -2,11 +2,11 @@ import math
 from random import choice
 
 from tinyrpg.constants import (
-    INPUT_SHOP_BUY,
-    INPUT_SHOP_CLOSE,
-    INPUT_SHOP_NEXT,
-    INPUT_SHOP_PREVIOUS,
-    INPUT_SHOP_SELL,
+    INPUT_SHOPPING_CART_BUY,
+    INPUT_SHOPPING_CART_CLOSE,
+    INPUT_SHOPPING_CART_NEXT,
+    INPUT_SHOPPING_CART_PREVIOUS,
+    INPUT_SHOPPING_CART_SELL,
     WORLD_HEIGHT,
     WORLD_WIDTH,
 )
@@ -42,7 +42,7 @@ CART_SIZE = 3
 class ShoppingCart(Window):
     def __init__(self, player: Character):
         assert player.inventory is not None, "Inventory must exist"
-        super().__init__(SHOPPING_CART_HEIGHT, WindowLocation.MIDDLE, "SHOP")
+        super().__init__(WORLD_WIDTH, SHOPPING_CART_HEIGHT, WindowLocation.MIDDLE, "SHOP")
 
         self.player = player
         self.cursor = 0
@@ -114,16 +114,16 @@ class ShoppingCart(Window):
             self.inventory.coin += bag_item.cost // 2
 
     def handle_input(self):
-        if is_action_pressed(INPUT_SHOP_NEXT):
+        if is_action_pressed(INPUT_SHOPPING_CART_NEXT):
             self.cursor = min(self.cursor + 1, len(self.cart) + len(self.bag) - 1)
-        if is_action_pressed(INPUT_SHOP_PREVIOUS):
+        if is_action_pressed(INPUT_SHOPPING_CART_PREVIOUS):
             self.cursor = max(self.cursor - 1, 0)
-        if is_action_pressed(INPUT_SHOP_CLOSE):
+        if is_action_pressed(INPUT_SHOPPING_CART_CLOSE):
             self.close()
-        if is_action_pressed(INPUT_SHOP_BUY) and self.cursor < CART_SIZE:
+        if is_action_pressed(INPUT_SHOPPING_CART_BUY) and self.cursor < CART_SIZE:
             self.buy_item(self.cursor)
             self.action = "BUY"
-        if is_action_pressed(INPUT_SHOP_SELL) and self.cursor >= CART_SIZE:
+        if is_action_pressed(INPUT_SHOPPING_CART_SELL) and self.cursor >= CART_SIZE:
             self.sell_item(self.cursor - CART_SIZE)
             self.action = "SELL"
 

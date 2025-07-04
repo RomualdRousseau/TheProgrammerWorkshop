@@ -35,12 +35,14 @@ from tinyrpg.engine.game.object import Object as Object
 from tinyrpg.engine.game.quest import Quest as Quest
 from tinyrpg.engine.game.scene import Saveable as Saveable
 from tinyrpg.engine.game.scene import Scene as Scene
+from tinyrpg.engine.game.scene import SceneEvent as SceneEvent
 from tinyrpg.engine.game.scene import change_scene as change_scene
 from tinyrpg.engine.gui.component import COMPONENT_PADDING as COMPONENT_PADDING
 from tinyrpg.engine.gui.component import Component as Component
 from tinyrpg.engine.gui.image_box import ImageBox as ImageBox
 from tinyrpg.engine.gui.item_box import ItemBox as ItemBox
 from tinyrpg.engine.gui.item_list import ItemList as ItemList
+from tinyrpg.engine.gui.item_text import ItemText as ItemText
 from tinyrpg.engine.gui.panel import Panel as Panel
 from tinyrpg.engine.gui.table_layout import TableLayout as TableLayout
 from tinyrpg.engine.gui.text_box import TEXTBOX_FONT_SIZE_DEFAULT as TEXTBOX_FONT_SIZE_DEFAULT

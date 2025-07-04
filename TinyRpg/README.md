@@ -14,4 +14,9 @@
   - [x] Fight System
 - Inventory / Equipment
   - [x] Inventory / Equipment
-  - [ ] Revise navigation
+  - [x] Revise navigation
+- Other
+  - [x] Scene events including scene change/save/load
+  - [ ] Animated particle
+  - [ ] Locked object
+  - [ ] Do a proper intro and menu

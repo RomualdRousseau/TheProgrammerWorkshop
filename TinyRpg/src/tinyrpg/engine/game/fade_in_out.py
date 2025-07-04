@@ -2,13 +2,16 @@ from typing import Any, Optional
 
 import pyray as pr
 
-from tinyrpg.engine.game.scene import Scene
+from tinyrpg.engine.game.scene import Scene, SceneEvent
 
 
 class FadeInOut:
     def __init__(self, state: str, next_scene: Scene):
         self.state = state
         self.next_scene = next_scene
+
+    def next_event(self) -> Optional[SceneEvent]:
+        return self.next_scene.next_event()
 
     def init(self, previous_scene: Optional[Scene] = None):
         if previous_scene:
@@ -37,11 +40,11 @@ class FadeInOut:
         if self.texture and self.time <= 1.0:
             pr.draw_texture(self.texture, 0, 0, pr.color_alpha(pr.WHITE, 1.0 - min(self.time, 1.0)))
 
-    def get_state_and_input(self) -> tuple[str, str]:
-        if self.time > 1.0:
-            return self.next_scene.get_state_and_input()
-        else:
-            return (self.state, "self")
+    # def get_state_and_input(self) -> tuple[str, str]:
+    #     if self.time > 1.0:
+    #         return self.next_scene.get_state_and_input()
+    #     else:
+    #         return (self.state, "self")
 
     def save_state(self) -> dict[str, Any]:
         return self.next_scene.save_state()

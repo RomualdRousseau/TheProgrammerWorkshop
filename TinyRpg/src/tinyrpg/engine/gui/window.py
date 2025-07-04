@@ -31,20 +31,22 @@ class TitlePosition(Enum):
 class Window(Widget):
     def __init__(
         self,
+        width: int,
         height: int,
         location: WindowLocation,
         title: Optional[str] = None,
         title_position: TitlePosition = TitlePosition.CENTER,
     ):
-        pos = pr.Vector2(WINDOW_MARGIN, 0)
-        size = pr.Vector2(WORLD_WIDTH - 2 * WINDOW_MARGIN, min(height, WORLD_HEIGHT - 2 * WINDOW_MARGIN))
+        pos = pr.Vector2(0, 0)
+        size = pr.Vector2(min(width, WORLD_WIDTH - 2 * WINDOW_MARGIN), min(height, WORLD_HEIGHT - 2 * WINDOW_MARGIN))
+        pos.x = (WORLD_WIDTH - size.x) // 2
         match location:
             case WindowLocation.TOP:
                 pos.y = WINDOW_MARGIN
             case WindowLocation.MIDDLE:
-                pos.y = (WORLD_HEIGHT - height) // 2
+                pos.y = (WORLD_HEIGHT - size.y) // 2
             case WindowLocation.BOTTOM:
-                pos.y = WORLD_HEIGHT - WINDOW_MARGIN - height
+                pos.y = WORLD_HEIGHT - WINDOW_MARGIN - size.y
 
         super().__init__(pos, size)
         self.title = title

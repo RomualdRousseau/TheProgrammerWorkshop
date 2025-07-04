@@ -13,6 +13,7 @@ from tinyrpg.engine import (
     Object,
     Particle,
     Scene,
+    SceneEvent,
     VerticalEffect,
     Widget,
     begin_mode_sorted_2d,
@@ -33,6 +34,10 @@ class Game:
         self.level_name = level_name
         self.initialized = False
         self.first_use = True
+        self.events: list[SceneEvent] = []
+
+    def next_event(self) -> Optional[SceneEvent]:
+        return self.events.pop(0) if len(self.events) > 0 else None
 
     def init(self, previous_scene: Optional[Scene] = None):
         if self.initialized:
@@ -146,9 +151,15 @@ class Game:
     def update(self, dt: float):
         assert self.initialized, "Game not initialized"
 
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_F10):
+            self.events.append(SceneEvent("change_scene", (self.level_name, "goto_level")))
+
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_F11):
+            self.events.append(SceneEvent("save", ()))
+
         if pr.is_key_pressed(pr.KeyboardKey.KEY_P):
             p = get_inventory_item("Grace_Gem")
-            self.particles.append(PickUp(self.player.pos, pr.Vector2(0, -1), p, self.player))
+            self.particles.append(PickUp(self.player.pos, pr.Vector2(1, -1), p, self.player))
 
         if self.widgets:
             self.update_widgets(dt)
@@ -199,12 +210,6 @@ class Game:
 
         if DEBUG_ENABLED:
             pr.draw_fps(10, 10)
-
-    def get_state_and_input(self) -> tuple[str, str]:
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_Q):
-            return (self.level_name, "goto_level")
-        else:
-            return (self.level_name, "self")
 
     def save_state(self) -> dict[str, Any]:
         state = {}

@@ -9,7 +9,7 @@ import pyray as pr
 from tinyrpg.constants import ENTITY_DENSITY_DEFAULT, ENTITY_MASS_DEFAULT, EPSILON, MAX_AVOID_FORCE
 from tinyrpg.engine.utils.bbox import get_bbox_center, get_bbox_from_rect
 
-GRAVITY_FORCE = pr.Vector2(0, 200)
+GRAVITY_FORCE = pr.Vector2(0, 150)
 
 
 class Entity:
