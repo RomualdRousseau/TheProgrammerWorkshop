@@ -2,7 +2,23 @@ import pyray as pr
 
 from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from tinyrpg.engine import FadeInOut, Scene, change_scene
-from tinyrpg.scenes import Game, intro, menu
+from tinyrpg.scenes import Game, intro, load_state, menu, save_state
+
+INITIAL_STATE: Scene = intro
+
+STATES: dict[str, Scene] = {
+    "intro": intro,
+    "menu": FadeInOut("menu", menu),
+    "level1": FadeInOut("level1", Game("level1")),
+    "level2": FadeInOut("level2", Game("level2")),
+}
+
+TRANSITION_TABLE: dict[str, dict[str, Scene]] = {
+    "intro": {"keypress": STATES["menu"]},
+    "menu": {"keypress": STATES["level1"]},
+    "level1": {"goto_level": STATES["level2"]},
+    "level2": {"goto_level": STATES["level1"]},
+}
 
 
 def main():
@@ -11,33 +27,22 @@ def main():
     pr.init_audio_device()
     pr.set_exit_key(pr.KeyboardKey.KEY_END)
 
-    initial_state = intro
-
-    states = {
-        "intro": intro,
-        "menu": FadeInOut("menu", menu),
-        "level1": FadeInOut("level1", Game("level1")),
-        "level2": FadeInOut("level2", Game("level2")),
-    }
-
-    transition_table = {
-        "intro": {"keypress": states["menu"]},
-        "menu": {"keypress": states["level1"]},
-        "level1": {"goto_level": states["level2"]},
-        "level2": {"goto_level": states["level1"]},
-    }
-
-    scene: Scene = initial_state
+    scene: Scene = INITIAL_STATE
     scene.init()
 
+    load_state("saved/state.pkl", STATES)
+
     while not pr.window_should_close():
+        if pr.is_key_pressed(pr.KeyboardKey.KEY_F11):
+            save_state("saved/state.pkl", STATES)
+
         scene.update(pr.get_frame_time())
 
         pr.begin_drawing()
         scene.draw()
         pr.end_drawing()
 
-        scene = change_scene(scene, transition_table)
+        scene = change_scene(scene, TRANSITION_TABLE)
 
     scene.release()
 

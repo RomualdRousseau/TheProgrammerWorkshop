@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
 from functools import cache
-from typing import Optional
+from typing import Any, Optional
 
 from tinyrpg.engine.base.database import get_database
 
@@ -42,7 +44,7 @@ class Inventory:
         return item in self.bag
 
     def index(self, item: Item) -> int:
-        return self.bag.index(item)
+        return next((i for i, x in enumerate(self.bag) if x == item), -1)
 
     def append(self, item_to_append: Item) -> int:
         free_slot = -1
@@ -55,7 +57,7 @@ class Inventory:
         return free_slot
 
     def remove(self, item_to_remove: Item):
-        self.bag.remove(item_to_remove)
+        self.drop(self.index(item_to_remove))
 
     def drop(self, slot: int) -> Optional[Item]:
         item_to_drop = self.bag[slot]
@@ -75,6 +77,18 @@ class Inventory:
             self.equipment[slot] = None
             self.append(item_to_unequip)
         return item_to_unequip
+
+    def save_state(self) -> dict[str, Any]:
+        state = {}
+        state["equipment"] = self.equipment
+        state["bag"] = self.bag
+        state["coin"] = self.coin
+        return state
+
+    def restore_state(self, state: dict[str, Any]):
+        self.equipment = state["equipment"]
+        self.bag = state["bag"]
+        self.coin = state["coin"]
 
 
 @cache

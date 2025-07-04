@@ -1,11 +1,11 @@
 import math
 from itertools import combinations
-from typing import Optional
+from typing import Any, Optional
 
 import pyray as pr
 
 from tinyrpg.characters import Enemy, Npc, Player
-from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY, INPUT_TAKE_SCREENSHOT
+from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY
 from tinyrpg.engine import (
     Character,
     FixedCamera,
@@ -146,9 +146,6 @@ class Game:
     def update(self, dt: float):
         assert self.initialized, "Game not initialized"
 
-        if is_action_pressed(INPUT_TAKE_SCREENSHOT):
-            pr.take_screenshot("screenshot.png")
-
         if pr.is_key_pressed(pr.KeyboardKey.KEY_P):
             p = get_inventory_item("Grace_Gem")
             self.particles.append(PickUp(self.player.pos, pr.Vector2(0, -1), p, self.player))
@@ -208,3 +205,19 @@ class Game:
             return (self.level_name, "goto_level")
         else:
             return (self.level_name, "self")
+
+    def save_state(self) -> dict[str, Any]:
+        state = {}
+        state["first_use"] = self.first_use
+        if not self.first_use:
+            state["player"] = self.player
+            state["characters"] = self.characters[1:]
+            state["objects"] = self.objects
+        return state
+
+    def restore_state(self, state: dict[str, Any]):
+        self.first_use = state["first_use"]
+        if not self.first_use:
+            self.player = state["player"]
+            self.characters = [self.player] + state["characters"]
+            self.objects = state["objects"]

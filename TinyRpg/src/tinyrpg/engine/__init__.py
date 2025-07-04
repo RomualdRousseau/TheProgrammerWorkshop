@@ -33,6 +33,7 @@ from tinyrpg.engine.game.map import MapTile as MapTile
 from tinyrpg.engine.game.object import OBJECT_SIZE as OBJECT_SIZE
 from tinyrpg.engine.game.object import Object as Object
 from tinyrpg.engine.game.quest import Quest as Quest
+from tinyrpg.engine.game.scene import Saveable as Saveable
 from tinyrpg.engine.game.scene import Scene as Scene
 from tinyrpg.engine.game.scene import change_scene as change_scene
 from tinyrpg.engine.gui.component import COMPONENT_PADDING as COMPONENT_PADDING
@@ -58,4 +59,6 @@ from tinyrpg.engine.utils.bbox import get_bbox_center as get_bbox_center
 from tinyrpg.engine.utils.bbox import get_bbox_center_2d as get_bbox_center_2d
 from tinyrpg.engine.utils.bbox import get_bbox_from_rect as get_bbox_from_rect
 from tinyrpg.engine.utils.bbox import resize_bbox as resize_bbox
+from tinyrpg.engine.utils.pickle import PRPickler as PRPickler
+from tinyrpg.engine.utils.pickle import PRUnpickler as PRUnpickler
 from tinyrpg.engine.utils.quad_tree import QuadTreeBuilder as QuadTreeBuilder
