@@ -2,7 +2,13 @@ from typing import Any, Optional
 
 import pyray as pr
 
-from tinyrpg.engine import Scene
+from tinyrpg.engine import Scene, SceneEvent, unload_resources
+
+events: list[SceneEvent] = []
+
+
+def next_event() -> Optional[SceneEvent]:
+    return events.pop(0) if len(events) > 0 else None
 
 
 def init(previous_scene: Optional[Scene] = None):
@@ -10,22 +16,16 @@ def init(previous_scene: Optional[Scene] = None):
 
 
 def release():
-    pass
+    unload_resources()
 
 
 def update(dt: float):
-    pass
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_X):
+        events.append(SceneEvent("change_scene", ("intro", "keypress")))
 
 
 def draw():
     pr.clear_background(pr.BLUE)
-
-
-def get_state_and_input() -> tuple[str, str]:
-    if pr.is_key_pressed(pr.KeyboardKey.KEY_X):
-        return ("intro", "keypress")
-    else:
-        return ("intro", "self")
 
 
 def save_state() -> dict[str, Any]:

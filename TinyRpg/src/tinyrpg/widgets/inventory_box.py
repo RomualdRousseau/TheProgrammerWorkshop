@@ -48,7 +48,7 @@ class InventoryBoxAction(Enum):
 class InventoryBox(Window):
     def __init__(self, player: Character):
         assert player.inventory is not None, "Inventory must exist"
-        super().__init__(INVENTORY_HEIGHT, WindowLocation.MIDDLE, "INVENTORY")
+        super().__init__(WORLD_WIDTH, INVENTORY_HEIGHT, WindowLocation.MIDDLE, "INVENTORY")
 
         self.player = player
         self.equipment_num = len(player.inventory.equipment)

@@ -1,7 +1,7 @@
 import pyray as pr
 
 from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
-from tinyrpg.engine import FadeInOut, Scene, change_scene
+from tinyrpg.engine import FadeInOut, Scene, SceneEvent, change_scene
 from tinyrpg.scenes import Game, intro, load_state, menu, save_state
 
 INITIAL_STATE: Scene = intro
@@ -30,19 +30,25 @@ def main():
     scene: Scene = INITIAL_STATE
     scene.init()
 
-    load_state("saved/state.pkl", STATES)
+    request_close = False
 
-    while not pr.window_should_close():
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_F11):
-            save_state("saved/state.pkl", STATES)
-
+    while not pr.window_should_close() and not request_close:
         scene.update(pr.get_frame_time())
 
         pr.begin_drawing()
         scene.draw()
         pr.end_drawing()
 
-        scene = change_scene(scene, TRANSITION_TABLE)
+        while (event := scene.next_event()) is not None:
+            match event:
+                case SceneEvent("change_scene", (state, input)):
+                    scene = change_scene(scene, state, input, TRANSITION_TABLE)
+                case SceneEvent("save", ()):
+                    save_state("saved/state.pkl", STATES)
+                case SceneEvent("load", ()):
+                    load_state("saved/state.pkl", STATES)
+                case SceneEvent("quit", ()):
+                    request_close = True
 
     scene.release()
 

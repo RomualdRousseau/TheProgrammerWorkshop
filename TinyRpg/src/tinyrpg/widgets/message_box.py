@@ -1,6 +1,6 @@
 import pyray as pr
 
-from tinyrpg.constants import INPUT_MESSAGE_NEXT, WORLD_HEIGHT
+from tinyrpg.constants import INPUT_MESSAGE_NEXT, WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine import (
     ImageBox,
     TableLayout,
@@ -24,7 +24,7 @@ MESSAGE_LINE_COUNT = 4
 
 class MessageBox(Window):
     def __init__(self, name: str, text: str):
-        super().__init__(MESSAGE_HEIGHT, WindowLocation.BOTTOM, name.upper(), TitlePosition.LEFT)
+        super().__init__(WORLD_WIDTH, MESSAGE_HEIGHT, WindowLocation.BOTTOM, name.upper(), TitlePosition.LEFT)
         self.text = [s for s in text.split("\n") if len(s) > 0]
         self.text_box = TextBox("")
         self.cursor = 0
