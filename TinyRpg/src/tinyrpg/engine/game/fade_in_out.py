@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 import pyray as pr
 
@@ -42,3 +42,9 @@ class FadeInOut:
             return self.next_scene.get_state_and_input()
         else:
             return (self.state, "self")
+
+    def save_state(self) -> dict[str, Any]:
+        return self.next_scene.save_state()
+
+    def restore_state(self, state: dict[str, Any]):
+        self.next_scene.restore_state(state)

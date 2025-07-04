@@ -64,3 +64,7 @@ class Player(Character):
         if is_action_down(INPUT_ATTACK) and self.inventory.is_equiped_with(EquipmentType.WEAPON):
             self.speed = 0
             self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.ATTACKING
+
+    def reload_resources(self):
+        super().reload_resources()
+        self.inventory = get_player_inventory()

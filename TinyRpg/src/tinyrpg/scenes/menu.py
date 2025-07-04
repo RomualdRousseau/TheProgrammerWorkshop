@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 import pyray as pr
 
@@ -26,3 +26,11 @@ def get_state_and_input() -> tuple[str, str]:
         return ("menu", "keypress")
     else:
         return ("menu", "self")
+
+
+def save_state() -> dict[str, Any]:
+    return {}
+
+
+def restore_state(state: dict[str, Any]):
+    pass

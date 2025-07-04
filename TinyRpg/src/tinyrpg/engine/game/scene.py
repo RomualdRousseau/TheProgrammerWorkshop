@@ -1,6 +1,12 @@
 from __future__ import annotations
 
-from typing import Optional, Protocol
+from typing import Any, Optional, Protocol
+
+
+class Saveable(Protocol):
+    def save_state(self) -> dict[str, Any]: ...
+
+    def restore_state(self, state: dict[str, Any]): ...
 
 
 class Scene(Protocol):
@@ -13,6 +19,10 @@ class Scene(Protocol):
     def draw(self): ...
 
     def get_state_and_input(self) -> tuple[str, str]: ...
+
+    def save_state(self) -> dict[str, Any]: ...
+
+    def restore_state(self, state: dict[str, Any]): ...
 
 
 def change_scene(scene: Scene, state_transition: dict[str, dict[str, Scene]]) -> Scene:
