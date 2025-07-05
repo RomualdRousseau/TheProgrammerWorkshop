@@ -8,6 +8,7 @@ from tinyrpg.characters import Enemy, Npc, Player
 from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY
 from tinyrpg.engine import (
     Character,
+    FadeInOut,
     FixedCamera,
     FollowCamera,
     Object,
@@ -21,6 +22,7 @@ from tinyrpg.engine import (
     is_action_pressed,
     load_map,
     load_music,
+    push_scene,
     unload_resources,
 )
 from tinyrpg.objects import OBJECTS
@@ -152,14 +154,11 @@ class Game:
         assert self.initialized, "Game not initialized"
 
         if pr.is_key_pressed(pr.KeyboardKey.KEY_F10):
-            self.events.append(SceneEvent("change_scene", (self.level_name, "goto_level")))
+            self.events.append(SceneEvent("change", (self.level_name, "goto_level")))
 
         if pr.is_key_pressed(pr.KeyboardKey.KEY_F11):
-            self.events.append(SceneEvent("save", ()))
-
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_P):
-            p = get_inventory_item("Grace_Gem")
-            self.particles.append(PickUp(self.player.pos, pr.Vector2(1, -1), p, self.player))
+            push_scene(FadeInOut("level1", self))
+            self.events.append(SceneEvent("change", (self.level_name, "goto_menu")))
 
         if self.widgets:
             self.update_widgets(dt)
@@ -210,6 +209,11 @@ class Game:
 
         if DEBUG_ENABLED:
             pr.draw_fps(10, 10)
+
+    def reset_state(self):
+        self.initialized = False
+        self.first_use = True
+        self.events: list[SceneEvent] = []
 
     def save_state(self) -> dict[str, Any]:
         state = {}

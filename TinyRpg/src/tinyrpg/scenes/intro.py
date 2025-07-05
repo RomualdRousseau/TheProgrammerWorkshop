@@ -21,11 +21,15 @@ def release():
 
 def update(dt: float):
     if pr.is_key_pressed(pr.KeyboardKey.KEY_X):
-        events.append(SceneEvent("change_scene", ("intro", "keypress")))
+        events.append(SceneEvent("change", ("intro", "keypress")))
 
 
 def draw():
     pr.clear_background(pr.BLUE)
+
+
+def reset_state():
+    pass
 
 
 def save_state() -> dict[str, Any]:

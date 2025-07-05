@@ -4,8 +4,8 @@ from tinyrpg.engine.base.resources import load_texture
 from tinyrpg.engine.gui.component import Component
 from tinyrpg.engine.gui.text_box import TEXTBOX_COLOR_DEFAULT, TEXTBOX_FONT_SIZE_DEFAULT, TextBoxAlign
 
-ITEMLIST_BORDER = 2  # px
-ITEMLIST_BORDER_SEL = 7  # px
+ITEMTEXT_BORDER = 2  # px
+ITEMTEXT_BORDER_SEL = 7  # px
 
 
 class ItemText(Component):
@@ -25,18 +25,18 @@ class ItemText(Component):
         self.texture = load_texture("skin-gui")
         self.textureNPatch = pr.NPatchInfo(
             pr.Rectangle(0, 32, 32, 32),
-            ITEMLIST_BORDER,
-            ITEMLIST_BORDER,
-            ITEMLIST_BORDER,
-            ITEMLIST_BORDER,
+            ITEMTEXT_BORDER,
+            ITEMTEXT_BORDER,
+            ITEMTEXT_BORDER,
+            ITEMTEXT_BORDER,
             pr.NPatchLayout.NPATCH_NINE_PATCH,
         )
         self.textureNPatchSel = pr.NPatchInfo(
             pr.Rectangle(32, 32, 32, 32),
-            ITEMLIST_BORDER_SEL,
-            ITEMLIST_BORDER_SEL,
-            ITEMLIST_BORDER_SEL,
-            ITEMLIST_BORDER_SEL,
+            ITEMTEXT_BORDER_SEL,
+            ITEMTEXT_BORDER_SEL,
+            ITEMTEXT_BORDER_SEL,
+            ITEMTEXT_BORDER_SEL,
             pr.NPatchLayout.NPATCH_NINE_PATCH,
         )
 

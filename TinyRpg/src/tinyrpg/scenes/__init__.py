@@ -3,9 +3,15 @@ import os
 
 from tinyrpg.engine import PRPickler, PRUnpickler, Scene, get_player_inventory
 from tinyrpg.scenes.game import Game as Game
+from tinyrpg.scenes.menu import Menu as Menu
 
 
-def save_state(file_path: str, states: dict[str, Scene]):
+def reset_states(states: dict[str, Scene]):
+    for scene in states.values():
+        scene.reset_state()
+
+
+def save_states(file_path: str, states: dict[str, Scene]):
     game_state = {}
 
     inventory = get_player_inventory()
@@ -20,7 +26,7 @@ def save_state(file_path: str, states: dict[str, Scene]):
         fp.write(file_data.getvalue())
 
 
-def load_state(file_path: str, states: dict[str, Scene]):
+def load_states(file_path: str, states: dict[str, Scene]):
     if not os.path.exists(file_path):
         return
 

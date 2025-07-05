@@ -37,6 +37,8 @@ from tinyrpg.engine.game.scene import Saveable as Saveable
 from tinyrpg.engine.game.scene import Scene as Scene
 from tinyrpg.engine.game.scene import SceneEvent as SceneEvent
 from tinyrpg.engine.game.scene import change_scene as change_scene
+from tinyrpg.engine.game.scene import pop_scene as pop_scene
+from tinyrpg.engine.game.scene import push_scene as push_scene
 from tinyrpg.engine.gui.component import COMPONENT_PADDING as COMPONENT_PADDING
 from tinyrpg.engine.gui.component import Component as Component
 from tinyrpg.engine.gui.image_box import ImageBox as ImageBox

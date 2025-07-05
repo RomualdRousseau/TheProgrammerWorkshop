@@ -40,11 +40,8 @@ class FadeInOut:
         if self.texture and self.time <= 1.0:
             pr.draw_texture(self.texture, 0, 0, pr.color_alpha(pr.WHITE, 1.0 - min(self.time, 1.0)))
 
-    # def get_state_and_input(self) -> tuple[str, str]:
-    #     if self.time > 1.0:
-    #         return self.next_scene.get_state_and_input()
-    #     else:
-    #         return (self.state, "self")
+    def reset_state(self):
+        self.next_scene.reset_state()
 
     def save_state(self) -> dict[str, Any]:
         return self.next_scene.save_state()
