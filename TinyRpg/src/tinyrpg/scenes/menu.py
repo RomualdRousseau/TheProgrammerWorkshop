@@ -2,50 +2,56 @@ from typing import Any, Optional
 
 import pyray as pr
 
-from tinyrpg.constants import INPUT_MENU_BOX_SELECT
-from tinyrpg.engine import FixedCamera, Scene, SceneEvent, is_action_pressed, unload_resources
+from tinyrpg.engine import FixedCamera, Scene, SceneEvent, unload_resources
 from tinyrpg.widgets import MenuBox
-
-events: list[SceneEvent] = []
-
-
-def next_event() -> Optional[SceneEvent]:
-    return events.pop(0) if len(events) > 0 else None
+from tinyrpg.widgets.menu_box import MenuItem
 
 
-def init(previous_scene: Optional[Scene] = None):
-    global menu_box, fixed_camera
-    menu_box = MenuBox()
-    fixed_camera = FixedCamera()
+class Menu:
+    def __init__(self):
+        self.first_use = True
+        self.events: list[SceneEvent] = []
 
+    def next_event(self) -> Optional[SceneEvent]:
+        return self.events.pop(0) if len(self.events) > 0 else None
 
-def release():
-    unload_resources()
+    def init(self, previous_scene: Optional[Scene] = None):
+        self.menu_box = MenuBox(self)
+        self.fixed_camera = FixedCamera()
+        self.first_use = False
 
+    def release(self):
+        unload_resources()
 
-def update(dt: float):
-    if is_action_pressed(INPUT_MENU_BOX_SELECT):
-        match menu_box.cursor:
-            case 0:
-                events.append(SceneEvent("load", ()))
-                events.append(SceneEvent("change_scene", ("menu", "keypress")))
-            case 1:
-                events.append(SceneEvent("change_scene", ("menu", "keypress")))
-            case 2:
-                events.append(SceneEvent("quit", ()))
-    menu_box.update(dt)
+    def update(self, dt: float):
+        self.menu_box.update(dt)
 
+        match self.menu_box.selected_item:
+            case MenuItem.LOAD:
+                self.events.append(SceneEvent("load", ()))
+                self.events.append(SceneEvent("change", ("menu", "keypress")))
+            case MenuItem.CONTINUE:
+                self.events.append(SceneEvent("pop", ()))
+            case MenuItem.SAVE:
+                self.events.append(SceneEvent("save", ()))
+                self.events.append(SceneEvent("pop", ()))
+            case MenuItem.NEW:
+                self.events.append(SceneEvent("reset", ()))
+                self.events.append(SceneEvent("change", ("menu", "keypress")))
+            case MenuItem.QUIT:
+                self.events.append(SceneEvent("quit", ()))
 
-def draw():
-    pr.clear_background(pr.RED)
-    pr.begin_mode_2d(fixed_camera.camera)
-    menu_box.draw()
-    pr.end_mode_2d()
+    def draw(self):
+        pr.clear_background(pr.RED)
+        pr.begin_mode_2d(self.fixed_camera.camera)
+        self.menu_box.draw()
+        pr.end_mode_2d()
 
+    def reset_state(self):
+        pass
 
-def save_state() -> dict[str, Any]:
-    return {}
+    def save_state(self) -> dict[str, Any]:
+        return {}
 
-
-def restore_state(state: dict[str, Any]):
-    pass
+    def restore_state(self, state: dict[str, Any]):
+        pass

@@ -1,14 +1,14 @@
 import pyray as pr
 
 from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
-from tinyrpg.engine import FadeInOut, Scene, SceneEvent, change_scene
-from tinyrpg.scenes import Game, intro, load_state, menu, save_state
+from tinyrpg.engine import FadeInOut, Scene, SceneEvent, change_scene, pop_scene
+from tinyrpg.scenes import Game, Menu, intro, load_states, reset_states, save_states
 
 INITIAL_STATE: Scene = intro
 
 STATES: dict[str, Scene] = {
     "intro": intro,
-    "menu": FadeInOut("menu", menu),
+    "menu": FadeInOut("menu", Menu()),
     "level1": FadeInOut("level1", Game("level1")),
     "level2": FadeInOut("level2", Game("level2")),
 }
@@ -16,8 +16,8 @@ STATES: dict[str, Scene] = {
 TRANSITION_TABLE: dict[str, dict[str, Scene]] = {
     "intro": {"keypress": STATES["menu"]},
     "menu": {"keypress": STATES["level1"]},
-    "level1": {"goto_level": STATES["level2"]},
-    "level2": {"goto_level": STATES["level1"]},
+    "level1": {"goto_level": STATES["level2"], "goto_menu": STATES["menu"]},
+    "level2": {"goto_level": STATES["level1"], "goto_menu": STATES["menu"]},
 }
 
 
@@ -41,12 +41,16 @@ def main():
 
         while (event := scene.next_event()) is not None:
             match event:
-                case SceneEvent("change_scene", (state, input)):
+                case SceneEvent("change", (state, input)):
                     scene = change_scene(scene, state, input, TRANSITION_TABLE)
+                case SceneEvent("pop", ()):
+                    scene = pop_scene(scene)
+                case SceneEvent("reset", ()):
+                    reset_states(STATES)
                 case SceneEvent("save", ()):
-                    save_state("saved/state.pkl", STATES)
+                    save_states("saved/state.pkl", STATES)
                 case SceneEvent("load", ()):
-                    load_state("saved/state.pkl", STATES)
+                    load_states("saved/state.pkl", STATES)
                 case SceneEvent("quit", ()):
                     request_close = True
 
