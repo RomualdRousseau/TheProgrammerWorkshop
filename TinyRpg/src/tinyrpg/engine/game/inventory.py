@@ -78,6 +78,11 @@ class Inventory:
             self.append(item_to_unequip)
         return item_to_unequip
 
+    def reset_state(self):
+        self.equipment = [None] * 3
+        self.bag = [None] * 9
+        self.coin = 0
+
     def save_state(self) -> dict[str, Any]:
         state = {}
         state["equipment"] = self.equipment
