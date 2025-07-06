@@ -47,8 +47,7 @@ class MenuItem(Enum):
 
 
 class MenuBox(Window):
-    def __init__(self, menu: Menu):
-        self.menu = menu
+    def __init__(self, with_save: bool):
         self.cursor = 0
         self.items: dict[ItemText, MenuItem] = {}
         self.selected_item: Optional[MenuItem] = None
@@ -56,7 +55,7 @@ class MenuBox(Window):
         if os.path.exists("saved/state.pkl"):
             self.items[ItemText("LOAD GAME", align=TextBoxAlign.CENTER)] = MenuItem.LOAD
 
-        if not self.menu.first_use:
+        if with_save:
             self.items[ItemText("CONTINUE", align=TextBoxAlign.CENTER)] = MenuItem.CONTINUE
             self.items[ItemText("SAVE GAME", align=TextBoxAlign.CENTER)] = MenuItem.SAVE
 
@@ -71,6 +70,8 @@ class MenuBox(Window):
         for item in self.items.keys():
             table_menu.add(item)
         self.add(table_menu).pack()
+
+        self.update_items()
 
     def play_sound_effect(self) -> None:
         pass

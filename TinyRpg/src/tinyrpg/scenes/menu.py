@@ -16,7 +16,7 @@ class Menu:
         return self.events.pop(0) if len(self.events) > 0 else None
 
     def init(self, previous_scene: Optional[Scene] = None):
-        self.menu_box = MenuBox(self)
+        self.menu_box = MenuBox(not self.first_use)
         self.fixed_camera = FixedCamera()
         self.first_use = False
 
@@ -29,15 +29,15 @@ class Menu:
         match self.menu_box.selected_item:
             case MenuItem.LOAD:
                 self.events.append(SceneEvent("load", ()))
-                self.events.append(SceneEvent("change", ("menu", "keypress")))
+                self.events.append(SceneEvent("restore", ()))
             case MenuItem.CONTINUE:
-                self.events.append(SceneEvent("pop", ()))
+                self.events.append(SceneEvent("restore", ()))
             case MenuItem.SAVE:
                 self.events.append(SceneEvent("save", ()))
-                self.events.append(SceneEvent("pop", ()))
+                self.events.append(SceneEvent("restore", ()))
             case MenuItem.NEW:
                 self.events.append(SceneEvent("reset", ()))
-                self.events.append(SceneEvent("change", ("menu", "keypress")))
+                self.events.append(SceneEvent("change", ("menu", "goto_level")))
             case MenuItem.QUIT:
                 self.events.append(SceneEvent("quit", ()))
 

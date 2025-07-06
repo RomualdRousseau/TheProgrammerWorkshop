@@ -22,7 +22,7 @@ from tinyrpg.engine import (
     is_action_pressed,
     load_map,
     load_music,
-    push_scene,
+    push_state,
     unload_resources,
 )
 from tinyrpg.objects import OBJECTS
@@ -157,7 +157,7 @@ class Game:
             self.events.append(SceneEvent("change", (self.level_name, "goto_level")))
 
         if pr.is_key_pressed(pr.KeyboardKey.KEY_F11):
-            push_scene(FadeInOut("level1", self))
+            push_state((self.level_name, FadeInOut(self.level_name, self)))
             self.events.append(SceneEvent("change", (self.level_name, "goto_menu")))
 
         if self.widgets:

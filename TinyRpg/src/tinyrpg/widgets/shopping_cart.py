@@ -94,6 +94,8 @@ class ShoppingCart(Window):
             )
         ).pack()
 
+        self.update_items()
+
     def play_sound_effect(self) -> None:
         if self.action == "BUY":
             play_sound("buy")
