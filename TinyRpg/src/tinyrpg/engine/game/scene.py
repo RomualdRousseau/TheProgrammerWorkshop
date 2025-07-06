@@ -50,6 +50,7 @@ def peek_state() -> Optional[SceneState]:
 
 
 def reset_states(states: dict[str, Scene]):
+    get_player_inventory().reset_state()
     for scene in states.values():
         scene.reset_state()
 
