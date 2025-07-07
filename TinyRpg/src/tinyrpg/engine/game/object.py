@@ -16,7 +16,7 @@ from tinyrpg.engine.base.renderer import BoundingBoxRenderer, renderer
 from tinyrpg.engine.base.resources import load_texture
 from tinyrpg.engine.base.sound import play_sound
 from tinyrpg.engine.base.sprite import AnimatedSprite
-from tinyrpg.engine.game.inventory import Item
+from tinyrpg.engine.game.inventory import Inventory, Item
 from tinyrpg.engine.utils.bbox import adjust_bbox, get_bbox_from_rect
 
 OBJECT_SIZE = pr.Vector2(16, 16)  # pixels
@@ -49,9 +49,11 @@ class Object(AnimatedSprite):
         pos: pr.Vector2,
         animations: dict[str, Animation],
         content: Optional[Item] = None,
+        key: Optional[Item] = None,
     ):
         super().__init__(id, pos, load_texture(f"object-{id}"), animations)
         self.item = content
+        self.key = key
         self.actions = ObjectAction.IDLING
         self.events: list[ObjectEvent] = []
 
@@ -68,6 +70,9 @@ class Object(AnimatedSprite):
 
     def is_open(self):
         return self.actions == ObjectAction.OPENING
+
+    def is_locked(self, inventory: Optional[Inventory]):
+        return self.key and not (inventory and inventory.contains(self.key))
 
     def open(self):
         if self.actions == ObjectAction.IDLING:
