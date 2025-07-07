@@ -18,5 +18,5 @@
 - Other
   - [x] Scene events including scene change/save/load
   - [ ] Animated particle
-  - [ ] Locked object
-  - [ ] Do a proper intro and menu
+  - [x] Locked object
+  - [-] Do a proper intro and menu
