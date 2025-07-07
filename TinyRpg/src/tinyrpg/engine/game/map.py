@@ -32,6 +32,7 @@ class MapObject:
     name: str
     type: str
     item: Optional[str]
+    key: Optional[str]
     quests: list[str]
 
 
@@ -94,6 +95,7 @@ class Map:
                             self.bboxes.append(self._get_tilexy_to_world_2d(x, y), (self.get_tile_bbox(x, y), tile))
 
                         self.tiles.append(MapTileRenderer(tile, self._get_tilexy_dest(x, y), layer.id - 1))
+
                 case TiledObjectGroup():
                     for obj in layer:
                         match obj.type:
@@ -105,6 +107,7 @@ class Map:
                             case "enemy" | "npc" | "object" as type:
                                 x, y = obj.x + obj.width / 2, obj.y + obj.height / 2
                                 content = obj.properties.get("content")
+                                key = obj.properties.get("key")
                                 quests = obj.properties.get("quests")
                                 self.objects.append(
                                     MapObject(
@@ -112,6 +115,7 @@ class Map:
                                         obj.name,
                                         type,
                                         content,
+                                        key,
                                         quests.split(",") if quests else [],
                                     )
                                 )

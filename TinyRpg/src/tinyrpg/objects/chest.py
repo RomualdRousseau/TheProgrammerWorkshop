@@ -11,5 +11,5 @@ CHEST_ANIMATIONS = lambda: {
 
 
 class Chest(Object):
-    def __init__(self, pos: pr.Vector2, content: Optional[Item] = None) -> None:
-        super().__init__("chest", pos, CHEST_ANIMATIONS(), content)
+    def __init__(self, pos: pr.Vector2, content: Optional[Item] = None, key: Optional[Item] = None) -> None:
+        super().__init__("chest", pos, CHEST_ANIMATIONS(), content, key)

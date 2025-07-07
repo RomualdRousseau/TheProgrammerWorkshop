@@ -5,7 +5,7 @@ from typing import Any, Optional
 import pyray as pr
 
 from tinyrpg.characters import Enemy, Npc, Player
-from tinyrpg.constants import DEBUG_ENABLED, INPUT_OPEN_INVENTORY
+from tinyrpg.constants import DEBUG_ENABLED, INPUT_GOTO_MENU, INPUT_OPEN_INVENTORY
 from tinyrpg.engine import (
     Character,
     FadeInOut,
@@ -66,11 +66,13 @@ class Game:
                         self.characters.append(Enemy(obj.name, obj.pos, self.map_data.get_world_boundary()))
                     case "object":
                         item = get_inventory_item(obj.item) if obj.item else None
-                        self.objects.append(OBJECTS[obj.name](obj.pos, item))
+                        key = get_inventory_item(obj.key) if obj.key else None
+                        self.objects.append(OBJECTS[obj.name](obj.pos, item, key))
         else:
             for entity in self.characters + self.objects:
                 entity.reload_resources()
 
+        self.map_data.check_triggers(self.player.pos)  # Avoid trigger reentrance on level change
         self.first_use = False
         self.initialized = True
 
@@ -114,6 +116,10 @@ class Game:
             character.think()
 
     def update_gameplay(self) -> None:
+        if is_action_pressed(INPUT_GOTO_MENU):
+            push_state((self.level_name, FadeInOut(self.level_name, self)))
+            self.events.append(SceneEvent("change", (self.level_name, "goto_menu")))
+
         if is_action_pressed(INPUT_OPEN_INVENTORY):
             self.widgets.append(VerticalEffect(InventoryBox(self.player)))
 
@@ -133,17 +139,24 @@ class Game:
                         self.player.start_talk()
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
                         character.start_talk()
-                        quest = character.get_next_quest(self.player)
-                        if quest:
+                        if quest := character.get_next_quest(self.player):
                             quest.process_next_state(self)
 
         for obj in self.objects:
             for event in obj.events:
-                match event.name:
-                    case "collide":
-                        if not obj.is_open() and obj.item:
+                if event.name == "collide" and not obj.is_open():
+                    if obj.is_locked(self.player.inventory):
+                        self.particles.append(Toast(pr.vector2_add(self.player.pos, (0, -16)), "LOCKED"))
+                    else:
+                        if obj.item:
                             self.particles.append(PickUp(self.player.pos, pr.Vector2(0, -1), obj.item, self.player))
-                            obj.open()
+                        obj.open()
+
+        if trigger := self.map_data.check_triggers(self.player.pos):
+            # TODO: Fix the name of the trigger for goto_level
+            match trigger.name[:10]:
+                case "goto_level":
+                    self.events.append(SceneEvent("change", (self.level_name, "goto_level")))
 
     def garbage_collect(self) -> None:
         self.characters = [character for character in self.characters if not character.should_be_free()]
@@ -152,13 +165,6 @@ class Game:
 
     def update(self, dt: float):
         assert self.initialized, "Game not initialized"
-
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_F10):
-            self.events.append(SceneEvent("change", (self.level_name, "goto_level")))
-
-        if pr.is_key_pressed(pr.KeyboardKey.KEY_F11):
-            push_state((self.level_name, FadeInOut(self.level_name, self)))
-            self.events.append(SceneEvent("change", (self.level_name, "goto_menu")))
 
         if self.widgets:
             self.update_widgets(dt)
