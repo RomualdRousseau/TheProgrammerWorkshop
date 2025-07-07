@@ -15,9 +15,9 @@ STATES: dict[str, Scene] = {
 
 TRANSITION_TABLE: dict[str, dict[str, Scene]] = {
     "intro": {"keypress": STATES["menu"]},
-    "menu": {"goto_level": STATES["level1"]},
-    "level1": {"goto_level": STATES["level2"], "goto_menu": STATES["menu"]},
-    "level2": {"goto_level": STATES["level1"], "goto_menu": STATES["menu"]},
+    "menu": {"goto_level1": STATES["level1"]},
+    "level1": {"goto_level2": STATES["level2"], "goto_menu": STATES["menu"]},
+    "level2": {"goto_level1": STATES["level1"], "goto_menu": STATES["menu"]},
 }
 
 
