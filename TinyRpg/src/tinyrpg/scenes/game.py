@@ -39,7 +39,7 @@ class Game:
         self.events: list[SceneEvent] = []
 
     def next_event(self) -> Optional[SceneEvent]:
-        return self.events.pop(0) if len(self.events) > 0 else None
+        return self.events.pop(0) if self.events else None
 
     def init(self, previous_scene: Optional[Scene] = None):
         if self.initialized:
@@ -47,8 +47,8 @@ class Game:
 
         self.map_data = load_map(f"map-{self.level_name}")
         self.music = load_music(f"music-{self.level_name}")
-        self.fixed_camera = FixedCamera()
         self.follow_camera = FollowCamera(self.map_data.get_world_boundary())
+        self.fixed_camera = FixedCamera()
         self.particles: list[Particle] = []
         self.widgets: list[Widget] = []
 
@@ -153,10 +153,8 @@ class Game:
                         obj.open()
 
         if trigger := self.map_data.check_triggers(self.player.pos):
-            # TODO: Fix the name of the trigger for goto_level
-            match trigger.name[:10]:
-                case "goto_level":
-                    self.events.append(SceneEvent("change", (self.level_name, "goto_level")))
+            if trigger.name[:4] == "goto":
+                self.events.append(SceneEvent("change", (self.level_name, trigger.name)))
 
     def garbage_collect(self) -> None:
         self.characters = [character for character in self.characters if not character.should_be_free()]

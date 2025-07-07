@@ -37,7 +37,7 @@ class Menu:
                 self.events.append(SceneEvent("restore", ()))
             case MenuItem.NEW:
                 self.events.append(SceneEvent("reset", ()))
-                self.events.append(SceneEvent("change", ("menu", "goto_level")))
+                self.events.append(SceneEvent("change", ("menu", "goto_level1")))
             case MenuItem.QUIT:
                 self.events.append(SceneEvent("quit", ()))
 
