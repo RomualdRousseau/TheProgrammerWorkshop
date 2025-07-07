@@ -43,6 +43,8 @@ class InventoryBoxAction(Enum):
     EQUIPING = auto()
     UNEQUIPING = auto()
     DROPPING = auto()
+    MOVING = auto()
+    CLOSING = auto()
 
 
 class InventoryBox(Window):
@@ -127,15 +129,22 @@ class InventoryBox(Window):
                 play_sound("unequip")
             case InventoryBoxAction.DROPPING:
                 play_sound("drop")
+            case InventoryBoxAction.MOVING:
+                play_sound("move-cursor")
+            case InventoryBoxAction.CLOSING:
+                play_sound("close")
 
     def handle_input(self):
         self.action = InventoryBoxAction.NONE
         if is_action_pressed(INPUT_INVENTORY_NEXT):
             self.cursor = min(self.cursor + 1, len(self.bag) - 1)
+            self.action = InventoryBoxAction.MOVING
         if is_action_pressed(INPUT_INVENTORY_PREVIOUS):
             self.cursor = max(self.cursor - 1, 0)
+            self.action = InventoryBoxAction.MOVING
         if is_action_pressed(INPUT_INVENTORY_CLOSE):
             self.close()
+            self.action = InventoryBoxAction.CLOSING
         if is_action_pressed(INPUT_INVENTORY_EQUIP) and self.cursor >= self.equipment_num:
             self.inventory.equip(self.cursor - 3)
             self.action = InventoryBoxAction.EQUIPING

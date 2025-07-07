@@ -10,6 +10,7 @@ from tinyrpg.constants import (
 )
 from tinyrpg.engine import (
     COMPONENT_PADDING,
+    ITEMTEXT_BORDER,
     TEXTBOX_FONT_SIZE_DEFAULT,
     WINDOW_BORDER,
     WINDOW_MARGIN,
@@ -21,8 +22,8 @@ from tinyrpg.engine import (
     Window,
     WindowLocation,
     is_action_pressed,
+    play_sound,
 )
-from tinyrpg.engine.gui.item_text import ITEMTEXT_BORDER
 
 MENU_BOX_WIDTH = int(WORLD_WIDTH * 0.75)  # px
 MENU_BOX_HEIGHT = int((WINDOW_BORDER + WINDOW_PADDING + ITEMTEXT_BORDER * 4) * 2)  # px
@@ -46,11 +47,18 @@ class MenuItem(Enum):
     QUIT = auto()
 
 
+class MenuBoxAction(Enum):
+    NONE = auto()
+    SELECTING = auto()
+    MOVING = auto()
+
+
 class MenuBox(Window):
     def __init__(self, with_save: bool):
         self.cursor = 0
         self.items: dict[ItemText, MenuItem] = {}
         self.selected_item: Optional[MenuItem] = None
+        self.action = MenuBoxAction.NONE
 
         if os.path.exists("saved/state.pkl"):
             self.items[ItemText("LOAD GAME", align=TextBoxAlign.CENTER)] = MenuItem.LOAD
@@ -74,17 +82,24 @@ class MenuBox(Window):
         self.update_items()
 
     def play_sound_effect(self) -> None:
-        pass
+        match self.action:
+            case MenuBoxAction.SELECTING:
+                play_sound("select")
+            case MenuBoxAction.MOVING:
+                play_sound("move-cursor")
 
     def handle_input(self):
+        self.action = MenuBoxAction.NONE
         if is_action_pressed(INPUT_MENU_BOX_NEXT):
             self.cursor = min(self.cursor + 1, len(self.items) - 1)
+            self.action = MenuBoxAction.MOVING
         if is_action_pressed(INPUT_MENU_BOX_PREVIOUS):
             self.cursor = max(self.cursor - 1, 0)
+            self.action = MenuBoxAction.MOVING
         if is_action_pressed(INPUT_MENU_BOX_SELECT):
-            item = next((x for x in self.items.keys() if x.selected), None)
-            if item:
+            if item := next((x for x in self.items.keys() if x.selected), None):
                 self.selected_item = self.items[item]
+                self.action = MenuBoxAction.SELECTING
 
     def update_items(self):
         for i, item_text in enumerate(self.items):

@@ -31,6 +31,9 @@
         "sound-unequip": "data/sounds/pick.wav",
         "sound-drop": "data/sounds/hurt.wav",
         "sound-buy": "data/sounds/pick.wav",
-        "sound-sell": "data/sounds/pick.wav"
+        "sound-sell": "data/sounds/pick.wav",
+        "sound-move-cursor": "data/sounds/step.wav",
+        "sound-close": "data/sounds/hit.wav",
+        "sound-select": "data/sounds/pick.wav"
     }
 }
