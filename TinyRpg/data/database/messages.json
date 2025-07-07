@@ -1,7 +1,7 @@
 {
   "quest_grace": {
     "1": [
-      ["GRACE", "It's gone… The gem.\nStolen from my chamber\nwhile I slept.\nOh — it's you!\nI was about to send for you."],
+      ["GRACE", "It's gone... The gem.\nStolen from my chamber\nwhile I slept.\nOh - it's you!\nI was about to send for you."],
       ["PLAYER", "Then the wind favors me today.\nI came as soon as I heard.\nAre you hurt?"],
       ["GRACE", "No... only my heart aches.\nThe gem isn't just a trinket.\nIt belonged to my mother.\nI keep it close always.\nWhoever took it must know\nits value."],
       ["PLAYER", "Then I'll find them.\nNo matter where they hide.\nI swear it on my blade...\nAnd on my love for you."],
@@ -18,7 +18,7 @@
       ["GRACE", "Bring the gem home, Romuald...\nBut promise you'll come home\ntoo.\nThat's the treasure I care\nfor most."]
     ],
     "3": [
-      ["GRACE", "Is it…? Romuald?"],
+      ["GRACE", "Is it...? Romuald?"],
       ["PLAYER", "It is.\nAnd this time,\nI didn't come empty-handed."],
       ["GRACE", "You found it...\nYou truly found it."],
       ["PLAYER", "It was buried deep in the forest.\nBut nothing could keep it\nfrom you."],
