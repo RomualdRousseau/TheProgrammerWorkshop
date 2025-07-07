@@ -48,6 +48,7 @@ from tinyrpg.engine.gui.component import Component as Component
 from tinyrpg.engine.gui.image_box import ImageBox as ImageBox
 from tinyrpg.engine.gui.item_box import ItemBox as ItemBox
 from tinyrpg.engine.gui.item_list import ItemList as ItemList
+from tinyrpg.engine.gui.item_text import ITEMTEXT_BORDER as ITEMTEXT_BORDER
 from tinyrpg.engine.gui.item_text import ItemText as ItemText
 from tinyrpg.engine.gui.panel import Panel as Panel
 from tinyrpg.engine.gui.table_layout import TableLayout as TableLayout

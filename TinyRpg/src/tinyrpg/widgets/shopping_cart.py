@@ -1,4 +1,5 @@
 import math
+from enum import Enum, auto
 from random import choice
 
 from tinyrpg.constants import (
@@ -34,9 +35,15 @@ from tinyrpg.engine import (
 SHOPPING_CART_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
 SHOPPING_CART_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
 SHOPPING_CART_ICON_HEIGHT = (WORLD_WIDTH - 2 * WINDOW_MARGIN - 2 * WINDOW_PADDING - 2 * WINDOW_BORDER) / 6
+SHOPPING_CART_SIZE = 3
 
 
-CART_SIZE = 3
+class ShoppingCartAction(Enum):
+    NONE = auto()
+    BUYING = auto()
+    SELLING = auto()
+    MOVING = auto()
+    CLOSING = auto()
 
 
 class ShoppingCart(Window):
@@ -51,10 +58,10 @@ class ShoppingCart(Window):
         self.bag: list[ItemBox] = []
         self.stats_coin = TextBox(f"{player.inventory.coin}", align=TextBoxAlign.LEFT)
         self.desc = TextBox("")
-        self.action = "IDLE"
+        self.action = ShoppingCartAction.NONE
 
-        cart_panel = TableLayout(CART_SIZE, 1)
-        for _ in range(CART_SIZE):
+        cart_panel = TableLayout(SHOPPING_CART_SIZE, 1)
+        for _ in range(SHOPPING_CART_SIZE):
             item_key = choice(list(get_database().select_dict("items").keys()))
             item = get_inventory_item(item_key)
             item_box = ItemList(item)
@@ -96,11 +103,16 @@ class ShoppingCart(Window):
 
         self.update_items()
 
-    def play_sound_effect(self) -> None:
-        if self.action == "BUY":
-            play_sound("buy")
-        if self.action == "SELL":
-            play_sound("sell")
+    def play_sound_effect(self):
+        match self.action:
+            case ShoppingCartAction.BUYING:
+                play_sound("buy")
+            case ShoppingCartAction.SELLING:
+                play_sound("sell")
+            case ShoppingCartAction.MOVING:
+                play_sound("move-cursor")
+            case ShoppingCartAction.CLOSING:
+                play_sound("close")
 
     def buy_item(self, slot: int):
         cart_item = self.cart[slot].item
@@ -116,24 +128,28 @@ class ShoppingCart(Window):
             self.inventory.coin += bag_item.cost // 2
 
     def handle_input(self):
+        self.action = ShoppingCartAction.NONE
         if is_action_pressed(INPUT_SHOPPING_CART_NEXT):
             self.cursor = min(self.cursor + 1, len(self.cart) + len(self.bag) - 1)
+            self.action = ShoppingCartAction.MOVING
         if is_action_pressed(INPUT_SHOPPING_CART_PREVIOUS):
             self.cursor = max(self.cursor - 1, 0)
+            self.action = ShoppingCartAction.MOVING
         if is_action_pressed(INPUT_SHOPPING_CART_CLOSE):
             self.close()
-        if is_action_pressed(INPUT_SHOPPING_CART_BUY) and self.cursor < CART_SIZE:
+            self.action = ShoppingCartAction.CLOSING
+        if is_action_pressed(INPUT_SHOPPING_CART_BUY) and self.cursor < SHOPPING_CART_SIZE:
             self.buy_item(self.cursor)
-            self.action = "BUY"
-        if is_action_pressed(INPUT_SHOPPING_CART_SELL) and self.cursor >= CART_SIZE:
-            self.sell_item(self.cursor - CART_SIZE)
-            self.action = "SELL"
+            self.action = ShoppingCartAction.BUYING
+        if is_action_pressed(INPUT_SHOPPING_CART_SELL) and self.cursor >= SHOPPING_CART_SIZE:
+            self.sell_item(self.cursor - SHOPPING_CART_SIZE)
+            self.action = ShoppingCartAction.SELLING
 
     def update_items(self):
         for i, item_box in enumerate(self.cart + self.bag):
             item_box.selected = self.cursor == i
-            if i >= CART_SIZE:
-                item_box.item = self.inventory.bag[i - CART_SIZE]
+            if i >= SHOPPING_CART_SIZE:
+                item_box.item = self.inventory.bag[i - SHOPPING_CART_SIZE]
                 if item_box.selected:
                     self.desc.text = f"{item_box.item.name}\n{item_box.item.description}" if item_box.item else ""
 
