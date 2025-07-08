@@ -18,6 +18,15 @@ class FollowCamera:
         self.target = pr.vector2_zero()
         self.boundary = resize_bbox(boundary, CAMERA_BOUNDARY_RESIZE)
 
+    def set_target(self, target: pr.Vector2):
+        target = pr.vector2_clamp(
+            target,
+            pr.Vector2(self.boundary.min.x, self.boundary.min.y),
+            pr.Vector2(self.boundary.max.x, self.boundary.max.y),
+        )
+        self.target = target
+        self.camera.target = target
+
     def set_boundary(self, boundary: pr.BoundingBox):
         self.boundary = resize_bbox(boundary, CAMERA_BOUNDARY_RESIZE)
 

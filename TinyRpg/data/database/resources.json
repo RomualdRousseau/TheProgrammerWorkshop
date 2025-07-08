@@ -18,7 +18,9 @@
         "object-gem": "data/textures/objects/gem.png",
         "object-chest": "data/textures/objects/chest.png",
         "object-potion": "data/textures/objects/potion.png",
-        "skin-gui": "data/textures/gui.png"
+        "skin-gui": "data/textures/gui.png",
+        "screen-intro": "data/textures/intro.png",
+        "screen-menu": "data/textures/menu.png"
     },
     "sounds": {
         "sound-step": "data/sounds/step.wav",
