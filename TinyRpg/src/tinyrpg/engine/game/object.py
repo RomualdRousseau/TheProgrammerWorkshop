@@ -97,10 +97,11 @@ class Object(AnimatedSprite):
     def update(self, dt: float):
         super().update(dt)
         self.events.clear()
+        self.play_sound_effect()
 
     @renderer
     def draw(self):
-        self.play_sound_effect()
+        # self.play_sound_effect()
         self.set_animation_effect()
         super().draw()
 

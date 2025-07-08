@@ -219,6 +219,8 @@ class Game:
         self.initialized = False
         self.first_use = True
         self.events: list[SceneEvent] = []
+        for quest in QUESTS.values():
+            quest.reset()
 
     def save_state(self) -> dict[str, Any]:
         state = {}

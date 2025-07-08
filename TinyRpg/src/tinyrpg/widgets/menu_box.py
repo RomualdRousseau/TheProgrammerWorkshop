@@ -84,7 +84,7 @@ class MenuBox(Window):
     def play_sound_effect(self) -> None:
         match self.action:
             case MenuBoxAction.SELECTING:
-                play_sound("select")
+                play_sound("select", True)
             case MenuBoxAction.MOVING:
                 play_sound("move-cursor")
 
@@ -109,7 +109,8 @@ class MenuBox(Window):
         self.handle_input()
         self.update_items()
         super().update(dt)
+        self.play_sound_effect()
 
     def draw(self):
-        self.play_sound_effect()
+        # self.play_sound_effect()
         super().draw()

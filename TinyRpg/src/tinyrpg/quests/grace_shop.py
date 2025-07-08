@@ -14,7 +14,9 @@ class GraceShop:
     def __init__(self):
         self.quest_name = "Grace's Shop"
         self.quest_description = "Grace sells and buys stuffs."
-        self.quest_state = 0
+
+    def reset(self):
+        pass
 
     def is_assignable(self, character: Character) -> bool:
         return True
