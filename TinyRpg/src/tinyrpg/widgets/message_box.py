@@ -90,7 +90,8 @@ class MessageBox(Window):
         self.update_text_stroke(dt)
         self.update_text_box()
         super().update(dt)
+        self.play_sound_effect()
 
     def draw(self):
-        self.play_sound_effect()
+        # self.play_sound_effect()
         super().draw()

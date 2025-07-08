@@ -162,7 +162,8 @@ class ShoppingCart(Window):
         self.update_items()
         self.update_stats()
         super().update(dt)
+        self.play_sound_effect()
 
     def draw(self):
-        self.play_sound_effect()
+        # self.play_sound_effect()
         super().draw()

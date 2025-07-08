@@ -265,6 +265,7 @@ class Character(AnimatedSprite):
         self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
         self.constrain_to_boundary(self.boundary)
         super().update(dt)
+        self.play_sound_effect()
 
         self.actions &= CHARACTER_NO_RESET_MASK
         self.events.clear()
@@ -272,7 +273,7 @@ class Character(AnimatedSprite):
 
     @renderer
     def draw(self):
-        self.play_sound_effect()
+        # self.play_sound_effect()
         self.set_animation_effect()
         super().draw()
 

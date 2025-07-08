@@ -5,7 +5,6 @@ import pyray as pr
 from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine import FixedCamera, Scene, SceneEvent, unload_resources
 from tinyrpg.engine.base.resources import load_texture
-from tinyrpg.scenes import intro
 from tinyrpg.widgets import MenuBox, MenuItem
 
 
@@ -20,15 +19,16 @@ class Menu:
     def init(self, previous_scene: Optional[Scene] = None):
         self.menu_box = MenuBox(not self.first_use)
         self.fixed_camera = FixedCamera()
-        self.first_use = False
 
-        if previous_scene is intro:
+        if self.first_use:
             self.texture = load_texture("screen-menu")
         else:
             image = pr.load_image_from_screen()
             pr.image_resize(image, WORLD_WIDTH, WORLD_HEIGHT)
             self.texture = pr.load_texture_from_image(image)
             pr.unload_image(image)
+
+        self.first_use = False
 
     def release(self):
         unload_resources()

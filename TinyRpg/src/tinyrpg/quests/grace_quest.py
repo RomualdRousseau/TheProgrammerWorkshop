@@ -19,6 +19,9 @@ class GraceQuest:
         self.quest_description = "Help Grace find her lost gem."
         self.quest_state = 0
 
+    def reset(self):
+        self.quest_state = 0
+
     def is_assignable(self, character: Character) -> bool:
         return True
 
