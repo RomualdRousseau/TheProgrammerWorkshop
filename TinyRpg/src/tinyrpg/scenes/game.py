@@ -73,6 +73,7 @@ class Game:
                 entity.reload_resources()
 
         self.map_data.check_triggers(self.player.pos)  # Avoid trigger reentrance on level change
+        self.follow_camera.set_target(self.player.pos)  # Avoid camera jitter on level change
         self.first_use = False
         self.initialized = True
 

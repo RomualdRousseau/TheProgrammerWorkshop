@@ -2,9 +2,11 @@ from typing import Any, Optional
 
 import pyray as pr
 
+from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
 from tinyrpg.engine import FixedCamera, Scene, SceneEvent, unload_resources
-from tinyrpg.widgets import MenuBox
-from tinyrpg.widgets.menu_box import MenuItem
+from tinyrpg.engine.base.resources import load_texture
+from tinyrpg.scenes import intro
+from tinyrpg.widgets import MenuBox, MenuItem
 
 
 class Menu:
@@ -19,6 +21,14 @@ class Menu:
         self.menu_box = MenuBox(not self.first_use)
         self.fixed_camera = FixedCamera()
         self.first_use = False
+
+        if previous_scene is intro:
+            self.texture = load_texture("screen-menu")
+        else:
+            image = pr.load_image_from_screen()
+            pr.image_resize(image, WORLD_WIDTH, WORLD_HEIGHT)
+            self.texture = pr.load_texture_from_image(image)
+            pr.unload_image(image)
 
     def release(self):
         unload_resources()
@@ -42,8 +52,9 @@ class Menu:
                 self.events.append(SceneEvent("quit", ()))
 
     def draw(self):
-        pr.clear_background(pr.RED)
+        pr.clear_background(pr.WHITE)
         pr.begin_mode_2d(self.fixed_camera.camera)
+        pr.draw_texture(self.texture, 0, 0, pr.color_alpha(pr.WHITE, 0.5))
         self.menu_box.draw()
         pr.end_mode_2d()
 
