@@ -38,9 +38,6 @@ class GraceQuest:
     def is_completed(self) -> bool:
         return self.quest_state == 3
 
-    def is_final(self) -> bool:
-        return True
-
     def provide_equipment(self, game: Game):
         sword = get_inventory_item("Sword")
         game.particles.append(PickUp(game.player.pos, pr.Vector2(0.25, -1), sword, game.player))
