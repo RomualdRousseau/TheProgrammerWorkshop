@@ -236,6 +236,7 @@ class Character(AnimatedSprite):
             self.events.append(CharacterEvent("hit", self, hits))
 
         if not self.is_alive():
+            self.events.append(CharacterEvent("die", self, hits))
             self.force = pr.vector2_zero()
             self.vel = pr.vector2_zero()
             self.dir = pr.vector2_zero()

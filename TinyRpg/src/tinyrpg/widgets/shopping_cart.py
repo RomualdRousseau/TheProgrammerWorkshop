@@ -112,7 +112,7 @@ class ShoppingCart(Window):
             case ShoppingCartAction.MOVING:
                 play_sound("move-cursor")
             case ShoppingCartAction.CLOSING:
-                play_sound("close", True)
+                play_sound("close")
 
     def buy_item(self, slot: int):
         cart_item = self.cart[slot].item

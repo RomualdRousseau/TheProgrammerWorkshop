@@ -2,7 +2,7 @@ import pyray as pr
 
 from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from tinyrpg.engine import FadeInOut, Scene, process_scene_event
-from tinyrpg.scenes import Game, GameOver, GameWinner, Menu, intro
+from tinyrpg.scenes import Game, GameOver, Menu, intro
 
 INITIAL_STATE: Scene = intro
 
@@ -11,8 +11,8 @@ STATES: dict[str, Scene] = {
     "menu": FadeInOut("menu", Menu()),
     "level1": FadeInOut("level1", Game("level1")),
     "level2": FadeInOut("level2", Game("level2")),
-    "game_winner": FadeInOut("game_winner", GameWinner()),
-    "game_over": FadeInOut("game_over", GameOver()),
+    "game_over_win": FadeInOut("game_over_win", GameOver("WIN", pr.WHITE)),
+    "game_over_lost": FadeInOut("game_over_lost", GameOver("LOST", pr.BLACK)),
 }
 
 TRANSITION_TABLE: dict[str, dict[str, Scene]] = {
@@ -21,17 +21,17 @@ TRANSITION_TABLE: dict[str, dict[str, Scene]] = {
     "level1": {
         "goto_level2": STATES["level2"],
         "goto_menu": STATES["menu"],
-        "game_winner": STATES["game_winner"],
-        "game_over": STATES["game_over"],
+        "goto_game_over_win": STATES["game_over_win"],
+        "goto_game_over_lost": STATES["game_over_lost"],
     },
     "level2": {
         "goto_level1": STATES["level1"],
         "goto_menu": STATES["menu"],
-        "game_winner": STATES["game_winner"],
-        "game_over": STATES["game_over"],
+        "goto_game_over_win": STATES["game_over_win"],
+        "goto_game_over_lost": STATES["game_over_lost"],
     },
-    "game_winner": {},
-    "game_over": {},
+    "game_over_win": {},
+    "game_over_lost": {},
 }
 
 

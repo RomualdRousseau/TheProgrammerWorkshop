@@ -3,23 +3,23 @@ import math
 
 class Timer:
     def __init__(self, time: float):
-        self.time = math.inf
-        self.max_time = time
+        self.time = time
+        self.remain = math.inf
 
     def is_running(self):
-        return self.time != math.inf
+        return self.remain != math.inf
 
     def is_elapsed(self):
-        return self.time <= 0
+        return self.remain <= 0
 
     def set(self):
         if not self.is_running():
-            self.time = self.max_time
+            self.remain = self.time
 
     def reset(self):
         if self.is_running():
-            self.time = math.inf
+            self.remain = math.inf
 
     def update(self, dt: float):
         if self.is_running():
-            self.time = max(self.time - dt, 0)
+            self.remain = max(self.remain - dt, 0)

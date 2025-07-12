@@ -24,5 +24,8 @@ class GraceShop:
     def is_completed(self) -> bool:
         return False
 
+    def is_final(self) -> bool:
+        return False
+
     def process_next_state(self, game: Game):
         game.widgets.append(VerticalEffect(ShoppingCart(game.player)))

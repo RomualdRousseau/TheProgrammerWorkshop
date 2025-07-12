@@ -15,6 +15,7 @@ from tinyrpg.engine import (
     Particle,
     Scene,
     SceneEvent,
+    Timer,
     VerticalEffect,
     Widget,
     begin_mode_sorted_2d,
@@ -51,6 +52,7 @@ class Game:
         self.fixed_camera = FixedCamera()
         self.particles: list[Particle] = []
         self.widgets: list[Widget] = []
+        self.should_end_timer = Timer(2)
 
         if self.first_use:
             self.player = Player("Romuald", self.map_data.start_location, self.map_data.get_world_boundary())
@@ -129,6 +131,8 @@ class Game:
                 match (character, event.name):
                     case Player(), "hit":
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                    case Player(), "die":
+                        self.should_end_timer.set()
                     case Enemy(), "trigger_far_enter":
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "!"))
                     case Enemy(), "trigger_far_leave":
@@ -157,8 +161,13 @@ class Game:
             if trigger.name[:4] == "goto":
                 self.events.append(SceneEvent("change", (self.level_name, trigger.name)))
 
-        if self.player.should_be_free():
-            self.events.append(SceneEvent("change", (self.level_name, "game_over")))
+    def check_game_end(self, dt: float):
+        self.should_end_timer.update(dt)
+        if self.should_end_timer.is_elapsed():
+            if self.player.is_alive():
+                self.events.append(SceneEvent("change", (self.level_name, "goto_game_over_win")))
+            else:
+                self.events.append(SceneEvent("change", (self.level_name, "goto_game_over_lost")))
 
     def garbage_collect(self) -> None:
         self.characters = [character for character in self.characters if not character.should_be_free()]
@@ -175,16 +184,17 @@ class Game:
             self.update_collisions()
             self.update_ai()
             self.update_gameplay()
+            self.check_game_end(dt)
 
         self.garbage_collect()
-
-    def draw(self):
-        assert self.initialized, "Game not initialized"
 
         if pr.is_music_stream_playing(self.music):
             pr.update_music_stream(self.music)
         else:
             pr.play_music_stream(self.music)
+
+    def draw(self):
+        assert self.initialized, "Game not initialized"
 
         # Setup follow camera
 

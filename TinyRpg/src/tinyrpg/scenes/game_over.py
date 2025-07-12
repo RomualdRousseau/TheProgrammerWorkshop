@@ -2,14 +2,15 @@ from typing import Any, Optional
 
 import pyray as pr
 
-from tinyrpg.constants import INPUT_GOTO_MENU, WORLD_HEIGHT, WORLD_WIDTH
-from tinyrpg.engine import FixedCamera, Scene, SceneEvent, draw_text_outlined_v, is_action_pressed, unload_resources
-
-GAMEOVER_FONT_SIZE = 16  # px
+from tinyrpg.constants import WORLD_HEIGHT, WORLD_WIDTH
+from tinyrpg.engine import FixedCamera, Scene, SceneEvent, get_database, unload_resources
+from tinyrpg.widgets import GameOverBox
 
 
 class GameOver:
-    def __init__(self):
+    def __init__(self, message: str, color: pr.Color):
+        self.message = message
+        self.color = color
         self.events: list[SceneEvent] = []
 
     def next_event(self) -> Optional[SceneEvent]:
@@ -17,6 +18,7 @@ class GameOver:
 
     def init(self, previous_scene: Optional[Scene] = None):
         self.fixed_camera = FixedCamera()
+        self.text_box = GameOverBox(get_database().select_dict("messages")["quest_grace"][self.message][0])
 
         image = pr.load_image_from_screen()
         pr.image_resize(image, WORLD_WIDTH, WORLD_HEIGHT)
@@ -27,16 +29,16 @@ class GameOver:
         unload_resources()
 
     def update(self, dt: float):
-        if is_action_pressed(INPUT_GOTO_MENU):
+        self.text_box.update(dt)
+
+        if self.text_box.closed:
             self.events.append(SceneEvent("quit", ()))
 
     def draw(self):
-        pr.clear_background(pr.BLACK)
+        pr.clear_background(self.color)
         pr.begin_mode_2d(self.fixed_camera.camera)
         pr.draw_texture(self.texture, 0, 0, pr.color_alpha(pr.WHITE, 0.5))
-        text_width = pr.measure_text("GAME OVER", GAMEOVER_FONT_SIZE)
-        text_pos = pr.Vector2((WORLD_WIDTH - text_width) / 2, (WORLD_HEIGHT - GAMEOVER_FONT_SIZE) / 2)
-        draw_text_outlined_v("GAME OVER", text_pos, GAMEOVER_FONT_SIZE, pr.WHITE, pr.BLACK)
+        self.text_box.draw()
         pr.end_mode_2d()
 
     def reset_state(self):

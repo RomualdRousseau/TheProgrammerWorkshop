@@ -1,3 +1,4 @@
+from tinyrpg.widgets.game_over_box import GameOverBox as GameOverBox
 from tinyrpg.widgets.inventory_box import InventoryBox as InventoryBox
 from tinyrpg.widgets.menu_box import MenuBox as MenuBox
 from tinyrpg.widgets.menu_box import MenuItem as MenuItem
