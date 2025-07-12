@@ -11,7 +11,6 @@ from tinyrpg.engine import (
     CharacterAction,
     CharacterStats,
     EquipmentType,
-    Timer,
     get_player_inventory,
     is_action_down,
 )
@@ -30,7 +29,7 @@ HERO_ANIMATIONS = lambda: {
 }
 
 HERO_STATS = lambda: CharacterStats(
-    speed=20,  # pixel * s-1
+    speed=20,  # pixel.s-1
     attack_speed=0.5,  # s
     damage=1,
     armor=0,
@@ -41,7 +40,6 @@ HERO_STATS = lambda: CharacterStats(
 class Player(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox):
         super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, Rules())
-        self.until_free_timer = Timer(2)
         self.inventory = get_player_inventory()
 
     def reload_resources(self):

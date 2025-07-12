@@ -132,7 +132,7 @@ class InventoryBox(Window):
             case InventoryBoxAction.MOVING:
                 play_sound("move-cursor")
             case InventoryBoxAction.CLOSING:
-                play_sound("close", True)
+                play_sound("close")
 
     def handle_input(self):
         self.action = InventoryBoxAction.NONE

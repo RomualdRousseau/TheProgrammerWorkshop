@@ -2,7 +2,16 @@ from typing import Protocol
 
 import pyray as pr
 
-from tinyrpg.engine import Character, DialogEffect, Particle, VerticalEffect, Widget, get_database, get_inventory_item
+from tinyrpg.engine import (
+    Character,
+    DialogEffect,
+    Particle,
+    Timer,
+    VerticalEffect,
+    Widget,
+    get_database,
+    get_inventory_item,
+)
 from tinyrpg.particles import PickUp
 from tinyrpg.widgets import MessageBox
 
@@ -11,6 +20,7 @@ class Game(Protocol):
     player: Character
     particles: list[Particle] = []
     widgets: list[Widget] = []
+    should_end_timer: Timer
 
 
 class GraceQuest:
@@ -27,6 +37,9 @@ class GraceQuest:
 
     def is_completed(self) -> bool:
         return self.quest_state == 3
+
+    def is_final(self) -> bool:
+        return True
 
     def provide_equipment(self, game: Game):
         sword = get_inventory_item("Sword")
@@ -46,6 +59,7 @@ class GraceQuest:
         assert game.player.inventory is not None, "Inventory must exist"
         potion = get_inventory_item("Potion")
         game.particles.append(PickUp(game.player.pos, pr.Vector2(0, -1), potion, game.player))
+        game.should_end_timer.set()
         self.quest_state = 3
 
     def process_next_state(self, game: Game):

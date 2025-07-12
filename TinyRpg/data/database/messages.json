@@ -26,6 +26,12 @@
       ["PLAYER", "Because I always return.\nFor you. Always."],
       ["GRACE", "Then stay.\nNot as a hero.\nNot as a knight.\nBut as the man I love."],
       ["PLAYER", "Then let this be our new quest...\nOne we walk together."]
+    ],
+    "WIN": [
+      "Congratulation!\n \nYou retrieve the gem of the\nprincess and save the kingdom.\n \nYou are a true Hero."
+    ],
+    "LOST": [
+      "Looser!\n \nYou didn't retrieve the gem of the\nprincess.\n \nYou are not a true Hero."
     ]
   }
 }
