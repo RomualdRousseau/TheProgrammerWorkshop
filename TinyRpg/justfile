@@ -1,32 +1,38 @@
 default:
-	just --list
+  just --list
 
 sync:
-	uv sync
+  uv sync
 
 update:
-	uv lock --upgrade
-	uv sync
+  uv lock --upgrade
+  uv sync
 
 clean:
-	uvx pyclean .
-	rm -rf dist
+  uvx pyclean .
+  rm -rf dist
+
+format:
+  uvx ruff format --extend-select "I"
 
 check:
-	uvx ruff check
-	uvx ty check
+  uvx ruff check
+  uvx ty check
+
+edit:
+  uv run nvim .
 
 test TEST:
-	uv run pytest {{TEST}}
+  uv run pytest {{TEST}}
 
 test-all:
-	uv run pytest
+  uv run pytest
 
 build: check
-	uv build
+  uv build
 
 publish:
-	uv publish
+  uv publish
 
 run:
-	uv run tinyrpg
+  uv run tinyrpg

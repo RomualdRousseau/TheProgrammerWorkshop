@@ -157,6 +157,9 @@ class Game:
             if trigger.name[:4] == "goto":
                 self.events.append(SceneEvent("change", (self.level_name, trigger.name)))
 
+        if self.player.should_be_free():
+            self.events.append(SceneEvent("change", (self.level_name, "game_over")))
+
     def garbage_collect(self) -> None:
         self.characters = [character for character in self.characters if not character.should_be_free()]
         self.particles = [particle for particle in self.particles if not particle.should_be_free()]

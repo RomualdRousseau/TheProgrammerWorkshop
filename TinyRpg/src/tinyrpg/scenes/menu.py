@@ -35,7 +35,6 @@ class Menu:
 
     def update(self, dt: float):
         self.menu_box.update(dt)
-
         match self.menu_box.selected_item:
             case MenuItem.LOAD:
                 self.events.append(SceneEvent("load", ()))

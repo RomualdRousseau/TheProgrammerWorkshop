@@ -2,8 +2,9 @@ import math
 
 
 class Timer:
-    def __init__(self):
+    def __init__(self, time: float):
         self.time = math.inf
+        self.max_time = time
 
     def is_running(self):
         return self.time != math.inf
@@ -11,9 +12,9 @@ class Timer:
     def is_elapsed(self):
         return self.time <= 0
 
-    def set(self, time: float):
+    def set(self):
         if not self.is_running():
-            self.time = time
+            self.time = self.max_time
 
     def reset(self):
         if self.is_running():
