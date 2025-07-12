@@ -71,3 +71,4 @@ from tinyrpg.engine.utils.bbox import resize_bbox as resize_bbox
 from tinyrpg.engine.utils.pickle import PRPickler as PRPickler
 from tinyrpg.engine.utils.pickle import PRUnpickler as PRUnpickler
 from tinyrpg.engine.utils.quad_tree import QuadTreeBuilder as QuadTreeBuilder
+from tinyrpg.engine.utils.timer import Timer as Timer

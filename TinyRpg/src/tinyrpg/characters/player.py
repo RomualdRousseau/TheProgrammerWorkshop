@@ -11,6 +11,7 @@ from tinyrpg.engine import (
     CharacterAction,
     CharacterStats,
     EquipmentType,
+    Timer,
     get_player_inventory,
     is_action_down,
 )
@@ -40,6 +41,11 @@ HERO_STATS = lambda: CharacterStats(
 class Player(Character):
     def __init__(self, name: str, pos: pr.Vector2, boundary: pr.BoundingBox):
         super().__init__("player", name, pos, HERO_STATS(), HERO_ANIMATIONS(), boundary, Rules())
+        self.until_free_timer = Timer(2)
+        self.inventory = get_player_inventory()
+
+    def reload_resources(self):
+        super().reload_resources()
         self.inventory = get_player_inventory()
 
     def handle_ai(self) -> None:
@@ -66,7 +72,3 @@ class Player(Character):
         if is_action_down(INPUT_ATTACK) and self.inventory.is_equiped_with(EquipmentType.WEAPON):
             self.speed = 0
             self.actions = (self.actions & CHARACTER_NO_RESET_MASK) | CharacterAction.ATTACKING
-
-    def reload_resources(self):
-        super().reload_resources()
-        self.inventory = get_player_inventory()

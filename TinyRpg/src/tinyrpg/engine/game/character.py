@@ -89,8 +89,8 @@ class Character(AnimatedSprite):
         self.dir = pr.vector2_zero()
         self.speed = 0
         self.actions = CharacterAction.IDLING
-        self.attack_timer = Timer()
-        self.free_timer = Timer()
+        self.attack_timer = Timer(self.stats.attack_speed)
+        self.until_free_timer = Timer(CHARACTER_FREE_TIMER)
         self.trigger_near = CharacterTrigger()
         self.trigger_far = CharacterTrigger()
         self.events: list[CharacterEvent] = []
@@ -99,7 +99,7 @@ class Character(AnimatedSprite):
         self.inventory: Optional[Inventory] = None
 
     def should_be_free(self) -> bool:
-        return self.health <= 0 and self.free_timer.is_elapsed()
+        return self.health <= 0 and self.until_free_timer.is_elapsed()
 
     def get_layer(self):
         return 1
@@ -153,7 +153,7 @@ class Character(AnimatedSprite):
             if self.trigger_near.curr:
                 self.trigger_near.curr.hit(self.get_damage())
         else:
-            self.attack_timer.set(self.stats.attack_speed)
+            self.attack_timer.set()
 
     def reset_triggers(self):
         self.trigger_near.dist = math.inf
@@ -241,7 +241,7 @@ class Character(AnimatedSprite):
             self.dir = pr.vector2_zero()
             self.speed = 0
             self.actions = CharacterAction.DYING
-            self.free_timer.set(CHARACTER_FREE_TIMER)
+            self.until_free_timer.set()
 
     def think(self):
         self.stop_talk()
@@ -260,7 +260,7 @@ class Character(AnimatedSprite):
             return
 
         self.attack_timer.update(dt)
-        self.free_timer.update(dt)
+        self.until_free_timer.update(dt)
 
         self.move_constant(pr.vector2_scale(self.dir, self.speed), dt)
         self.constrain_to_boundary(self.boundary)

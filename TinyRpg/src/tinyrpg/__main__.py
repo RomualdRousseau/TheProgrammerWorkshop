@@ -2,7 +2,7 @@ import pyray as pr
 
 from tinyrpg.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from tinyrpg.engine import FadeInOut, Scene, process_scene_event
-from tinyrpg.scenes import Game, Menu, intro
+from tinyrpg.scenes import Game, GameOver, GameWinner, Menu, intro
 
 INITIAL_STATE: Scene = intro
 
@@ -11,13 +11,27 @@ STATES: dict[str, Scene] = {
     "menu": FadeInOut("menu", Menu()),
     "level1": FadeInOut("level1", Game("level1")),
     "level2": FadeInOut("level2", Game("level2")),
+    "game_winner": FadeInOut("game_winner", GameWinner()),
+    "game_over": FadeInOut("game_over", GameOver()),
 }
 
 TRANSITION_TABLE: dict[str, dict[str, Scene]] = {
     "intro": {"keypress": STATES["menu"]},
     "menu": {"goto_level1": STATES["level1"]},
-    "level1": {"goto_level2": STATES["level2"], "goto_menu": STATES["menu"]},
-    "level2": {"goto_level1": STATES["level1"], "goto_menu": STATES["menu"]},
+    "level1": {
+        "goto_level2": STATES["level2"],
+        "goto_menu": STATES["menu"],
+        "game_winner": STATES["game_winner"],
+        "game_over": STATES["game_over"],
+    },
+    "level2": {
+        "goto_level1": STATES["level1"],
+        "goto_menu": STATES["menu"],
+        "game_winner": STATES["game_winner"],
+        "game_over": STATES["game_over"],
+    },
+    "game_winner": {},
+    "game_over": {},
 }
 
 
