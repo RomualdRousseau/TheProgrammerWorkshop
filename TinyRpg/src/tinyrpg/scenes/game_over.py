@@ -32,7 +32,7 @@ class GameOver:
         self.text_box.update(dt)
 
         if self.text_box.closed:
-            self.events.append(SceneEvent("quit", ()))
+            self.events.append(SceneEvent("change", ("menu_level", "goto_menu")))
 
     def draw(self):
         pr.clear_background(self.color)

@@ -9,16 +9,17 @@ INITIAL_STATE: Scene = intro
 STATES: dict[str, Scene] = {
     "intro": intro,
     "menu": FadeInOut("menu", Menu()),
+    "menu_level": FadeInOut("menu_level", Menu(with_save=True)),
     "level1": FadeInOut("level1", Game("level1")),
     "level2": FadeInOut("level2", Game("level2")),
-    "menu_level": FadeInOut("menu_level", Menu(with_save = True)),
     "game_over_win": FadeInOut("game_over_win", GameOver("WIN", pr.WHITE)),
     "game_over_lost": FadeInOut("game_over_lost", GameOver("LOST", pr.BLACK)),
 }
 
 TRANSITION_TABLE: dict[str, dict[str, Scene]] = {
-    "intro": {"keypress": STATES["menu"]},
+    "intro": {"goto_menu": STATES["menu"]},
     "menu": {"goto_level1": STATES["level1"]},
+    "menu_level": {"goto_menu": STATES["menu"]},
     "level1": {
         "goto_level2": STATES["level2"],
         "goto_menu": STATES["menu_level"],
@@ -31,7 +32,6 @@ TRANSITION_TABLE: dict[str, dict[str, Scene]] = {
         "goto_game_over_win": STATES["game_over_win"],
         "goto_game_over_lost": STATES["game_over_lost"],
     },
-    "menu_level": {},
     "game_over_win": {},
     "game_over_lost": {},
 }

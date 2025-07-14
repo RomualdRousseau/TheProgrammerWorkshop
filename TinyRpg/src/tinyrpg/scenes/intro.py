@@ -30,7 +30,7 @@ def update(dt: float):
     timer.update(dt)
 
     if timer.is_elapsed() or pr.is_key_pressed(pr.KeyboardKey.KEY_X):
-        events.append(SceneEvent("change", ("intro", "keypress")))
+        events.append(SceneEvent("change", ("intro", "goto_menu")))
 
 
 def draw():

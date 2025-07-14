@@ -1,4 +1,5 @@
 ## TODO
+
 - Map
   - [ ] redesign new maps
 - Map event (location, time)
@@ -17,6 +18,8 @@
 - Inventory / Equipment
   - [x] Inventory / Equipment
   - [x] Revise navigation
+- Object
+  - [ ] Do coin
 - Other
   - [x] Scene events including scene change/save/load
   - [ ] Animated particle
