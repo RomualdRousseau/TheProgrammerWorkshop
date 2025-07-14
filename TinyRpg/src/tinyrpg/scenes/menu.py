@@ -9,26 +9,24 @@ from tinyrpg.widgets import MenuBox, MenuItem
 
 
 class Menu:
-    def __init__(self):
-        self.first_use = True
+    def __init__(self, with_save: bool = False):
+        self.with_save = with_save
         self.events: list[SceneEvent] = []
 
     def next_event(self) -> Optional[SceneEvent]:
         return self.events.pop(0) if len(self.events) > 0 else None
 
     def init(self, previous_scene: Optional[Scene] = None):
-        self.menu_box = MenuBox(not self.first_use)
+        self.menu_box = MenuBox(self.with_save)
         self.fixed_camera = FixedCamera()
 
-        if self.first_use:
+        if not self.with_save:
             self.texture = load_texture("screen-menu")
         else:
             image = pr.load_image_from_screen()
             pr.image_resize(image, WORLD_WIDTH, WORLD_HEIGHT)
             self.texture = pr.load_texture_from_image(image)
             pr.unload_image(image)
-
-        self.first_use = False
 
     def release(self):
         unload_resources()

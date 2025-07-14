@@ -1,4 +1,6 @@
 ## TODO
+- Map
+  - [ ] redesign new maps
 - Map event (location, time)
   - [x] get_trigger(location)
   - [x] distance with another point
@@ -19,4 +21,4 @@
   - [x] Scene events including scene change/save/load
   - [ ] Animated particle
   - [x] Locked object
-  - [-] Do a proper intro and menu
+  - [x] Do a proper intro and menu
