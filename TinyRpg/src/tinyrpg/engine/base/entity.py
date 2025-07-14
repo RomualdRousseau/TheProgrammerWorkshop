@@ -41,6 +41,11 @@ class Entity:
     def clamp_force(self, min_force: float, max_force: float):
         self.force = pr.vector2_clamp_value(self.force, min_force, max_force)
 
+    def drag_force(self, cd: float, rho: float, a: float):
+        drag_value = 0.5 * cd * rho * a * pr.vector2_length(self.vel)
+        drag_force = pr.vector2_scale(pr.vector2_normalize(self.vel), -drag_value)
+        self.force = pr.vector2_add(self.force, drag_force)
+
     def gravity(self):
         gravity_force = pr.vector2_scale(GRAVITY_FORCE, self.mass)
         self.force = pr.vector2_add(self.force, gravity_force)
