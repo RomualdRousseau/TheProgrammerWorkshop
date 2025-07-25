@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Any, Protocol
 
 from tinyrpg.engine.game.character import Character
 
@@ -11,3 +11,7 @@ class Quest(Protocol):
     def is_completed(self) -> bool: ...
 
     def process_next_state(self, game): ...
+
+    def save_state(self) -> dict[str, Any]: ...
+
+    def restore_state(self, state: dict[str, Any]): ...
