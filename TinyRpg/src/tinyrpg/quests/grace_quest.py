@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Any, Protocol
 
 import pyray as pr
 
@@ -89,3 +89,9 @@ class GraceQuest:
                         )
                     )
                     should_return = True
+
+    def save_state(self) -> dict[str, Any]:
+        return {}
+
+    def restore_state(self, state: dict[str, Any]):
+        pass

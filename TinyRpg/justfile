@@ -19,9 +19,6 @@ check:
   uvx ruff check
   uvx ty check
 
-edit:
-  uv run nvim .
-
 test TEST:
   uv run pytest {{TEST}}
 

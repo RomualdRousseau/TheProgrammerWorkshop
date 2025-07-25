@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Any, Protocol
 
 from tinyrpg.engine import Character, Particle, VerticalEffect, Widget
 from tinyrpg.widgets import ShoppingCart
@@ -26,3 +26,9 @@ class GraceShop:
 
     def process_next_state(self, game: Game):
         game.widgets.append(VerticalEffect(ShoppingCart(game.player)))
+
+    def save_state(self) -> dict[str, Any]:
+        return {}
+
+    def restore_state(self, state: dict[str, Any]):
+        pass

@@ -75,7 +75,7 @@
 </data>
  </layer>
  <objectgroup id="3" name="Things">
-  <object id="1" name="goto_level1" type="trigger" x="167.419" y="0.843417">
+  <object id="1" name="goto_level1" type="trigger" x="168" y="0">
    <properties>
     <property name="name" value="goto_level1"/>
     <property name="size" type="int" value="16"/>
@@ -167,7 +167,7 @@
    </properties>
    <point/>
   </object>
-  <object id="18" name="start" type="start" x="184.288" y="10.5428">
+  <object id="18" name="start" type="start" x="168" y="8">
    <properties>
     <property name="type" value="start"/>
    </properties>

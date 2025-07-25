@@ -96,8 +96,8 @@
     "project": "tinyrpg.tiled-project",
     "property.type": "object",
     "recentFiles": [
-        "levels/level2.tmx",
         "levels/level1.tmx",
+        "levels/level2.tmx",
         "tilesets/tilesets.tsx",
         "tilesets/decorations.tsx",
         "tilesets/Basic_Furniture.tsx",

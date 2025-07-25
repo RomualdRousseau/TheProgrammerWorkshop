@@ -25,3 +25,4 @@
   - [ ] Animated particle
   - [x] Locked object
   - [x] Do a proper intro and menu
+  - [ ] Fog of war
