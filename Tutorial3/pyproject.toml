@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "Tutorials"
+version = "0.1.0"
+description = ""
+authors = ["Romuald Rousseau <romuald.rousseau@servier.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
+ruff = "^0.7.4"
+python-dotenv = "^1.0.1"
+pixi = "^1.0.1"
+pytest = "^8.2.1"
+coverage = "^7.5.3"
+pre-commit = "^3.7.1"
+mypy = "^1.10.0"
+snakeviz = "^2.2.0"
+validate-pyproject = "^0.18"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "N",  # PEP8 naming convetions
+    "D"   # pydocstyle
+]
+ignore = [
+    "C901",  # Too complex
+    "W191",  # Indentation contains tabs
+    "D401",  # Imperative mood
+    "D100",  # Missing docstring in public module
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D103",  # Missing docstring in public function
+    "D104",  # Missing docstring in public package
+    "D105",  # Missing docstring in magic method
+    "D106",  # Missing docstring in public nested class
+    "D107",  # Missing docstring in `__init__`
+    "E731"   # Lambda-assignment
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
