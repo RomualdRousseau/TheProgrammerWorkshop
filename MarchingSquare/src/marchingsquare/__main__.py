@@ -1,6 +1,7 @@
 import pyray as pr
 
-from marchingsquare import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH, sketch
+from marchingsquare import sketch
+from marchingsquare.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 
 
 def main():

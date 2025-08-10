@@ -1,4 +1,4 @@
-APP_NAME = "Tutorial5 - TinyRpg"
+APP_NAME = "TinyRpg"
 
 WINDOW_WIDTH = 1024  # px
 WINDOW_HEIGHT = 1024  # px

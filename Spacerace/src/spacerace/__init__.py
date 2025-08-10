@@ -1,6 +1,6 @@
 import pyray as pr
 
-APP_NAME = "Tutorial1 - Space Race"
+APP_NAME = "Space Race"
 
 WINDOW_WIDTH = 512  # px
 WINDOW_HEIGHT = 512  # px
