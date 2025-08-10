@@ -5,7 +5,7 @@ import numpy as np
 import pyray as pr
 from numba import njit
 
-from metaball import EPSILON, FIELD_HEIGHT, FIELD_WIDTH, METABALL_RADIUS, METABALL_SPEED
+from metaball.constants import EPSILON, FIELD_HEIGHT, FIELD_WIDTH, METABALL_RADIUS, METABALL_SPEED
 
 Metaballs = tuple[int, np.ndarray, np.ndarray, np.ndarray]
 

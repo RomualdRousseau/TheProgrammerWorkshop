@@ -9,14 +9,14 @@ update:
 	uv sync
 
 clean:
-	uv run pyclean .
+	uvx pyclean .
 	rm -rf dist
 
 test TEST:
-	uv run pytest {{TEST}}
+	uvx pytest {{TEST}}
 
 test-all:
-	uv run pytest
+	uvx pytest
 
 build:
 	uv build

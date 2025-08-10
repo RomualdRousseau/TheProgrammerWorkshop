@@ -1,7 +1,7 @@
 import numpy as np
 import pyray as pr
 
-from metaball import METABALLS_COUNT, METABALLS_PALETTE, WINDOW_HEIGHT, WINDOW_WIDTH
+from metaball.constants import METABALLS_COUNT, METABALLS_PALETTE, WINDOW_HEIGHT, WINDOW_WIDTH
 from metaball.metaballs import (
     Metaballs,
     create_metaballs,

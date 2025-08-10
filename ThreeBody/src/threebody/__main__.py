@@ -1,6 +1,6 @@
 import pyray as pr
 
-from threebody import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
+from threebody.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 from threebody.scenes import galaxy
 
 

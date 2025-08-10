@@ -1,6 +1,7 @@
 import pyray as pr
 
-from metaball import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH, sketch
+from metaball import sketch
+from metaball.constants import APP_NAME, FRAME_RATE, WINDOW_HEIGHT, WINDOW_WIDTH
 
 
 def main():
