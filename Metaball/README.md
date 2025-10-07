@@ -36,7 +36,7 @@ Each metaball m contributes:
 f_m(x, y) = r_m² / ((x - c_{m_x})² + (y - c_{m_y})²)
 ```
 Where:
-- r_m is the radius of the metaball m 
+- r_m is the radius of the metaball m
 - (c_m_x, c_m_y) is the center of the metaball m
 
 Then a pixel value is:

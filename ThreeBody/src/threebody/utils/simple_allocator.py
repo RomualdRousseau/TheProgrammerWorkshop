@@ -1,5 +1,4 @@
 class SimpleAllocator:
-
     def __init__(self, size: int):
         self.free_list = list(reversed(range(size)))
         self.allocated = []

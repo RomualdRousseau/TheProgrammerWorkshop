@@ -57,4 +57,3 @@ convention = "google"
 testpaths = [
     "tests",
 ]
-

@@ -1,0 +1,62 @@
+[project]
+name = "taxi_driver_agent"
+version = "0.1.0"
+description = "Taxi Driver Agent"
+authors = [{ name = "Romuald Rousseau", email = "romualdrousseau@gmail.com" }]
+requires-python = "~=3.11"
+readme = "README.md"
+dependencies = [
+    "gymnasium>=0.29.1,<0.30",
+    "numpy==2.0.0",
+    "fire>=0.6.0,<0.7",
+]
+
+[tool.uv]
+
+[tool.hatch.build.targets.sdist]
+include = ["taxi_driver_agent"]
+
+[tool.hatch.build.targets.wheel]
+include = ["taxi_driver_agent"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.coverage.run]
+omit = ["tests/*"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "N",  # PEP8 naming convetions
+    "D"   # pydocstyle
+]
+ignore = [
+    "C901",  # Too complex
+    "W191",  # Indentation contains tabs
+    "D401",  # Imperative mood
+    "D100",  # Missing docstring in public module
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D103",  # Missing docstring in public function
+    "D104",  # Missing docstring in public package
+    "D105",  # Missing docstring in magic method
+    "D106",  # Missing docstring in public nested class
+    "D107",  # Missing docstring in `__init__`
+    "E731"   # Lambda-assignment
+]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+

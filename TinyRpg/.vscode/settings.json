@@ -14,7 +14,7 @@
   "python.testing.pytestArgs": [
     "tests"
   ],
-  
+
   // Git
   "git.openRepositoryInParentFolders": "always",
 

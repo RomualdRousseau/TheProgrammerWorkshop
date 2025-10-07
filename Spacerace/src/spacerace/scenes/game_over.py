@@ -1,4 +1,3 @@
-
 import pyray as pr
 
 from spacerace import (
