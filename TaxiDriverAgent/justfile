@@ -14,9 +14,17 @@ install-dev:
 update:
     uv sync --upgrade
 
+# Run the tutorial in training mode
+run-training:
+    uv run taxi_driver_agent --mode=training --model-file=agent.model --duration=120
+
+# Run the tutorial in training mode
+run-validation:
+    uv run taxi_driver_agent --mode=validation --model-file=agent.model --duration=120
+
 # Run the application
 run *args:
-    uv run cartpole {{args}}
+    uv run taxi_driver_agent {{args}}
 
 # Run tests
 test:
@@ -25,6 +33,11 @@ test:
 # Run tests with coverage
 test-cov:
     uvx pytest --cov=src --cov-report=html --cov-report=term
+
+# Run profiling
+profile:
+    uvx cProfile -o taxi_driver_agent.prof -m taxi_driver_agent
+    uvx snakeviz taxi_driver_agent.prof
 
 # Run linting
 lint:
