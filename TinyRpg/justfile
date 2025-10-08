@@ -32,4 +32,4 @@ publish:
   uv publish
 
 run:
-  uv run tinyrpg
+  uv run src/tinyrpg
