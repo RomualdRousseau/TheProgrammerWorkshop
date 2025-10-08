@@ -31,3 +31,4 @@ repos:
       - id: mypy
         args:
           - --ignore-missing-imports
+          - --check-untyped-defs

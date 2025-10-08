@@ -1,3 +1,5 @@
+APP_NAME := "taxi_driver_agent"
+
 # Default recipe to display help
 default:
     @just --list
@@ -14,17 +16,17 @@ install-dev:
 update:
     uv sync --upgrade
 
+# Run the application
+run *args:
+    uv run src/{{APP_NAME}} {{args}}
+
 # Run the tutorial in training mode
 run-training:
-    uv run taxi_driver_agent --mode=training --model-file=agent.model --duration=120
+    uv run src/{{APP_NAME}} --mode=training --model-file=agent.model --duration=120
 
 # Run the tutorial in training mode
 run-validation:
-    uv run taxi_driver_agent --mode=validation --model-file=agent.model --duration=120
-
-# Run the application
-run *args:
-    uv run taxi_driver_agent {{args}}
+    uv run src/{{APP_NAME}} --mode=validation --model-file=agent.model --duration=120
 
 # Run tests
 test:
@@ -36,8 +38,8 @@ test-cov:
 
 # Run profiling
 profile:
-    uvx cProfile -o taxi_driver_agent.prof -m taxi_driver_agent
-    uvx snakeviz taxi_driver_agent.prof
+    uv run python -m cProfile -o {{APP_NAME}}.prof -m {{APP_NAME}}
+    uvx snakeviz {{APP_NAME}}.prof
 
 # Run linting
 lint:
@@ -55,7 +57,7 @@ security:
 
 # Clean build artifacts and cache
 clean:
-    uvx pyclean . 
+    uvx pyclean .
 
 # Build the package
 build:

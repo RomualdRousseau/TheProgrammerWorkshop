@@ -1,9 +1,9 @@
 class SimpleAllocator:
     def __init__(self, size: int):
         self.free_list = list(reversed(range(size)))
-        self.allocated = []
+        self.allocated: list[int] = []
 
-    def alloc(self):
+    def alloc(self) -> int:
         if len(self.free_list) > 0:
             e = self.free_list.pop()
             self.allocated.append(e)

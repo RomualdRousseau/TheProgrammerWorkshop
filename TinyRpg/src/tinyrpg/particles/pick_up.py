@@ -21,7 +21,7 @@ class PickUp(Particle):
         self.target = target
         self.texture = load_texture(item.texture)
         self.vel = pr.vector2_scale(pr.vector2_normalize(dir), PICKUP_SPEED_INITIAL)
-        self.time = 0
+        self.time = 0.0
 
     def play_sound_effect(self) -> None:
         if pr.vector2_distance(self.pos, self.target.pos) < PICKUP_RADIUS2 and self.time >= 1.0:

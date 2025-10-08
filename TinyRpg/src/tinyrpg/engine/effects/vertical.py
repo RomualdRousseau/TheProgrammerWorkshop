@@ -12,7 +12,7 @@ class VerticalEffect(Widget):
         super().__init__(widget.pos, widget.size)
         self.widget = widget
         self.state = 0
-        self.fade_time = 0
+        self.fade_time = 0.0
         self.texture = load_texture("skin-gui")
         self.textureNPatch = pr.NPatchInfo(
             pr.Rectangle(0, 0, 32, 32),

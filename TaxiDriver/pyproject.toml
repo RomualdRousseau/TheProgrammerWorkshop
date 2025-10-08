@@ -12,26 +12,13 @@ dependencies = [
     "tqdm>=4.66.4,<5",
     "numba>=0.60.0,<0.61",
     "scipy>=1.14.0,<2",
+    "types-tqdm>=4.67.0.20250809",
 ]
-
-[tool.hatch.build.targets.sdist]
-include = ["taxi_driver_env"]
-
-[tool.hatch.build.targets.wheel]
-include = ["taxi_driver_env"]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.coverage.run]
-omit = [
-    "tests/*",
-    "taxi_driver_env/utils/*",
-    "taxi_driver_env/render/*",
-    "taxi_driver_env/game/*",
-    "taxi_driver_env/math/linalg.py",
-]
 [tool.ruff]
 line-length = 120
 
@@ -66,3 +53,16 @@ testpaths = [
     "tests",
 ]
 
+[tool.coverage.run]
+omit = [
+    "tests/*",
+    "src/taxi_driver_env/utils/*",
+    "src/taxi_driver_env/render/*",
+    "src/taxi_driver_env/game/*",
+    "src/taxi_driver_env/math/linalg.py",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]

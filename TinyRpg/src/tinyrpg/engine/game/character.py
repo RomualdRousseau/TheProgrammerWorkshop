@@ -85,9 +85,9 @@ class Character(AnimatedSprite):
         super().__init__(id, pos, load_texture(f"skin-{id}"), animations)
         self.name = name
         self.stats = stats
-        self.health = self.stats.hp
+        self.health: float = self.stats.hp
         self.dir = pr.vector2_zero()
-        self.speed = 0
+        self.speed = 0.0
         self.actions = CharacterAction.IDLING
         self.attack_timer = Timer(self.stats.attack_speed)
         self.until_free_timer = Timer(CHARACTER_FREE_TIMER)

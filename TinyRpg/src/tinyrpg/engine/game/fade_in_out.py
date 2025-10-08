@@ -23,7 +23,7 @@ class FadeInOut:
         else:
             self.texture = None
 
-        self.time = 0
+        self.time = 0.0
         self.next_scene.init(previous_scene)
 
     def release(self):

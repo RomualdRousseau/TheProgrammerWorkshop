@@ -1,3 +1,5 @@
+APP_NAME := "taxi_driver_env"
+
 # Default recipe to display help
 default:
     @just --list
@@ -16,15 +18,20 @@ update:
 
 # Run the application
 run *args:
-    uv run cartpole {{args}}
+    uv run src/{{APP_NAME}} {{args}}
 
 # Run tests
 test:
-    uvx pytest
+    uv run pytest
 
 # Run tests with coverage
 test-cov:
-    uvx pytest --cov=src --cov-report=html --cov-report=term
+    uv run pytest --cov=src --cov-report=html --cov-report=term
+
+# Run profiling
+profile:
+    uv run python -m cProfile -o {{APP_NAME}}.prof -m {{APP_NAME}}
+    uvx snakeviz {{APP_NAME}}.prof
 
 # Run linting
 lint:
@@ -42,7 +49,7 @@ security:
 
 # Clean build artifacts and cache
 clean:
-    uvx pyclean . 
+    uvx pyclean .
 
 # Build the package
 build:
@@ -66,9 +73,7 @@ shell:
 
 # Show project info
 info:
-    uv version
-    @echo ""
-    @echo "Python version:"
+    uv self version
     uv run python --version
 
 # Export requirements.txt for compatibility

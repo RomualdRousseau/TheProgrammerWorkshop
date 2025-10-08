@@ -31,6 +31,7 @@ from tinyrpg.engine import (
     is_action_pressed,
     play_sound,
 )
+from tinyrpg.engine.gui.component import Component
 
 SHOPPING_CART_HEIGHT = int(WORLD_HEIGHT * 0.8)  # px
 SHOPPING_CART_TEXT_HEIGHT = TEXTBOX_FONT_SIZE_DEFAULT + COMPONENT_PADDING * 2 + 1
@@ -64,15 +65,15 @@ class ShoppingCart(Window):
         for _ in range(SHOPPING_CART_SIZE):
             item_key = choice(list(get_database().select_dict("items").keys()))
             item = get_inventory_item(item_key)
-            item_box = ItemList(item)
-            cart_panel.add(item_box)
-            self.cart.append(item_box)
+            item_list = ItemList(item)
+            cart_panel.add(item_list)
+            self.cart.append(item_list)
 
         bag_rows = int(math.sqrt(len(self.inventory.bag)))
         bag_cols = int(math.sqrt(len(self.inventory.bag)))
         bag = TableLayout(bag_rows, bag_cols)
-        for item in self.inventory.bag:
-            item_box = ItemBox(item)
+        for item_bag in self.inventory.bag:
+            item_box = ItemBox(item_bag)
             bag.add(item_box)
             self.bag.append(item_box)
 
@@ -146,7 +147,7 @@ class ShoppingCart(Window):
             self.action = ShoppingCartAction.SELLING
 
     def update_items(self):
-        for i, item_box in enumerate(self.cart + self.bag):
+        for i, item_box in enumerate(list[Component](self.cart) + list[Component](self.bag)):
             item_box.selected = self.cursor == i
             if i >= SHOPPING_CART_SIZE:
                 item_box.item = self.inventory.bag[i - SHOPPING_CART_SIZE]
@@ -157,7 +158,7 @@ class ShoppingCart(Window):
         self.stats_coin.text = f"{self.inventory.coin}"
 
     def update(self, dt: float):
-        self.action = "IDLE"
+        self.action = ShoppingCartAction.NONE
         self.handle_input()
         self.update_items()
         self.update_stats()

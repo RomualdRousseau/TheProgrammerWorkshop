@@ -10,6 +10,8 @@ COMPONENT_BORDER = 1  # px
 class Component(Widget):
     def __init__(self):
         super().__init__(pr.vector2_zero(), pr.vector2_one())
+        self.item = None
+        self.selected = False
 
     def get_rect(self) -> pr.Rectangle:
         rect = super().get_rect()

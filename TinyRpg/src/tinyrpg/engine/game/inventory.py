@@ -84,7 +84,7 @@ class Inventory:
         self.coin = 0
 
     def save_state(self) -> dict[str, Any]:
-        state = {}
+        state: dict[str, Any] = {}
         state["equipment"] = self.equipment
         state["bag"] = self.bag
         state["coin"] = self.coin

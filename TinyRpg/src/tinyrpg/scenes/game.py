@@ -26,6 +26,7 @@ from tinyrpg.engine import (
     push_state,
     unload_resources,
 )
+from tinyrpg.engine.base.entity import Entity
 from tinyrpg.objects import OBJECTS
 from tinyrpg.particles import PickUp, Toast
 from tinyrpg.quests import QUESTS
@@ -97,11 +98,11 @@ class Game:
             if has_collision:
                 character.collide(collision_vector)
 
-        for character, other in combinations(self.characters + self.objects, 2):
-            has_collision, collision_vector = other.check_collision(character.get_bbox())
+        for entity1, entity2 in combinations(list[Entity](self.characters) + list[Entity](self.objects), 2):
+            has_collision, collision_vector = entity2.check_collision(entity1.get_bbox())
             if has_collision:
-                character.collide(collision_vector, other)
-                other.collide(pr.vector2_scale(collision_vector, -1), character)
+                entity1.collide(collision_vector, entity2)
+                entity2.collide(pr.vector2_scale(collision_vector, -1), entity1)
 
         for character in self.characters:
             has_los = (
@@ -127,10 +128,10 @@ class Game:
             self.widgets.append(VerticalEffect(InventoryBox(self.player)))
 
         for character in self.characters:
-            for event in character.events:
-                match (character, event.name):
+            for char_event in character.events:
+                match (character, char_event.name):
                     case Player(), "hit":
-                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{char_event.value}"))
                     case Player(), "die":
                         self.should_end_timer.set()
                     case Enemy(), "trigger_far_enter":
@@ -138,7 +139,7 @@ class Game:
                     case Enemy(), "trigger_far_leave":
                         self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), "?"))
                     case Enemy(), "hit":
-                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{event.value}"))
+                        self.particles.append(Toast(pr.vector2_add(character.pos, (0, -16)), f"-{char_event.value}"))
                     case Npc(), "trigger_near_enter":
                         self.particles.append(Toast(pr.vector2_add(self.player.pos, (0, -16)), "?"))
                         self.player.start_talk()
@@ -148,8 +149,8 @@ class Game:
                             quest.process_next_state(self)
 
         for obj in self.objects:
-            for event in obj.events:
-                if event.name == "collide" and not obj.is_open():
+            for obj_event in obj.events:
+                if obj_event.name == "collide" and not obj.is_open():
                     if obj.is_locked(self.player.inventory):
                         self.particles.append(Toast(pr.vector2_add(self.player.pos, (0, -16)), "LOCKED"))
                     else:
@@ -231,12 +232,12 @@ class Game:
     def reset_state(self):
         self.initialized = False
         self.first_use = True
-        self.events: list[SceneEvent] = []
+        self.events = []
         for quest in QUESTS.values():
             quest.reset()
 
     def save_state(self) -> dict[str, Any]:
-        state = {}
+        state: dict[str, Any] = {}
         state["first_use"] = self.first_use
         if not self.first_use:
             state["player"] = self.player

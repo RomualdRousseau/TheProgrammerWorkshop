@@ -77,12 +77,12 @@ class GraceQuest:
                     if game.player.inventory.contains(get_inventory_item("Grace_Gem")):
                         self.give_gem(game)
                     else:
-                        messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["2"]
+                        messages = get_database().select_dict("messages")["quest_grace"]["2"]
                         game.widgets.append(VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])))
                         should_return = True
 
                 case 2:
-                    messages: list[list[str]] = get_database().select_dict("messages")["quest_grace"]["3"]
+                    messages = get_database().select_dict("messages")["quest_grace"]["3"]
                     game.widgets.append(
                         VerticalEffect(DialogEffect([MessageBox(*m) for m in messages])).on_close(
                             lambda: self.provide_reward(game)

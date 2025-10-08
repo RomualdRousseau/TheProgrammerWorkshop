@@ -9,6 +9,8 @@ INTRO_FONT_SIZE = 48
 
 timer = Timer(5)
 events: list[SceneEvent] = []
+fixed_camera: FixedCamera
+texture: pr.Texture
 
 
 def next_event() -> Optional[SceneEvent]:

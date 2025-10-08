@@ -14,8 +14,8 @@ class Widget(Entity):
         self.closed = False
         self.on_close_cb: Optional[Callable[[], None]] = None
         self.on_resize_cb: Optional[Callable[[], None]] = None
-        self.fixed_width = 0
-        self.fixed_height = 0
+        self.fixed_width = 0.0
+        self.fixed_height = 0.0
 
     def should_be_free(self) -> bool:
         return self.closed

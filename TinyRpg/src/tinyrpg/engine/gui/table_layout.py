@@ -58,11 +58,11 @@ class TableLayout(Widget):
         count = self.rows
         height = inner_rect.height
         for i in range(self.rows):
-            h_max = 0
+            h_max = 0.0
             for j in range(self.cols):
                 if h_max < matrix[i][j][1]:
                     h_max = matrix[i][j][1]
-            if h_max > 0:
+            if h_max > 0.0:
                 for j in range(self.cols):
                     if matrix[i][j][1] == 0:
                         matrix[i][j][1] = h_max
@@ -78,7 +78,7 @@ class TableLayout(Widget):
         cells = (x for x in self.widgets)
         pos = pr.Vector2(inner_rect.x, inner_rect.y)
         for i in range(self.rows):
-            h_max = 0
+            h_max = 0.0
             for j in range(self.cols):
                 size = pr.Vector2(*matrix[i][j])
                 if h_max < size.y:
