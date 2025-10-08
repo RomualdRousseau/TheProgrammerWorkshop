@@ -10,13 +10,13 @@ from taxi_driver_agent.pyflow.functions import __functions__
 
 
 class Trainer(Protocol):
-    """This protocol must be implemeted by all trainers to train a model."""
+    """Trainer protocol must be implemeted by all trainers to train a model."""
 
     def train(self, model: Model, x: Optional[np.ndarray], y: Optional[np.ndarray]) -> Optional[np.ndarray]: ...
 
 
 class Params:
-    """This class is responsible for handling parameters with a fixed shape.
+    """Responsible for handling parameters with a fixed shape.
 
     It allows for initialization of parameters,
     supports item setting and retrieval, copying, converting to and from list representations, and checking for
@@ -71,7 +71,7 @@ class Params:
 
 
 class Layer:
-    """This is the base class for all layers.
+    """Base class for all layers.
 
     It provides the structure for storing weights and biases,
     and outlines the necessary methods that every layer should implement or support.
@@ -109,7 +109,7 @@ class Layer:
 
 
 class Model:
-    """This is the base class for all models.
+    """Base class for all models.
 
     It provides methods to manage the model's layers, clone the model, load
     model parameters from a file, and save the model to a file.
