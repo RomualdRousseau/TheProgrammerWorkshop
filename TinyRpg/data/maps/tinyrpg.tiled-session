@@ -3,11 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "tilesets/decorations.tsx",
     "expandedProjectPaths": [
-        "tilesets",
+        "levels",
         ".",
-        "levels"
+        "tilesets"
     ],
     "fileStates": {
         "levels/level1.tmx": {
@@ -92,14 +92,16 @@
     "map.tileWidth": 16,
     "map.width": 32,
     "openFiles": [
+        "tilesets/tilesets.tsx",
+        "tilesets/decorations.tsx"
     ],
     "project": "tinyrpg.tiled-project",
     "property.type": "object",
     "recentFiles": [
-        "levels/level1.tmx",
-        "levels/level2.tmx",
         "tilesets/tilesets.tsx",
         "tilesets/decorations.tsx",
+        "levels/level1.tmx",
+        "levels/level2.tmx",
         "tilesets/Basic_Furniture.tsx",
         "tilesets/Basic_Grass.tsx",
         "tilesets/Dirt_Wide.tsx",

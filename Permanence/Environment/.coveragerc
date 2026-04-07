@@ -1,0 +1,5 @@
+[run]
+omit =
+    */ui/*
+    */__init__.py
+    */__main__.py
