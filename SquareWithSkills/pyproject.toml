@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "greensquare"
+version = "0.1.0"
+description = "A 2D Python game featuring a 32x32 green square moving in a 512x512 window built with Raylib"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "raylib>=5.0.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+greensquare-play = "greensquare.main:run"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

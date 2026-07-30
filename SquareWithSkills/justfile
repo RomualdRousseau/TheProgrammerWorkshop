@@ -1,0 +1,32 @@
+# Default recipe: list all commands
+default:
+    @just --list
+
+# Install dependencies
+sync:
+    uv sync --extra dev
+
+# Run the application
+play:
+    uv run greensquare-play
+
+# Run the test suite
+test:
+    uv run pytest
+
+# Check code style and type safety
+lint:
+    uvx ruff check .
+    uvx ty check
+
+# Format code
+format:
+    uvx ruff format .
+
+# Install git pre-commit hooks
+hooks:
+    uvx prek install
+
+# Remove Python cache and test artifacts
+clean:
+    uvx pyclean . -d all

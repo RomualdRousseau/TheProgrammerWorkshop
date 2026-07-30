@@ -1,0 +1,23 @@
+# Justfile template
+# See the developer skill reference for full guidance:
+# references/tooling.md
+
+# Default recipe: list all commands
+default:
+    @just --list
+
+# Install dependencies
+sync:
+    uv sync --extra dev
+
+# Run the application
+play:
+    uv run my-project-play
+
+# Run the test suite
+test:
+    uv run pytest
+
+# Remove Python cache and test artifacts
+clean:
+    uvx pyclean . -d all
