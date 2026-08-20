@@ -1,16 +1,26 @@
 """Scene router: dispatches update and draw between Title, Playing, Game Over."""
 
+from collections.abc import Callable
+from dataclasses import dataclass
+
 from spacerace.core import constant
 from spacerace.core.input import InputCommand
 from spacerace.core.render import RenderEngine
 from spacerace.core.state import (
     AppState,
     GameOverState,
-    PlayState,
     Scene,
     TitleState,
 )
 from spacerace.game import gameplay
+
+
+@dataclass(slots=True, frozen=True)
+class _SceneHandlers:
+    """Update/draw pair for a single scene."""
+
+    update: Callable[[InputCommand, AppState, float], AppState]
+    draw: Callable[[RenderEngine, AppState], None]
 
 
 def init() -> AppState:
@@ -24,31 +34,37 @@ def init() -> AppState:
 
 
 def update(command: InputCommand, state: AppState, dt: float) -> AppState:
-    """Dispatch update to the active scene."""
-    if state.scene == Scene.TITLE:
-        return _update_title(command, state.title, dt)
-    if state.scene == Scene.PLAYING:
-        return _update_playing(command, state.play, dt)
-    if state.scene == Scene.GAMEOVER:
-        return _update_gameover(command, state.gameover, dt)
-    return state
+    """Dispatch update to the active scene via the transition table."""
+    handlers = _SCENE_TABLE.get(state.scene)
+    if handlers is None:
+        return state
+    return handlers.update(command, state, dt)
 
 
 def draw(render: RenderEngine, state: AppState) -> None:
-    """Dispatch draw to the active scene, handling frame lifecycle per scene."""
-    if state.scene == Scene.TITLE:
-        assert state.title is not None
-        render.render_title(state.title)
-    elif state.scene == Scene.PLAYING:
-        assert state.play is not None
-        render.begin_frame()
-        gameplay.draw(render, state.play)
-        render.end_frame()
-    elif state.scene == Scene.GAMEOVER:
-        assert state.gameover is not None
-        render.begin_frame()
-        gameplay.draw(render, state.gameover.final_state)
-        render.end_frame()
+    """Dispatch draw to the active scene via the transition table."""
+    handlers = _SCENE_TABLE.get(state.scene)
+    if handlers is not None:
+        handlers.draw(render, state)
+
+
+def _draw_title(render: RenderEngine, state: AppState) -> None:
+    assert state.title is not None
+    render.render_title(state.title)
+
+
+def _draw_playing(render: RenderEngine, state: AppState) -> None:
+    assert state.play is not None
+    render.begin_frame()
+    gameplay.draw(render, state.play)
+    render.end_frame()
+
+
+def _draw_gameover(render: RenderEngine, state: AppState) -> None:
+    assert state.gameover is not None
+    render.begin_frame()
+    gameplay.draw(render, state.gameover.final_state)
+    render.end_frame()
 
 
 def _go_to_title() -> AppState:
@@ -61,10 +77,9 @@ def _go_to_title() -> AppState:
     )
 
 
-def _update_title(
-    command: InputCommand, title: TitleState | None, dt: float
-) -> AppState:
+def _update_title(command: InputCommand, state: AppState, dt: float) -> AppState:
     """Handle title input and inactivity timer."""
+    title = state.title
     if title is None:
         title = TitleState(inactivity_timer=constant.TITLE_INACTIVITY_TIMEOUT)
 
@@ -87,10 +102,9 @@ def _update_title(
     )
 
 
-def _update_playing(
-    command: InputCommand, play: PlayState | None, dt: float
-) -> AppState:
+def _update_playing(command: InputCommand, state: AppState, dt: float) -> AppState:
     """Advance the live match; transition to Game Over when time expires."""
+    play = state.play
     if play is None:
         play = gameplay.init()
     new_play = gameplay.update(command, play, dt)
@@ -112,10 +126,9 @@ def _update_playing(
     )
 
 
-def _update_gameover(
-    command: InputCommand, gameover: GameOverState | None, dt: float
-) -> AppState:
+def _update_gameover(command: InputCommand, state: AppState, dt: float) -> AppState:
     """Return to title on Space or after the game-over timeout."""
+    gameover = state.gameover
     if gameover is None:
         gameover = GameOverState(
             final_state=gameplay.init(), timeout=constant.GAMEOVER_TIMEOUT
@@ -142,3 +155,10 @@ def _update_gameover(
 def _any_mapped_key(command: InputCommand) -> bool:
     """Return True for any player movement key (confirm is handled separately)."""
     return command.p1_up or command.p1_down or command.p2_up or command.p2_down
+
+
+_SCENE_TABLE: dict[Scene, _SceneHandlers] = {
+    Scene.TITLE: _SceneHandlers(update=_update_title, draw=_draw_title),
+    Scene.PLAYING: _SceneHandlers(update=_update_playing, draw=_draw_playing),
+    Scene.GAMEOVER: _SceneHandlers(update=_update_gameover, draw=_draw_gameover),
+}
