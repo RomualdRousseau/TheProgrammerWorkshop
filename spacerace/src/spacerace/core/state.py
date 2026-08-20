@@ -5,10 +5,15 @@ from dataclasses import dataclass
 
 @dataclass(slots=True, frozen=True)
 class Player:
-    """A rocket. Position is the sprite's top-left corner in logical pixels."""
+    """A rocket. Position is the sprite's top-left corner in logical pixels.
+
+    ``respawn_timer`` counts down while the rocket is hidden after a hit;
+    when it is zero the rocket is active.
+    """
 
     x: float
     y: float
+    respawn_timer: float
 
 
 @dataclass(slots=True, frozen=True)

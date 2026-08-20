@@ -15,6 +15,16 @@ def move_player(player: Player, velocity_y: float, dt: float) -> Player:
     return replace(player, y=y)
 
 
+def collides(player: Player, asteroid: Asteroid) -> bool:
+    """Return True when the player's footprint overlaps the asteroid."""
+    return (
+        player.x < asteroid.x + asteroid.width
+        and player.x + constant.PLAYER_WIDTH > asteroid.x
+        and player.y < asteroid.y + asteroid.height
+        and player.y + constant.PLAYER_HEIGHT > asteroid.y
+    )
+
+
 def move_asteroid(asteroid: Asteroid, dt: float) -> Asteroid:
     """Move an asteroid horizontally."""
     x = asteroid.x + asteroid.velocity_x * dt

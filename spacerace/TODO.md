@@ -2,7 +2,7 @@
 
 ## 🎯 Backlog
 
-*Unrefined ideas or upcoming features (post-brief).*
+_Unrefined ideas or upcoming features (post-brief)._
 
 - [ ] **Story: Juiciness pass**
   - **Goal:** As a player, I want visible celebration and impact effects, so that scoring feels rewarding and hits feel costly.
@@ -34,16 +34,8 @@
 
 ## 🏗️ Selected for Development
 
-*Refined stories with clear acceptance criteria, in implementation order.*
+_Refined stories with clear acceptance criteria, in implementation order._
 
-- [ ] **Story 4: Collision & respawn**
-  - **Goal:** As a player, when I hit an asteroid I want my rocket to briefly disappear and respawn at the start, so that mistakes cost time but the race never stops.
-  - **Acceptance Criteria:**
-    - [ ] Collision detection between an active rocket and asteroids
-    - [ ] On hit: rocket is hidden, immobile and non-collidable for `RESPAWN_DELAY` (~0.5 s), then reappears at its start position; the other player and asteroids continue uninterrupted
-    - [ ] Hidden rockets cannot move, score, or be drawn
-    - [ ] TDD: full cycle — hit → hidden → timer elapses → respawned at start; no collision while hidden
-  - **Labels:** `priority:high`
 - [ ] **Story 5: Scoring & match timer**
   - **Goal:** As a player, I want to score by reaching the top and race a countdown, so that matches produce a winner.
   - **Acceptance Criteria:**
@@ -89,20 +81,21 @@
 
 ## 🚧 In Progress
 
-*Currently being implemented.*
-
-- [ ] **Story 3: Asteroid lanes**
-  - **Goal:** As a player, I want asteroids sweeping horizontally across several lanes, so that the climb requires timing and nerve.
-  - **Acceptance Criteria:**
-    - [ ] Fixed deterministic layout: lanes confined to the middle band; start and goal rows are safe zones; per-lane speed, alternating direction, evenly spaced asteroids — identical every match
-    - [ ] Asteroids move horizontally with dt and wrap seamlessly at screen edges
-    - [ ] Rendered as 2-px-wide white vertical bars via the render protocol
-    - [ ] TDD: tests for wrap-around, direction, spacing preservation, deterministic reset
-  - **Labels:** `priority:high`
+_Currently being implemented._
 
 ## ✅ Done
 
-*Completed work.*
+_Completed work._
+
+- [x] **Story 4: Collision & respawn**
+  - **Goal:** As a player, when I hit an asteroid I want my rocket to briefly disappear and respawn at the start, so that mistakes cost time but the race never stops.
+  - **Acceptance Criteria:**
+    - [x] Collision detection between an active rocket and asteroids
+    - [x] On hit: rocket is hidden, immobile and non-collidable for `RESPAWN_DELAY` (~0.5 s), then reappears at its start position; the other player and asteroids continue uninterrupted
+    - [x] Hidden rockets cannot move, score, or be drawn
+    - [x] TDD: full cycle — hit → hidden → timer elapses → respawned at start; no collision while hidden
+  - **Labels:** `priority:high`
+  - **Implemented:** `core/state.py` (`respawn_timer` on `Player`); `core/constant.py` (`RESPAWN_DELAY=0.5`); `core/physics.py` (`collides` AABB check); `game/gameplay.py` (`_update_player` handles hit → hidden → respawn cycle); `engine/raylib_render.py` skips hidden rockets. 7 new headless tests in `tests/test_gameplay.py` cover hit detection, hidden immobility, no hidden collision, respawn at start, and uninterrupted other player/asteroids. 33 tests total pass.
 
 - [x] **Story 3: Asteroid lanes**
   - **Goal:** As a player, I want asteroids sweeping horizontally across several lanes, so that the climb requires timing and nerve.
@@ -112,17 +105,7 @@
     - [x] Rendered as 2-px-wide white vertical bars via the render protocol
     - [x] TDD: tests for wrap-around, direction, spacing preservation, deterministic reset
   - **Labels:** `priority:high`
-  - **Implemented:** `core/state.py` (`Asteroid` dataclass, `rng_state` in `PlayState`); `core/constant.py` (`ASTEROID_COUNT=30`, `ASTEROID_WIDTH=2`, `ASTEROID_HEIGHT=1`, speed range, `SAFE_ZONE_HEIGHT=48` so the rocket launch row is fully safe); `core/physics.py` (`move_asteroid`, `_is_off_screen`, `_make_asteroid` with `on_screen` flag, `make_asteroids`, `update_asteroids`); `game/gameplay.py` (`init(seed)` for deterministic/random start, `update()` advances asteroids and respawns off-screen ones); `engine/raylib_render.py` draws 2×1 white rectangles. 13 headless tests in `tests/test_asteroids.py` covering size, safe-zone placement, bidirectional movement, speed range, on-screen initial x, varied x, respawn, and deterministic update. 26 tests total pass.
-
-- [x] **Story 1: Project bootstrap & rendering harness**
-  - **Goal:** As a developer, I want a scaffolded project with tooling and a 128×128→512×512 pixel-perfect render pipeline, so that every later story has a tested, visible foundation.
-  - **Acceptance Criteria:**
-    - [x] `pyproject.toml` (raylib dep, `dev` extra with pytest, `spacerace-play` script entry), `justfile` (`play/test/sync/clean`), src-layout `core/game/engine` packages exist
-    - [x] `just sync` and `just test` succeed (headless smoke test); `uv run spacerace-play` opens a 512×512 "Space Race" window at 60 FPS and closes cleanly via Esc/window close
-    - [x] All drawing goes through a 128×128 render texture upscaled ×4 with point filtering
-    - [x] `README.md` and `TODO.md` (this backlog) created
-  - **Labels:** `priority:high`, `foundational`
-  - **Implemented:** uv/hatchling src-layout package; `engine/config.py` (512×512 window, 60 FPS, asset dir); `engine/raylib_render.py` (128×128 render texture → ×4 point-filtered blit); `main.py` frame loop; 3 headless smoke tests (3 passed). Verified: window runs at 60 FPS on raylib 6.0.
+  - **Implemented:** `core/state.py` (`Asteroid` dataclass, `rng_state` in `PlayState`); `core/constant.py` (`ASTEROID_COUNT=20`, `ASTEROID_WIDTH=2`, `ASTEROID_HEIGHT=1`, speed range, `SAFE_ZONE_HEIGHT=48` so the rocket launch row is fully safe); `core/physics.py` (`move_asteroid`, `_is_off_screen`, `_make_asteroid` with `on_screen` flag, `make_asteroids`, `update_asteroids`); `game/gameplay.py` (`init(seed)` for deterministic/random start, `update()` advances asteroids and respawns off-screen ones); `engine/raylib_render.py` draws 2×1 white rectangles. 13 headless tests in `tests/test_asteroids.py` covering size, safe-zone placement, bidirectional movement, speed range, on-screen initial x, varied x, respawn, and deterministic update. 26 tests total pass.
 - [x] **Story 2: Player rockets — movement & rendering**
   - **Goal:** As a player, I want to move my rocket vertically with responsive keys, so that I can race to the top.
   - **Acceptance Criteria:**
@@ -132,3 +115,12 @@
     - [x] TDD: headless tests (scripted mock input) cover up/down movement, clamping, independence
   - **Labels:** `priority:high`
   - **Implemented:** `core/input.py` (`InputCommand`, `InputSource` protocol), `core/render.py` (`RenderEngine` protocol), `core/state.py` (`Player`, `PlayState`), `core/math.py` (`clamp`), `core/physics.py` (`move_player`, clamped), `game/gameplay.py` (init/update/draw), `engine/raylib_input.py` (keyboard polling), sprite rendering at original size (16×18 rocket) in white on black; `main.py` loop with dt clamp. 10 new headless tests (13 total). Verified visually: both rockets render at the expected positions on the 128×128 field.
+- [x] **Story 1: Project bootstrap & rendering harness**
+  - **Goal:** As a developer, I want a scaffolded project with tooling and a 128×128→512×512 pixel-perfect render pipeline, so that every later story has a tested, visible foundation.
+  - **Acceptance Criteria:**
+    - [x] `pyproject.toml` (raylib dep, `dev` extra with pytest, `spacerace-play` script entry), `justfile` (`play/test/sync/clean`), src-layout `core/game/engine` packages exist
+    - [x] `just sync` and `just test` succeed (headless smoke test); `uv run spacerace-play` opens a 512×512 "Space Race" window at 60 FPS and closes cleanly via Esc/window close
+    - [x] All drawing goes through a 128×128 render texture upscaled ×4 with point filtering
+    - [x] `README.md` and `TODO.md` (this backlog) created
+  - **Labels:** `priority:high`, `foundational`
+  - **Implemented:** uv/hatchling src-layout package; `engine/config.py` (512×512 window, 60 FPS, asset dir); `engine/raylib_render.py` (128×128 render texture → ×4 point-filtered blit); `main.py` frame loop; 3 headless smoke tests (3 passed). Verified: window runs at 60 FPS on raylib 6.0.

@@ -11,9 +11,11 @@ P1_START_X: float = 56.0  # player 1 lane, left half of the field
 P2_START_X: float = 184.0  # player 2 lane, right half of the field
 START_Y: float = 224.0  # both rockets launch from the bottom row
 
+RESPAWN_DELAY: float = 0.5  # seconds a rocket stays hidden after a hit
+
 # Asteroid layout
 SAFE_ZONE_HEIGHT: int = 48  # top and bottom safe rows in logical pixels
-ASTEROID_COUNT: int = 30  # number of small asteroids on screen
+ASTEROID_COUNT: int = 20  # number of small asteroids on screen
 ASTEROID_WIDTH: int = 2
 ASTEROID_HEIGHT: int = 1
 ASTEROID_SPEED_MIN: float = 30.0  # pixels per second

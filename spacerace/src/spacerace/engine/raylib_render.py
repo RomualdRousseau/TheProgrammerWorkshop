@@ -82,6 +82,8 @@ def render_play(state: PlayState) -> None:
             pr.WHITE,
         )
     for player in state.players:
+        if player.respawn_timer > 0:
+            continue
         pr.draw_texture_ex(
             _spaceship,
             pr.Vector2(player.x - _SPRITE_OFFSET, player.y - _SPRITE_OFFSET),
