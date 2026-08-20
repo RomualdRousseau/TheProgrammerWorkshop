@@ -1,6 +1,14 @@
 """World state: immutable dataclasses describing the Space Race universe."""
 
 from dataclasses import dataclass
+from enum import Enum
+
+
+class Scene(Enum):
+    """Top-level application scenes."""
+
+    TITLE = "title"
+    PLAYING = "playing"
 
 
 @dataclass(slots=True, frozen=True)
@@ -36,3 +44,19 @@ class PlayState:
     rng_state: tuple  # random.Random state for deterministic respawns
     scores: tuple[int, int]
     match_timer: float
+
+
+@dataclass(slots=True, frozen=True)
+class TitleState:
+    """Data tracked while the title screen is shown."""
+
+    inactivity_timer: float
+
+
+@dataclass(slots=True, frozen=True)
+class AppState:
+    """The scene router's state: one active scene plus its payload."""
+
+    scene: Scene
+    title: TitleState | None
+    play: PlayState | None

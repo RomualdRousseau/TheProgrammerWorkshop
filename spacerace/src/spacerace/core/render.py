@@ -7,7 +7,7 @@ and leaves the engine free to polish visuals independently.
 
 from typing import Protocol
 
-from spacerace.core.state import PlayState
+from spacerace.core.state import PlayState, TitleState
 
 
 class RenderEngine(Protocol):
@@ -31,4 +31,8 @@ class RenderEngine(Protocol):
 
     def render_play(self, state: PlayState) -> None:
         """Render a live match: rockets, obstacles, HUD."""
+        ...
+
+    def render_title(self, state: TitleState) -> None:
+        """Render the title screen at native window resolution."""
         ...

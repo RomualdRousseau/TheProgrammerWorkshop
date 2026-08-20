@@ -14,6 +14,7 @@ START_Y: float = 224.0  # both rockets launch from the bottom row
 RESPAWN_DELAY: float = 0.5  # seconds a rocket stays hidden after a hit
 GOAL_ROW: int = 0  # reaching this y row (top) awards a point
 MATCH_DURATION: float = 60.0  # seconds per match
+TITLE_INACTIVITY_TIMEOUT: float = 15.0  # seconds before title enters demo (Story 8)
 
 # Asteroid layout
 SAFE_ZONE_HEIGHT: int = 48  # top and bottom safe rows in logical pixels

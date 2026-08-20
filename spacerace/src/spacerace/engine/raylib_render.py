@@ -8,11 +8,12 @@ The game is rendered strictly in black and white.
 import pyray as pr
 
 from spacerace.core import constant
-from spacerace.core.state import PlayState
+from spacerace.core.state import PlayState, TitleState
 from spacerace.engine import config
 
 _render_texture: pr.RenderTexture
 _spaceship: pr.Texture
+_title: pr.Texture
 
 # The spaceship source image is 32x33 with the 16x18 rocket drawn in the
 # center (8 px of padding on every side); it is rendered at original size.
@@ -25,7 +26,7 @@ _TIMER_BAR_WIDTH: int = 2
 
 def init() -> None:
     """Open the window, create the render target, and load assets."""
-    global _render_texture, _spaceship
+    global _render_texture, _spaceship, _title
     pr.init_window(config.WINDOW_SIZE, config.WINDOW_SIZE, config.WINDOW_TITLE)
     pr.set_target_fps(config.FPS)
     _render_texture = pr.load_render_texture(constant.SCREEN_SIZE, constant.SCREEN_SIZE)
@@ -34,6 +35,8 @@ def init() -> None:
     )
     _spaceship = pr.load_texture(str(config.ASSET_DIR / "spaceship.png"))
     pr.set_texture_filter(_spaceship, pr.TextureFilter.TEXTURE_FILTER_POINT)
+    _title = pr.load_texture(str(config.ASSET_DIR / "title.png"))
+    pr.set_texture_filter(_title, pr.TextureFilter.TEXTURE_FILTER_POINT)
 
 
 def should_quit() -> bool:
@@ -130,8 +133,18 @@ def _draw_scores(state: PlayState) -> None:
     )
 
 
+def render_title(state: TitleState) -> None:
+    """Render the title image at native 512x512 window resolution."""
+    del state
+    pr.begin_drawing()
+    pr.clear_background(pr.BLACK)
+    pr.draw_texture(_title, 0, 0, pr.WHITE)
+    pr.end_drawing()
+
+
 def close() -> None:
     """Release resources and close the window."""
+    pr.unload_texture(_title)
     pr.unload_texture(_spaceship)
     pr.unload_render_texture(_render_texture)
     pr.close_window()

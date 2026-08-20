@@ -36,14 +36,6 @@ _Unrefined ideas or upcoming features (post-brief)._
 
 _Refined stories with clear acceptance criteria, in implementation order._
 
-- [ ] **Story 6: Title screen & scene router**
-  - **Goal:** As a player, I want a title screen where Space starts a match, so that the game has a proper entry point.
-  - **Acceptance Criteria:**
-    - [ ] App boots into Title showing `title.png` (native 512×512); edge-triggered `Space` starts a fresh match
-    - [ ] Router (`AppState` + explicit dispatch) introduced; entering PLAYING constructs a fully fresh `PlayState` (players, scores, timer, asteroids, effects)
-    - [ ] Inactivity timer starts ticking on the title (transition lands in Story 8); any mapped key resets it
-    - [ ] TDD: headless tests for title→playing transition and full state reset
-  - **Labels:** `priority:high`
 - [ ] **Story 7: Game Over screen**
   - **Goal:** As a player, when time expires I want to see the frozen final screen, so that the match has closure.
   - **Acceptance Criteria:**
@@ -78,6 +70,16 @@ _Currently being implemented._
 ## ✅ Done
 
 _Completed work._
+
+- [x] **Story 6: Title screen & scene router**
+  - **Goal:** As a player, I want a title screen where Space starts a match, so that the game has a proper entry point.
+  - **Acceptance Criteria:**
+    - [x] App boots into Title showing `title.png` (native 512×512); edge-triggered `Space` starts a fresh match
+    - [x] Router (`AppState` + explicit dispatch) introduced; entering PLAYING constructs a fully fresh `PlayState` (players, scores, timer, asteroids, effects)
+    - [x] Inactivity timer starts ticking on the title (transition lands in Story 8); any mapped key resets it
+    - [x] TDD: headless tests for title→playing transition and full state reset
+  - **Labels:** `priority:high`
+  - **Implemented:** `core/state.py` (`Scene` enum, `TitleState`, `AppState`); `core/constant.py` (`TITLE_INACTIVITY_TIMEOUT=15.0`); `core/render.py` (`render_title` protocol method); `game/scenes.py` (router with `init/update/draw`, title inactivity handling, Space → fresh `PlayState`); `engine/raylib_render.py` (loads `title.png`, `render_title` draws it natively to the window); `main.py` now drives `scenes`. 8 new headless tests in `tests/test_scenes.py`. 47 tests total pass.
 
 - [x] **Story 5: Scoring & match timer**
   - **Goal:** As a player, I want to score by reaching the top and race a countdown, so that matches produce a winner.
