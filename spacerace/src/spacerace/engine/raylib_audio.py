@@ -1,4 +1,4 @@
-"""Raylib-backed audio engine: generates ship engine beeps from a high-level state.
+"""Raylib-backed audio engine: generates ship engine tones from a high-level state.
 
 Audio is best-effort: if the audio device cannot be initialized (e.g. headless
 or no sound hardware), the game continues silently.
@@ -16,6 +16,10 @@ from spacerace.engine import config
 _stream: pr.AudioStream | None = None
 _p1_phase: float = 0.0
 _p2_phase: float = 0.0
+_p1_freq: float = 0.0
+_p2_freq: float = 0.0
+_p1_amp: float = 0.0
+_p2_amp: float = 0.0
 
 
 def init() -> None:
@@ -48,33 +52,52 @@ def update(state: AudioState) -> None:
 
 
 def _generate_samples(state: AudioState, frames: int) -> list[int]:
-    """Generate a stereo int16 buffer from the current audio state."""
-    global _p1_phase, _p2_phase
+    """Generate a stereo int16 buffer with smooth, continuous sine tones."""
+    global _p1_phase, _p2_phase, _p1_freq, _p2_freq, _p1_amp, _p2_amp
     max_int16 = 32767
     samples: list[int] = []
-    p1_freq = _progress_to_freq(state.p1_progress, config.P1_BASE_FREQ)
-    p2_freq = _progress_to_freq(state.p2_progress, config.P2_BASE_FREQ)
 
-    for _ in range(frames):
-        p1_sample = 0.0
-        p2_sample = 0.0
-        if p1_freq is not None:
-            _p1_phase = (_p1_phase + p1_freq / config.AUDIO_SAMPLE_RATE) % 1.0
-            p1_sample = math.sin(_p1_phase * 2.0 * math.pi)
-        if p2_freq is not None:
-            _p2_phase = (_p2_phase + p2_freq / config.AUDIO_SAMPLE_RATE) % 1.0
-            p2_sample = math.sin(_p2_phase * 2.0 * math.pi)
+    p1_target_freq = _progress_to_freq(state.p1_progress, config.P1_BASE_FREQ)
+    p2_target_freq = _progress_to_freq(state.p2_progress, config.P2_BASE_FREQ)
+    p1_target_amp = 1.0 if state.p1_progress is not None else 0.0
+    p2_target_amp = 1.0 if state.p2_progress is not None else 0.0
+
+    # Fade from 0 to full amplitude over 1 ms to avoid clicks.
+    fade_step = 1.0 / (0.001 * config.AUDIO_SAMPLE_RATE)
+
+    for i in range(frames):
+        t = i / frames
+        freq1 = _p1_freq + (p1_target_freq - _p1_freq) * t
+        freq2 = _p2_freq + (p2_target_freq - _p2_freq) * t
+
+        _p1_phase = (_p1_phase + freq1 / config.AUDIO_SAMPLE_RATE) % 1.0
+        _p2_phase = (_p2_phase + freq2 / config.AUDIO_SAMPLE_RATE) % 1.0
+
+        _p1_amp = _move_toward(_p1_amp, p1_target_amp, fade_step)
+        _p2_amp = _move_toward(_p2_amp, p2_target_amp, fade_step)
+
+        p1_sample = math.sin(_p1_phase * 2.0 * math.pi) * _p1_amp
+        p2_sample = math.sin(_p2_phase * 2.0 * math.pi) * _p2_amp
 
         left = config.AUDIO_AMPLITUDE * (p1_sample * 0.8 + p2_sample * 0.2)
         right = config.AUDIO_AMPLITUDE * (p1_sample * 0.2 + p2_sample * 0.8)
         samples.append(int(max(-1.0, min(1.0, left)) * max_int16))
         samples.append(int(max(-1.0, min(1.0, right)) * max_int16))
 
+    _p1_freq = p1_target_freq
+    _p2_freq = p2_target_freq
     return samples
 
 
-def _progress_to_freq(progress: float | None, base_freq: float) -> float | None:
-    """Map ascent progress to frequency; ``None`` means silent."""
+def _progress_to_freq(progress: float | None, base_freq: float) -> float:
+    """Map ascent progress to frequency; silent progress maps to 0 Hz."""
     if progress is None:
-        return None
+        return 0.0
     return base_freq * (2.0 ** (config.PITCH_RANGE_OCTAVES * progress))
+
+
+def _move_toward(current: float, target: float, step: float) -> float:
+    """Move ``current`` toward ``target`` by at most ``step``."""
+    if current < target:
+        return min(current + step, target)
+    return max(current - step, target)
