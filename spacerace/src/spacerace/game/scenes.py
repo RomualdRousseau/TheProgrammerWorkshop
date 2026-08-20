@@ -5,12 +5,15 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from spacerace.core import constant
+from spacerace.core.audio import ship_altitude_progress
 from spacerace.core.input import InputCommand
 from spacerace.core.render import RenderEngine
 from spacerace.core.state import (
     AppState,
+    AudioState,
     DemoState,
     GameOverState,
+    PlayState,
     Scene,
     TitleState,
 )
@@ -50,6 +53,28 @@ def draw(render: RenderEngine, state: AppState) -> None:
     handlers = _SCENE_TABLE.get(state.scene)
     if handlers is not None:
         handlers.draw(render, state)
+
+
+def audio_state(state: AppState) -> AudioState:
+    """Derive the high-level audio representation from the current scene."""
+    play = _active_play_state(state)
+    if play is None:
+        return AudioState(p1_progress=None, p2_progress=None)
+
+    p1, p2 = play.players
+    return AudioState(
+        p1_progress=ship_altitude_progress(p1.y) if p1.respawn_timer == 0 else None,
+        p2_progress=ship_altitude_progress(p2.y) if p2.respawn_timer == 0 else None,
+    )
+
+
+def _active_play_state(state: AppState) -> PlayState | None:
+    """Return the live PlayState for active matches, None otherwise."""
+    if state.scene == Scene.PLAYING:
+        return state.play
+    if state.scene == Scene.DEMO and state.demo is not None:
+        return state.demo.play
+    return None
 
 
 def _draw_title(render: RenderEngine, state: AppState) -> None:

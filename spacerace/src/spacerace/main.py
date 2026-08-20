@@ -2,7 +2,7 @@
 
 from spacerace.core.input import InputCommand
 from spacerace.core.state import AppState, Scene
-from spacerace.engine import raylib_input, raylib_render
+from spacerace.engine import raylib_audio, raylib_input, raylib_render
 from spacerace.game import scenes
 
 _MAX_FRAME_TIME: float = 0.1  # clamp dt spikes (e.g. window dragging)
@@ -11,12 +11,15 @@ _MAX_FRAME_TIME: float = 0.1  # clamp dt spikes (e.g. window dragging)
 def run() -> None:
     """Open the window and run the frame loop until the user quits."""
     raylib_render.init()
+    raylib_audio.init()
     state = scenes.init()
     while not raylib_render.should_quit():
         dt = min(raylib_render.get_frame_time(), _MAX_FRAME_TIME)
         command = _poll_command(state, dt)
         state = scenes.update(command, state, dt)
         scenes.draw(raylib_render, state)
+        raylib_audio.update(scenes.audio_state(state))
+    raylib_audio.close()
     raylib_render.close()
 
 

@@ -75,6 +75,17 @@ class DemoState:
 
 
 @dataclass(slots=True, frozen=True)
+class AudioState:
+    """High-level audio representation: per-ship ascent progress.
+
+    ``None`` means the ship is silent (hidden/respawning or no match active).
+    """
+
+    p1_progress: float | None
+    p2_progress: float | None
+
+
+@dataclass(slots=True, frozen=True)
 class AppState:
     """The scene router's state: one active scene plus its payload."""
 

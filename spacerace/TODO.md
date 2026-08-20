@@ -36,15 +36,6 @@ _Unrefined ideas or upcoming features (post-brief)._
 
 _Refined stories with clear acceptance criteria, in implementation order._
 
-- [ ] **Story 9: Ship engine beeps — pitch rises with altitude**
-  - **Goal:** As a player, I want each ship to emit the original game's signature beep whose pitch climbs as the ship ascends, so that I can hear the race's progress like on the 1973 cabinet.
-  - **Acceptance Criteria:**
-    - [ ] Each ship emits a continuous beep while a match is active (Main Game and Demo); pitch rises smoothly from low at the start row to high at the goal row, correlated with the ship's vertical position
-    - [ ] The two ships are distinguishable by ear (e.g., P1 panned left / P2 panned right, or distinct base tones)
-    - [ ] A ship's beep is silent while the ship is hidden/respawning; no beeps on the Title or Game Over screens
-    - [ ] Tones are generated in code (sine wave via raylib audio streams) — no audio asset files required
-    - [ ] Audio lives entirely in the engine layer, driven by the high-level representation passed to it; the altitude→progress mapping is a pure core function with headless tests; the full suite still passes without audio hardware
-  - **Labels:** `priority:medium`
 
 ## 🚧 In Progress
 
@@ -53,6 +44,17 @@ _Currently being implemented._
 ## ✅ Done
 
 _Completed work._
+
+- [x] **Story 9: Ship engine beeps — pitch rises with altitude**
+  - **Goal:** As a player, I want each ship to emit the original game's signature beep whose pitch climbs as the ship ascends, so that I can hear the race's progress like on the 1973 cabinet.
+  - **Acceptance Criteria:**
+    - [x] Each ship emits a continuous beep while a match is active (Main Game and Demo); pitch rises smoothly from low at the start row to high at the goal row, correlated with the ship's vertical position
+    - [x] The two ships are distinguishable by ear (P1 panned left / P2 panned right, distinct base frequencies)
+    - [x] A ship's beep is silent while the ship is hidden/respawning; no beeps on the Title or Game Over screens
+    - [x] Tones are generated in code (sine wave via raylib audio streams) — no audio asset files required
+    - [x] Audio lives entirely in the engine layer, driven by the high-level representation passed to it; the altitude→progress mapping is a pure core function with headless tests; the full suite still passes without audio hardware
+  - **Labels:** `priority:medium`
+  - **Implemented:** `core/audio.py` (`ship_altitude_progress` pure mapping); `core/state.py` (`AudioState` high-level representation); `engine/config.py` (audio sample rate, base frequencies, amplitude); `engine/raylib_audio.py` (best-effort audio device init, streaming sine-wave generation with panning, gracefully silent if no hardware); `game/scenes.py` (`audio_state()` derives `AudioState` from active PLAYING/DEMO matches, mutes hidden ships and non-match scenes); `main.py` initializes/closes audio and calls `raylib_audio.update()` each frame. 11 new headless tests in `tests/test_audio.py`. 73 tests total pass.
 
 - [x] **Story 8: Demo mode (attract loop)**
   - **Goal:** As a player, I want the game to play itself after idle time on the title, so that it feels alive like an arcade cabinet.
