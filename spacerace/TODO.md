@@ -36,15 +36,6 @@ _Unrefined ideas or upcoming features (post-brief)._
 
 _Refined stories with clear acceptance criteria, in implementation order._
 
-- [ ] **Story 8: Demo mode (attract loop)**
-  - **Goal:** As a player, I want the game to play itself after idle time on the title, so that it feels alive like an arcade cabinet.
-  - **Acceptance Criteria:**
-    - [ ] Title inactivity (15 s, reset by any mapped key) enters Demo with a fresh `PlayState`
-    - [ ] Demo reuses the exact playing logic and renderer; only the input source differs — a seeded `RandomBot` (decision interval ~0.15 s, never confirms); `Space` still comes from the keyboard and starts a normal match immediately
-    - [ ] Demo duration (30 s) expiry returns to Title
-    - [ ] Bot is replaceable: it implements the `InputSource` protocol; seeded RNG injected for determinism
-    - [ ] TDD: headless tests for all demo transitions and bot determinism (same seed → same commands)
-  - **Labels:** `priority:high`
 - [ ] **Story 9: Ship engine beeps — pitch rises with altitude**
   - **Goal:** As a player, I want each ship to emit the original game's signature beep whose pitch climbs as the ship ascends, so that I can hear the race's progress like on the 1973 cabinet.
   - **Acceptance Criteria:**
@@ -62,6 +53,17 @@ _Currently being implemented._
 ## ✅ Done
 
 _Completed work._
+
+- [x] **Story 8: Demo mode (attract loop)**
+  - **Goal:** As a player, I want the game to play itself after idle time on the title, so that it feels alive like an arcade cabinet.
+  - **Acceptance Criteria:**
+    - [x] Title inactivity (15 s, reset by any mapped key) enters Demo with a fresh `PlayState`
+    - [x] Demo reuses the exact playing logic and renderer; only the input source differs — a seeded `RandomBot` (decision interval ~0.15 s, never confirms); `Space` still comes from the keyboard and starts a normal match immediately
+    - [x] Demo duration (30 s) expiry returns to Title
+    - [x] Bot is replaceable: it implements the `InputSource` protocol; seeded RNG injected for determinism
+    - [x] TDD: headless tests for all demo transitions and bot determinism (same seed → same commands)
+  - **Labels:** `priority:high`
+  - **Implemented:** `core/state.py` (`Scene.DEMO`, `DemoState`, `AppState.demo`); `core/constant.py` (`DEMO_DURATION=30.0`); `game/random_bot.py` (`RandomBot` implementing `InputSource`, seeded, 0.15 s decision interval, never confirms); `game/scenes.py` (title inactivity → demo, demo Space → playing, demo timeout → title, demo uses `_draw_demo` reusing playing renderer); `main.py` (`_poll_command` selects keyboard or bot based on scene). 7 new headless tests in `tests/test_scenes.py` and 3 in `tests/test_random_bot.py`. 62 tests total pass.
 
 - [x] **Story 7: Game Over screen**
   - **Goal:** As a player, when time expires I want to see the frozen final screen, so that the match has closure.

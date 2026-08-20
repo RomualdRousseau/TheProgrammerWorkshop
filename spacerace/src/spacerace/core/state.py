@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from spacerace.core.input import InputSource
+
 
 class Scene(Enum):
     """Top-level application scenes."""
@@ -10,6 +12,7 @@ class Scene(Enum):
     TITLE = "title"
     PLAYING = "playing"
     GAMEOVER = "gameover"
+    DEMO = "demo"
 
 
 @dataclass(slots=True, frozen=True)
@@ -63,6 +66,15 @@ class GameOverState:
 
 
 @dataclass(slots=True, frozen=True)
+class DemoState:
+    """Attract-loop state: the bot plays a fresh match for a limited time."""
+
+    play: PlayState
+    remaining: float
+    bot: InputSource
+
+
+@dataclass(slots=True, frozen=True)
 class AppState:
     """The scene router's state: one active scene plus its payload."""
 
@@ -70,3 +82,4 @@ class AppState:
     title: TitleState | None
     play: PlayState | None
     gameover: GameOverState | None
+    demo: DemoState | None
