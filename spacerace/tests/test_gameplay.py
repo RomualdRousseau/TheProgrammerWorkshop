@@ -1,0 +1,107 @@
+"""Story 2: player rocket movement and rendering — headless behavioral tests.
+
+Given/When/Then: a match state plus an input command produces the expected
+new state, with no window or hardware involved.
+"""
+
+from unittest.mock import Mock
+
+from spacerace.core import constant
+from spacerace.core.input import InputCommand
+from spacerace.core.render import RenderEngine
+from spacerace.core.state import Player, PlayState
+from spacerace.game import gameplay
+
+
+def test_init_places_both_players_at_their_start_positions() -> None:
+    state = gameplay.init()
+
+    assert state.players[0] == Player(x=constant.P1_START_X, y=constant.START_Y)
+    assert state.players[1] == Player(x=constant.P2_START_X, y=constant.START_Y)
+
+
+def test_player1_moves_up_with_its_key_while_player2_stays() -> None:
+    # Given a fresh match
+    state = gameplay.init()
+
+    # When player 1 thrusts up for one second
+    new_state = gameplay.update(InputCommand(p1_up=True), state, dt=1.0)
+
+    # Then player 1 climbs by exactly its speed, player 2 is untouched
+    assert new_state.players[0].y == constant.START_Y - constant.PLAYER_SPEED
+    assert new_state.players[1] == state.players[1]
+
+
+def test_player1_moves_down_with_its_key() -> None:
+    state = gameplay.init()
+
+    new_state = gameplay.update(InputCommand(p1_down=True), state, dt=0.1)
+
+    assert new_state.players[0].y == constant.START_Y + constant.PLAYER_SPEED * 0.1
+
+
+def test_player2_moves_independently_with_arrow_keys() -> None:
+    state = gameplay.init()
+
+    new_state = gameplay.update(InputCommand(p2_up=True), state, dt=1.0)
+
+    assert new_state.players[1].y == constant.START_Y - constant.PLAYER_SPEED
+    assert new_state.players[0] == state.players[0]
+
+
+def test_movement_scales_with_dt() -> None:
+    state = gameplay.init()
+
+    new_state = gameplay.update(InputCommand(p1_up=True), state, dt=0.5)
+
+    assert new_state.players[0].y == constant.START_Y - constant.PLAYER_SPEED * 0.5
+
+
+def test_no_input_leaves_players_untouched() -> None:
+    state = gameplay.init()
+
+    assert gameplay.update(InputCommand(), state, dt=1.0) == state
+
+
+def test_pressing_both_directions_cancels_out() -> None:
+    state = gameplay.init()
+
+    new_state = gameplay.update(InputCommand(p1_up=True, p1_down=True), state, dt=1.0)
+
+    assert new_state == state
+
+
+def test_player_cannot_fly_above_the_field() -> None:
+    # Given a rocket one pixel below the top edge
+    state = PlayState(
+        players=(Player(x=constant.P1_START_X, y=1.0), gameplay.init().players[1])
+    )
+
+    # When thrusting up for a long time
+    new_state = gameplay.update(InputCommand(p1_up=True), state, dt=1.0)
+
+    # Then it clamps at the top edge instead of leaving the field
+    assert new_state.players[0].y == 0.0
+
+
+def test_player_cannot_sink_below_the_field() -> None:
+    max_y = float(constant.SCREEN_SIZE - constant.PLAYER_HEIGHT)
+    state = PlayState(
+        players=(
+            Player(x=constant.P1_START_X, y=max_y - 1.0),
+            gameplay.init().players[1],
+        )
+    )
+
+    new_state = gameplay.update(InputCommand(p1_down=True), state, dt=1.0)
+
+    assert new_state.players[0].y == max_y
+
+
+def test_draw_delegates_to_the_render_engine() -> None:
+    render = Mock(spec=RenderEngine)
+    state = gameplay.init()
+
+    gameplay.draw(render, state)
+
+    render.render_play.assert_called_once_with(state)

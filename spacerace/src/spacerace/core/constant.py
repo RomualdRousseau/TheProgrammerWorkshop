@@ -1,0 +1,12 @@
+"""Laws of the world: immutable constants of the Space Race universe."""
+
+SCREEN_SIZE: int = 256  # logical playfield size in pixels (square)
+SCALE: int = 2  # integer upscale factor from logical screen to window
+
+PLAYER_SPEED: float = 120.0  # vertical rocket speed in pixels per second
+PLAYER_WIDTH: int = 16  # rocket sprite footprint in logical pixels
+PLAYER_HEIGHT: int = 18
+
+P1_START_X: float = 56.0  # player 1 lane, left half of the field
+P2_START_X: float = 184.0  # player 2 lane, right half of the field
+START_Y: float = 224.0  # both rockets launch from the bottom row

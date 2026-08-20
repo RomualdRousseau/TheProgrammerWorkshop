@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "python-game-designer": {
+      "source": "RomualdRousseau/Skills",
+      "sourceType": "github",
+      "skillPath": "skills/python-game/python-game-designer/SKILL.md",
+      "computedHash": "de5bac134d785ad1ee759a61aae5dc8bfacc0a0dc6f5c117d94a445601107cb0"
+    },
+    "python-game-developer": {
+      "source": "RomualdRousseau/Skills",
+      "sourceType": "github",
+      "skillPath": "skills/python-game/python-game-developer/SKILL.md",
+      "computedHash": "28842850ad20772794cd7a9be7eb07156ee320dd5267794de79bfc6abb9669fa"
+    }
+  }
+}

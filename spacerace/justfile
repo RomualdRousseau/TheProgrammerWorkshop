@@ -1,0 +1,44 @@
+# Justfile — common commands for Space Race
+
+# Default recipe: list all commands
+default:
+    @just --list
+
+# Install dependencies
+sync:
+    uv sync --extra dev
+
+# Run the game
+play:
+    uv run spacerace-play
+
+# Run the test suite
+test:
+    uv run pytest
+
+# Run all quality checks (format, lint, types, tests)
+check: format-check lint typecheck test
+
+# Format the source code
+format:
+    uv run --extra dev ruff format .
+
+# Check formatting without making changes
+format-check:
+    uv run --extra dev ruff format . --check
+
+# Lint the source code
+lint:
+    uv run --extra dev ruff check .
+
+# Auto-fix linting issues where possible
+fix:
+    uv run --extra dev ruff check . --fix
+
+# Type check the source code
+typecheck:
+    uv run --extra dev ty check .
+
+# Remove Python cache and test artifacts
+clean:
+    uvx pyclean . -d all
