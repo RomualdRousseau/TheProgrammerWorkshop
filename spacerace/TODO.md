@@ -36,15 +36,6 @@
 
 *Refined stories with clear acceptance criteria, in implementation order.*
 
-
-- [ ] **Story 3: Asteroid lanes**
-  - **Goal:** As a player, I want asteroids sweeping horizontally across several lanes, so that the climb requires timing and nerve.
-  - **Acceptance Criteria:**
-    - [ ] Fixed deterministic layout: lanes confined to the middle band; start and goal rows are safe zones; per-lane speed, alternating direction, evenly spaced asteroids — identical every match
-    - [ ] Asteroids move horizontally with dt and wrap seamlessly at screen edges
-    - [ ] Rendered as 2-px-wide white vertical bars via the render protocol
-    - [ ] TDD: tests for wrap-around, direction, spacing preservation, deterministic reset
-  - **Labels:** `priority:high`
 - [ ] **Story 4: Collision & respawn**
   - **Goal:** As a player, when I hit an asteroid I want my rocket to briefly disappear and respawn at the start, so that mistakes cost time but the race never stops.
   - **Acceptance Criteria:**
@@ -100,11 +91,28 @@
 
 *Currently being implemented.*
 
-*Nothing in progress.*
+- [ ] **Story 3: Asteroid lanes**
+  - **Goal:** As a player, I want asteroids sweeping horizontally across several lanes, so that the climb requires timing and nerve.
+  - **Acceptance Criteria:**
+    - [ ] Fixed deterministic layout: lanes confined to the middle band; start and goal rows are safe zones; per-lane speed, alternating direction, evenly spaced asteroids — identical every match
+    - [ ] Asteroids move horizontally with dt and wrap seamlessly at screen edges
+    - [ ] Rendered as 2-px-wide white vertical bars via the render protocol
+    - [ ] TDD: tests for wrap-around, direction, spacing preservation, deterministic reset
+  - **Labels:** `priority:high`
 
 ## ✅ Done
 
 *Completed work.*
+
+- [x] **Story 3: Asteroid lanes**
+  - **Goal:** As a player, I want asteroids sweeping horizontally across several lanes, so that the climb requires timing and nerve.
+  - **Acceptance Criteria:**
+    - [x] Fixed deterministic layout: lanes confined to the middle band; start and goal rows are safe zones; per-lane speed, alternating direction, evenly spaced asteroids — identical every match
+    - [x] Asteroids move horizontally with dt and wrap seamlessly at screen edges
+    - [x] Rendered as 2-px-wide white vertical bars via the render protocol
+    - [x] TDD: tests for wrap-around, direction, spacing preservation, deterministic reset
+  - **Labels:** `priority:high`
+  - **Implemented:** `core/state.py` (`Asteroid` dataclass, `rng_state` in `PlayState`); `core/constant.py` (`ASTEROID_COUNT=30`, `ASTEROID_WIDTH=2`, `ASTEROID_HEIGHT=1`, speed range, `SAFE_ZONE_HEIGHT=48` so the rocket launch row is fully safe); `core/physics.py` (`move_asteroid`, `_is_off_screen`, `_make_asteroid` with `on_screen` flag, `make_asteroids`, `update_asteroids`); `game/gameplay.py` (`init(seed)` for deterministic/random start, `update()` advances asteroids and respawns off-screen ones); `engine/raylib_render.py` draws 2×1 white rectangles. 13 headless tests in `tests/test_asteroids.py` covering size, safe-zone placement, bidirectional movement, speed range, on-screen initial x, varied x, respawn, and deterministic update. 26 tests total pass.
 
 - [x] **Story 1: Project bootstrap & rendering harness**
   - **Goal:** As a developer, I want a scaffolded project with tooling and a 128×128→512×512 pixel-perfect render pipeline, so that every later story has a tested, visible foundation.

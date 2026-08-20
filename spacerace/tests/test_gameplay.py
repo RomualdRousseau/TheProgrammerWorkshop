@@ -57,10 +57,13 @@ def test_movement_scales_with_dt() -> None:
     assert new_state.players[0].y == constant.START_Y - constant.PLAYER_SPEED * 0.5
 
 
-def test_no_input_leaves_players_untouched() -> None:
+def test_no_input_leaves_players_untouched_but_asteroids_move() -> None:
     state = gameplay.init()
 
-    assert gameplay.update(InputCommand(), state, dt=1.0) == state
+    new_state = gameplay.update(InputCommand(), state, dt=1.0)
+
+    assert new_state.players == state.players
+    assert new_state.asteroids != state.asteroids
 
 
 def test_pressing_both_directions_cancels_out() -> None:
@@ -68,13 +71,15 @@ def test_pressing_both_directions_cancels_out() -> None:
 
     new_state = gameplay.update(InputCommand(p1_up=True, p1_down=True), state, dt=1.0)
 
-    assert new_state == state
+    assert new_state.players == state.players
 
 
 def test_player_cannot_fly_above_the_field() -> None:
     # Given a rocket one pixel below the top edge
     state = PlayState(
-        players=(Player(x=constant.P1_START_X, y=1.0), gameplay.init().players[1])
+        players=(Player(x=constant.P1_START_X, y=1.0), gameplay.init().players[1]),
+        asteroids=gameplay.init().asteroids,
+        rng_state=gameplay.init().rng_state,
     )
 
     # When thrusting up for a long time
@@ -90,7 +95,9 @@ def test_player_cannot_sink_below_the_field() -> None:
         players=(
             Player(x=constant.P1_START_X, y=max_y - 1.0),
             gameplay.init().players[1],
-        )
+        ),
+        asteroids=gameplay.init().asteroids,
+        rng_state=gameplay.init().rng_state,
     )
 
     new_state = gameplay.update(InputCommand(p1_down=True), state, dt=1.0)

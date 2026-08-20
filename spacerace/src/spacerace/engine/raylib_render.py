@@ -72,7 +72,15 @@ def end_frame() -> None:
 
 
 def render_play(state: PlayState) -> None:
-    """Render a live match: both rockets in white on black."""
+    """Render a live match: asteroids, then both rockets in white on black."""
+    for asteroid in state.asteroids:
+        pr.draw_rectangle(
+            int(asteroid.x),
+            int(asteroid.y),
+            asteroid.width,
+            asteroid.height,
+            pr.WHITE,
+        )
     for player in state.players:
         pr.draw_texture_ex(
             _spaceship,
