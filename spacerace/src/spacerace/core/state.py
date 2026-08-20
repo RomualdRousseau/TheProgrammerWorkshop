@@ -9,6 +9,7 @@ class Scene(Enum):
 
     TITLE = "title"
     PLAYING = "playing"
+    GAMEOVER = "gameover"
 
 
 @dataclass(slots=True, frozen=True)
@@ -54,9 +55,18 @@ class TitleState:
 
 
 @dataclass(slots=True, frozen=True)
+class GameOverState:
+    """Frozen final match state plus the automatic return timeout."""
+
+    final_state: PlayState
+    timeout: float
+
+
+@dataclass(slots=True, frozen=True)
 class AppState:
     """The scene router's state: one active scene plus its payload."""
 
     scene: Scene
     title: TitleState | None
     play: PlayState | None
+    gameover: GameOverState | None

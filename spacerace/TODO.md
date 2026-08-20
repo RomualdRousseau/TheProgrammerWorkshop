@@ -36,14 +36,6 @@ _Unrefined ideas or upcoming features (post-brief)._
 
 _Refined stories with clear acceptance criteria, in implementation order._
 
-- [ ] **Story 7: Game Over screen**
-  - **Goal:** As a player, when time expires I want to see the frozen final screen, so that the match has closure.
-  - **Acceptance Criteria:**
-    - [ ] Match timer expiry transitions to Game Over, freezing the final `PlayState`; rendering shows exactly the last game frame (scores + timer at 0), no overlay text
-    - [ ] `Space` returns to Title; `GAMEOVER_TIMEOUT` (10 s) returns automatically; the timeout is independent of the match timer
-    - [ ] Title → new match afterwards resets everything
-    - [ ] TDD: headless tests for expiry transition, both return paths, timeout independence
-  - **Labels:** `priority:high`
 - [ ] **Story 8: Demo mode (attract loop)**
   - **Goal:** As a player, I want the game to play itself after idle time on the title, so that it feels alive like an arcade cabinet.
   - **Acceptance Criteria:**
@@ -71,6 +63,15 @@ _Currently being implemented._
 
 _Completed work._
 
+- [x] **Story 7: Game Over screen**
+  - **Goal:** As a player, when time expires I want to see the frozen final screen, so that the match has closure.
+  - **Acceptance Criteria:**
+    - [x] Match timer expiry transitions to Game Over, freezing the final `PlayState`; rendering shows exactly the last game frame (scores + timer at 0), no overlay text
+    - [x] `Space` returns to Title; `GAMEOVER_TIMEOUT` (10 s) returns automatically; the timeout is independent of the match timer
+    - [x] Title → new match afterwards resets everything
+    - [x] TDD: headless tests for expiry transition, both return paths, timeout independence
+  - **Labels:** `priority:high`
+  - **Implemented:** `core/state.py` (`Scene.GAMEOVER`, `GameOverState`, `AppState.gameover`); `core/constant.py` (`GAMEOVER_TIMEOUT=10.0`); `game/scenes.py` (`_update_playing` transitions to GAMEOVER when `match_timer` reaches 0; `_update_gameover` returns to title on Space or timeout; `_go_to_title()` ensures a fresh title state); `scenes.draw` renders the frozen final frame via `gameplay.draw` for GAMEOVER. 6 new headless tests in `tests/test_scenes.py` cover expiry transition, Space/timeout return paths, timeout independence, full reset on new match, and frozen-frame drawing. 53 tests total pass.
 - [x] **Story 6: Title screen & scene router**
   - **Goal:** As a player, I want a title screen where Space starts a match, so that the game has a proper entry point.
   - **Acceptance Criteria:**
@@ -80,7 +81,6 @@ _Completed work._
     - [x] TDD: headless tests for title→playing transition and full state reset
   - **Labels:** `priority:high`
   - **Implemented:** `core/state.py` (`Scene` enum, `TitleState`, `AppState`); `core/constant.py` (`TITLE_INACTIVITY_TIMEOUT=15.0`); `core/render.py` (`render_title` protocol method); `game/scenes.py` (router with `init/update/draw`, title inactivity handling, Space → fresh `PlayState`); `engine/raylib_render.py` (loads `title.png`, `render_title` draws it natively to the window); `main.py` now drives `scenes`. 8 new headless tests in `tests/test_scenes.py`. 47 tests total pass.
-
 - [x] **Story 5: Scoring & match timer**
   - **Goal:** As a player, I want to score by reaching the top and race a countdown, so that matches produce a winner.
   - **Acceptance Criteria:**
@@ -90,7 +90,6 @@ _Completed work._
     - [x] TDD: headless tests for scoring, reset-on-score, countdown
   - **Labels:** `priority:high`
   - **Implemented:** `core/state.py` (`scores`, `match_timer` on `PlayState`); `core/constant.py` (`GOAL_ROW=0`, `MATCH_DURATION=60.0`); `game/gameplay.py` (`_update_player` now returns `(Player, int)` and awards a point when an active rocket reaches `GOAL_ROW`, then resets it to start; match timer counts down and clamps at 0); `engine/raylib_render.py` (`_draw_hud` draws a vertical timer bar in the center that shrinks from bottom to top, and larger P1/P2 scores in ship-sized text closer to each player's start lane). 6 new headless tests in `tests/test_gameplay.py` cover scoring, reset-on-score, hidden-player can't score, timer countdown/clamp, and scoring not affecting the other player. 39 tests total pass.
-
 - [x] **Story 4: Collision & respawn**
   - **Goal:** As a player, when I hit an asteroid I want my rocket to briefly disappear and respawn at the start, so that mistakes cost time but the race never stops.
   - **Acceptance Criteria:**
