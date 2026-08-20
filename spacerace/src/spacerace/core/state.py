@@ -34,3 +34,5 @@ class PlayState:
     players: tuple[Player, Player]
     asteroids: tuple[Asteroid, ...]
     rng_state: tuple  # random.Random state for deterministic respawns
+    scores: tuple[int, int]
+    match_timer: float

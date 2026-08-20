@@ -30,30 +30,40 @@ def init(seed: int | None = None) -> PlayState:
         ),
         asteroids=asteroids,
         rng_state=rng_state,
+        scores=(0, 0),
+        match_timer=constant.MATCH_DURATION,
     )
 
 
 def update(command: InputCommand, state: PlayState, dt: float) -> PlayState:
     """Advance the match by one frame, applying both players' intentions."""
     asteroids, rng_state = update_asteroids(state.asteroids, state.rng_state, dt)
-    player1 = _update_player(
+    player1, score1 = _update_player(
         state.players[0],
         command.p1_up,
         command.p1_down,
         dt,
         constant.P1_START_X,
         asteroids,
+        state.scores[0],
     )
-    player2 = _update_player(
+    player2, score2 = _update_player(
         state.players[1],
         command.p2_up,
         command.p2_down,
         dt,
         constant.P2_START_X,
         asteroids,
+        state.scores[1],
     )
+    match_timer = max(0.0, state.match_timer - dt)
     return replace(
-        state, players=(player1, player2), asteroids=asteroids, rng_state=rng_state
+        state,
+        players=(player1, player2),
+        asteroids=asteroids,
+        rng_state=rng_state,
+        scores=(score1, score2),
+        match_timer=match_timer,
     )
 
 
@@ -74,15 +84,25 @@ def _update_player(
     dt: float,
     start_x: float,
     asteroids: tuple[Asteroid, ...],
-) -> Player:
-    """Move one player, handle hits, and count down respawn timers."""
+    score: int,
+) -> tuple[Player, int]:
+    """Move one player, handle hits, count down respawn timers, and score."""
     if player.respawn_timer > 0:
         new_timer = player.respawn_timer - dt
         if new_timer <= 0:
-            return Player(x=start_x, y=constant.START_Y, respawn_timer=0.0)
-        return replace(player, respawn_timer=new_timer)
+            player = Player(x=start_x, y=constant.START_Y, respawn_timer=0.0)
+        else:
+            player = replace(player, respawn_timer=new_timer)
+        return player, score
 
     moved = move_player(player, _thrust(up, down), dt)
     if any(collides(moved, asteroid) for asteroid in asteroids):
-        return replace(moved, respawn_timer=constant.RESPAWN_DELAY)
-    return moved
+        return replace(moved, respawn_timer=constant.RESPAWN_DELAY), score
+
+    if moved.y <= constant.GOAL_ROW:
+        return (
+            Player(x=start_x, y=constant.START_Y, respawn_timer=0.0),
+            score + 1,
+        )
+
+    return moved, score

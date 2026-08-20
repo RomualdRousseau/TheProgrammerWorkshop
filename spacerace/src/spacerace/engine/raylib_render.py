@@ -18,6 +18,9 @@ _spaceship: pr.Texture
 # center (8 px of padding on every side); it is rendered at original size.
 _SPRITE_SCALE: float = 1.0
 _SPRITE_OFFSET: float = 8.0  # content padding inside the source image
+_SCORE_FONT_SIZE: int = 20
+_SCORE_MARGIN: int = 40
+_TIMER_BAR_WIDTH: int = 2
 
 
 def init() -> None:
@@ -72,7 +75,7 @@ def end_frame() -> None:
 
 
 def render_play(state: PlayState) -> None:
-    """Render a live match: asteroids, then both rockets in white on black."""
+    """Render a live match: asteroids, rockets, and HUD in white on black."""
     for asteroid in state.asteroids:
         pr.draw_rectangle(
             int(asteroid.x),
@@ -91,6 +94,40 @@ def render_play(state: PlayState) -> None:
             _SPRITE_SCALE,
             pr.WHITE,
         )
+    _draw_hud(state)
+
+
+def _draw_hud(state: PlayState) -> None:
+    """Draw the original-style timer bar and side scores."""
+    _draw_timer(state)
+    _draw_scores(state)
+
+
+def _draw_timer(state: PlayState) -> None:
+    """Draw a vertical bar in the center that shrinks from top to bottom."""
+    ratio = state.match_timer / constant.MATCH_DURATION
+    height = int(constant.SCREEN_SIZE * ratio)
+    x = (constant.SCREEN_SIZE - _TIMER_BAR_WIDTH) // 2
+    y = constant.SCREEN_SIZE - height
+    pr.draw_rectangle(x, y, _TIMER_BAR_WIDTH, height, pr.WHITE)
+
+
+def _draw_scores(state: PlayState) -> None:
+    """Draw each score beside its player's start lane, ship-sized font."""
+    p1_score = str(state.scores[0])
+    p2_score = str(state.scores[1])
+    y = int(constant.START_Y + constant.PLAYER_HEIGHT / 2 - _SCORE_FONT_SIZE / 2)
+
+    pr.draw_text(p1_score, _SCORE_MARGIN, y, _SCORE_FONT_SIZE, pr.WHITE)
+
+    p2_width = pr.measure_text(p2_score, _SCORE_FONT_SIZE)
+    pr.draw_text(
+        p2_score,
+        constant.SCREEN_SIZE - _SCORE_MARGIN - p2_width,
+        y,
+        _SCORE_FONT_SIZE,
+        pr.WHITE,
+    )
 
 
 def close() -> None:

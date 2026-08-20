@@ -1,4 +1,4 @@
-"""Story 2: player rocket movement and rendering — headless behavioral tests.
+"""Story 2 & 4 & 5: player rocket movement, collision, scoring, and timer.
 
 Given/When/Then: a match state plus an input command produces the expected
 new state, with no window or hardware involved.
@@ -23,6 +23,13 @@ def test_init_places_both_players_at_their_start_positions() -> None:
     assert state.players[1] == Player(
         x=constant.P2_START_X, y=constant.START_Y, respawn_timer=0.0
     )
+
+
+def test_init_starts_with_zero_scores_and_full_timer() -> None:
+    state = gameplay.init()
+
+    assert state.scores == (0, 0)
+    assert state.match_timer == constant.MATCH_DURATION
 
 
 def test_player1_moves_up_with_its_key_while_player2_stays() -> None:
@@ -79,7 +86,7 @@ def test_pressing_both_directions_cancels_out() -> None:
     assert new_state.players == state.players
 
 
-def test_player_cannot_fly_above_the_field() -> None:
+def test_reaching_top_clamps_and_scores() -> None:
     # Given a rocket one pixel below the top edge
     state = PlayState(
         players=(
@@ -88,13 +95,16 @@ def test_player_cannot_fly_above_the_field() -> None:
         ),
         asteroids=gameplay.init().asteroids,
         rng_state=gameplay.init().rng_state,
+        scores=(0, 0),
+        match_timer=constant.MATCH_DURATION,
     )
 
     # When thrusting up for a long time
     new_state = gameplay.update(InputCommand(p1_up=True), state, dt=1.0)
 
-    # Then it clamps at the top edge instead of leaving the field
-    assert new_state.players[0].y == 0.0
+    # Then it scores and resets at the start (it can never leave the field)
+    assert new_state.scores[0] == 1
+    assert new_state.players[0].y == constant.START_Y
 
 
 def test_player_cannot_sink_below_the_field() -> None:
@@ -106,6 +116,8 @@ def test_player_cannot_sink_below_the_field() -> None:
         ),
         asteroids=gameplay.init().asteroids,
         rng_state=gameplay.init().rng_state,
+        scores=(0, 0),
+        match_timer=constant.MATCH_DURATION,
     )
 
     new_state = gameplay.update(InputCommand(p1_down=True), state, dt=1.0)
@@ -148,10 +160,9 @@ def test_collision_hides_player_and_starts_respawn_timer() -> None:
         y=asteroid.y,
         respawn_timer=0.0,
     )
-    state = PlayState(
+    state = replace(
+        state,
         players=(player, state.players[1]),
-        asteroids=state.asteroids,
-        rng_state=state.rng_state,
     )
 
     new_state = gameplay.update(InputCommand(), state, dt=0.0)
@@ -162,13 +173,12 @@ def test_collision_hides_player_and_starts_respawn_timer() -> None:
 
 
 def test_hidden_player_cannot_move() -> None:
-    state = PlayState(
+    state = replace(
+        gameplay.init(),
         players=(
             Player(x=constant.P1_START_X, y=constant.START_Y, respawn_timer=0.5),
             gameplay.init().players[1],
         ),
-        asteroids=gameplay.init().asteroids,
-        rng_state=gameplay.init().rng_state,
     )
 
     new_state = gameplay.update(InputCommand(p1_up=True), state, dt=0.1)
@@ -185,10 +195,9 @@ def test_hidden_player_does_not_collide() -> None:
         y=asteroid.y,
         respawn_timer=constant.RESPAWN_DELAY,
     )
-    state = PlayState(
+    state = replace(
+        state,
         players=(hidden_player, state.players[1]),
-        asteroids=state.asteroids,
-        rng_state=state.rng_state,
     )
 
     new_state = gameplay.update(InputCommand(), state, dt=0.0)
@@ -197,13 +206,12 @@ def test_hidden_player_does_not_collide() -> None:
 
 
 def test_player_respawns_at_start_after_delay() -> None:
-    state = PlayState(
+    state = replace(
+        gameplay.init(),
         players=(
             Player(x=50.0, y=50.0, respawn_timer=0.3),
             gameplay.init().players[1],
         ),
-        asteroids=gameplay.init().asteroids,
-        rng_state=gameplay.init().rng_state,
     )
 
     new_state = gameplay.update(InputCommand(), state, dt=0.5)
@@ -217,10 +225,9 @@ def test_hit_on_one_player_does_not_affect_the_other() -> None:
     state = gameplay.init(seed=42)
     asteroid = state.asteroids[0]
     hit_player = Player(x=asteroid.x, y=asteroid.y, respawn_timer=0.0)
-    state = PlayState(
+    state = replace(
+        state,
         players=(hit_player, state.players[1]),
-        asteroids=state.asteroids,
-        rng_state=state.rng_state,
     )
 
     new_state = gameplay.update(InputCommand(), state, dt=0.0)
@@ -230,7 +237,8 @@ def test_hit_on_one_player_does_not_affect_the_other() -> None:
 
 
 def test_other_player_continues_while_one_is_hidden() -> None:
-    state = PlayState(
+    state = replace(
+        gameplay.init(),
         players=(
             Player(
                 x=constant.P1_START_X,
@@ -239,11 +247,73 @@ def test_other_player_continues_while_one_is_hidden() -> None:
             ),
             Player(x=constant.P2_START_X, y=constant.START_Y, respawn_timer=0.0),
         ),
-        asteroids=gameplay.init().asteroids,
-        rng_state=gameplay.init().rng_state,
     )
 
     new_state = gameplay.update(InputCommand(p2_up=True), state, dt=0.1)
 
     assert new_state.players[0].respawn_timer == constant.RESPAWN_DELAY - 0.1
     assert new_state.players[1].y == constant.START_Y - constant.PLAYER_SPEED * 0.1
+
+
+def test_reaching_goal_row_increments_score_and_resets_player() -> None:
+    state = replace(
+        gameplay.init(),
+        players=(
+            Player(x=constant.P1_START_X, y=0.0, respawn_timer=0.0),
+            gameplay.init().players[1],
+        ),
+        scores=(0, 5),
+    )
+
+    new_state = gameplay.update(InputCommand(), state, dt=0.0)
+
+    assert new_state.scores == (1, 5)
+    assert new_state.players[0].x == constant.P1_START_X
+    assert new_state.players[0].y == constant.START_Y
+
+
+def test_hidden_player_cannot_score() -> None:
+    state = replace(
+        gameplay.init(),
+        players=(
+            Player(x=constant.P1_START_X, y=0.0, respawn_timer=constant.RESPAWN_DELAY),
+            gameplay.init().players[1],
+        ),
+    )
+
+    new_state = gameplay.update(InputCommand(), state, dt=0.0)
+
+    assert new_state.scores == (0, 0)
+
+
+def test_match_timer_counts_down_each_frame() -> None:
+    state = gameplay.init()
+
+    new_state = gameplay.update(InputCommand(), state, dt=1.5)
+
+    assert new_state.match_timer == constant.MATCH_DURATION - 1.5
+
+
+def test_match_timer_clamps_at_zero() -> None:
+    state = gameplay.init()
+
+    new_state = gameplay.update(
+        InputCommand(), state, dt=constant.MATCH_DURATION + 10.0
+    )
+
+    assert new_state.match_timer == 0.0
+
+
+def test_scoring_does_not_affect_other_player() -> None:
+    state = replace(
+        gameplay.init(),
+        players=(
+            Player(x=constant.P1_START_X, y=0.0, respawn_timer=0.0),
+            Player(x=constant.P2_START_X, y=100.0, respawn_timer=0.0),
+        ),
+    )
+
+    new_state = gameplay.update(InputCommand(p2_up=True), state, dt=0.5)
+
+    assert new_state.scores == (1, 0)
+    assert new_state.players[1].y == 100.0 - constant.PLAYER_SPEED * 0.5

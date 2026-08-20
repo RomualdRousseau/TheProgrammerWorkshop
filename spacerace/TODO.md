@@ -36,14 +36,6 @@ _Unrefined ideas or upcoming features (post-brief)._
 
 _Refined stories with clear acceptance criteria, in implementation order._
 
-- [ ] **Story 5: Scoring & match timer**
-  - **Goal:** As a player, I want to score by reaching the top and race a countdown, so that matches produce a winner.
-  - **Acceptance Criteria:**
-    - [ ] Reaching the goal row awards +1 and resets that rocket to its start; play continues
-    - [ ] Match timer counts down from `MATCH_DURATION` (60 s)
-    - [ ] HUD (renderer-level) shows both scores and remaining time — it is part of the game screen, so the frozen Game Over frame shows the final result with no extra text
-    - [ ] TDD: headless tests for scoring, reset-on-score, countdown
-  - **Labels:** `priority:high`
 - [ ] **Story 6: Title screen & scene router**
   - **Goal:** As a player, I want a title screen where Space starts a match, so that the game has a proper entry point.
   - **Acceptance Criteria:**
@@ -87,6 +79,16 @@ _Currently being implemented._
 
 _Completed work._
 
+- [x] **Story 5: Scoring & match timer**
+  - **Goal:** As a player, I want to score by reaching the top and race a countdown, so that matches produce a winner.
+  - **Acceptance Criteria:**
+    - [x] Reaching the goal row awards +1 and resets that rocket to its start; play continues
+    - [x] Match timer counts down from `MATCH_DURATION` (60 s)
+    - [x] HUD (renderer-level) shows both scores and remaining time — it is part of the game screen, so the frozen Game Over frame shows the final result with no extra text
+    - [x] TDD: headless tests for scoring, reset-on-score, countdown
+  - **Labels:** `priority:high`
+  - **Implemented:** `core/state.py` (`scores`, `match_timer` on `PlayState`); `core/constant.py` (`GOAL_ROW=0`, `MATCH_DURATION=60.0`); `game/gameplay.py` (`_update_player` now returns `(Player, int)` and awards a point when an active rocket reaches `GOAL_ROW`, then resets it to start; match timer counts down and clamps at 0); `engine/raylib_render.py` (`_draw_hud` draws a vertical timer bar in the center that shrinks from bottom to top, and larger P1/P2 scores in ship-sized text closer to each player's start lane). 6 new headless tests in `tests/test_gameplay.py` cover scoring, reset-on-score, hidden-player can't score, timer countdown/clamp, and scoring not affecting the other player. 39 tests total pass.
+
 - [x] **Story 4: Collision & respawn**
   - **Goal:** As a player, when I hit an asteroid I want my rocket to briefly disappear and respawn at the start, so that mistakes cost time but the race never stops.
   - **Acceptance Criteria:**
@@ -96,7 +98,6 @@ _Completed work._
     - [x] TDD: full cycle — hit → hidden → timer elapses → respawned at start; no collision while hidden
   - **Labels:** `priority:high`
   - **Implemented:** `core/state.py` (`respawn_timer` on `Player`); `core/constant.py` (`RESPAWN_DELAY=0.5`); `core/physics.py` (`collides` AABB check); `game/gameplay.py` (`_update_player` handles hit → hidden → respawn cycle); `engine/raylib_render.py` skips hidden rockets. 7 new headless tests in `tests/test_gameplay.py` cover hit detection, hidden immobility, no hidden collision, respawn at start, and uninterrupted other player/asteroids. 33 tests total pass.
-
 - [x] **Story 3: Asteroid lanes**
   - **Goal:** As a player, I want asteroids sweeping horizontally across several lanes, so that the climb requires timing and nerve.
   - **Acceptance Criteria:**
