@@ -1,0 +1,134 @@
+# ============== Python ==============
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============== Testing ==============
+.pytest_cache/
+.cache/
+pytest_cache/
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# ============== Type Checking ==============
+.ty_cache/
+.pyright/
+.pytype/
+
+# ============== Linting ==============
+.ruff_cache/
+
+# ============== Virtual Environments ==============
+.venv/
+venv/
+ENV/
+env/
+.env.local
+.env.*.local
+.python-version
+
+# ============== IDEs & Editors ==============
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+*.code-workspace
+.history/
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+*.swp
+*.swo
+*.swn
+*~
+.netrwhist
+
+# ============== OS Files ==============
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+desktop.ini
+
+# ============== Secrets & Config ==============
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets.yaml
+secrets.yml
+secrets.json
+.secrets/
+
+# ============== Logs ==============
+*.log
+logs/
+log/
+
+# ============== Database ==============
+*.db
+*.sqlite
+*.sqlite3
+
+# ============== Build Artifacts ==============
+cython_debug/
+
+# ============== Misc ==============
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.tar.gz
+*.zip
+*.rar
+*.7z
+.benchmarks/
+benchmarks/results/
+*.prof
+*.lprof
+profile_output/
+.opencode/
+
+# ============== Racer Specific ==============
+racer-env/logs/
+racer-env/models/
+racer-agents/models/
+racer-agents/runs/

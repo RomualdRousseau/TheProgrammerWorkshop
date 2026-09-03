@@ -1,0 +1,36 @@
+# Justfile for Spacerace Monorepo
+
+# Default task: list commands
+default:
+    @just --list
+
+# Linting with ruff
+lint:
+    uv run ruff check .
+
+# Fix all auto-fixable issues
+fix:
+    uv run ruff check --fix .
+
+# Formatting with ruff
+format:
+    uv run ruff format .
+
+# Type checking with ty
+typecheck:
+    uv run ty check .
+
+# Running all tests with coverage
+test:
+    uv run pytest --cov
+
+# Initialize pre-commit with prek
+pre-commit-init:
+    uv run prek install
+
+# Run all checks
+check: lint typecheck test
+
+# Clean all pycache and other junk files
+clean:
+    uv run pyclean . -d all

@@ -1,0 +1,46 @@
+# Justfile for Racer Monorepo
+
+# Default task: list commands
+default:
+    @just --list
+
+# Sync workspace
+sync:
+    uv sync --all-extras
+
+# Linting and formatting with ruff
+lint:
+    uv run ruff check .
+    uv run ruff format --check .
+
+# Fix all auto-fixable issues
+fix:
+    uv run ruff check --fix .
+    uv run ruff format .
+
+# Type checking with ty
+typecheck:
+    uv run ty check .
+
+# Running all tests with coverage
+test:
+    uv run pytest --cov
+
+# Install prek hooks
+prek-install:
+    uv run prek install
+
+# Run prek hooks on all files
+prek-run:
+    uv run prek run --all-files
+
+# Run all checks
+check: prek-run lint typecheck test
+
+# Run commands in racer-env package
+env *args:
+    uv run python -m racer_env {{args}}
+
+# Run commands in racer-agents package
+agents *args:
+    uv run python -m racer_agents {{args}}
