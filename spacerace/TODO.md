@@ -11,6 +11,15 @@ _Unrefined ideas or upcoming features (post-brief)._
 - [ ] **Story: Single-player mode vs bot**
   - **Goal:** As a solo player, I want to race against the computer, so that I can play alone. (Reuse the bot `InputSource` for P2.)
   - **Labels:** `priority:low`, `unrefined`
+- [ ] **Story: Numba-accelerated audio synthesis**
+  - **Goal:** As a developer, I want the vectorized audio generation compiled with numba, so that sample synthesis runs at maximum speed with zero risk of starving the audio stream.
+  - **Acceptance Criteria:**
+    - [ ] Depends on Story 10: the numpy-vectorized version must be completed and verified first — numba only replaces the hot synthesis path
+    - [ ] `numba` added to project dependencies; the synthesis loop JIT-compiled (`@njit`); graceful fallback to the numpy path if numba is unavailable or compilation fails
+    - [ ] First-run JIT warmup prints a console message so the user knows audio is being prepared; `cache=True` used so subsequent starts skip recompilation
+    - [ ] Measurable performance: at least 2× faster than the numpy-only version (benchmark figures recorded in the story's implementation notes)
+    - [ ] Audible output identical to the numpy version (no clicks/pops); audio stays in the engine layer; full headless suite still passes
+  - **Labels:** `priority:low`, `unrefined`
 
 ## 🏗️ Selected for Development
 
