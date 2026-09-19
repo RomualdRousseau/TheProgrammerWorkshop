@@ -19,7 +19,8 @@ TITLE_INACTIVITY_TIMEOUT: float = 15.0  # seconds before title enters demo
 DEMO_DURATION: float = 30.0  # seconds the attract loop runs
 
 # Asteroid layout
-SAFE_ZONE_HEIGHT: int = 48  # top and bottom safe rows in logical pixels
+SAFE_ZONE_TOP: int = 10  # safe rows below the goal line in logical pixels
+SAFE_ZONE_BOTTOM: int = 48  # safe rows above the launch row in logical pixels
 ASTEROID_COUNT: int = 20  # number of small asteroids on screen
 ASTEROID_WIDTH: int = 2
 ASTEROID_HEIGHT: int = 1

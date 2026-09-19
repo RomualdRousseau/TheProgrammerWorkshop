@@ -48,8 +48,8 @@ def _make_asteroid(rng: random.Random, *, on_screen: bool) -> Asteroid:
     direction = rng.choice((-1, 1))
     speed = rng.uniform(constant.ASTEROID_SPEED_MIN, constant.ASTEROID_SPEED_MAX)
     y = rng.randint(
-        constant.SAFE_ZONE_HEIGHT,
-        constant.SCREEN_SIZE - constant.SAFE_ZONE_HEIGHT - constant.ASTEROID_HEIGHT,
+        constant.SAFE_ZONE_TOP,
+        constant.SCREEN_SIZE - constant.SAFE_ZONE_BOTTOM - constant.ASTEROID_HEIGHT,
     )
     if on_screen:
         x = rng.uniform(0.0, float(constant.SCREEN_SIZE - constant.ASTEROID_WIDTH))

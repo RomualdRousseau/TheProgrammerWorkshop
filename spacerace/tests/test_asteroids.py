@@ -28,11 +28,17 @@ def test_asteroids_spawn_in_the_middle_band() -> None:
     state = gameplay.init(seed=42)
 
     for asteroid in state.asteroids:
-        assert asteroid.y >= constant.SAFE_ZONE_HEIGHT
+        assert asteroid.y >= constant.SAFE_ZONE_TOP
         assert (
             asteroid.y + asteroid.height
-            <= constant.SCREEN_SIZE - constant.SAFE_ZONE_HEIGHT
+            <= constant.SCREEN_SIZE - constant.SAFE_ZONE_BOTTOM
         )
+
+
+def test_safe_zones_are_asymmetrical() -> None:
+    """The goal-side margin is tighter than the launch-side margin."""
+    assert constant.SAFE_ZONE_TOP == 10
+    assert constant.SAFE_ZONE_BOTTOM == 48
 
 
 def test_asteroids_move_in_both_directions() -> None:
@@ -93,10 +99,10 @@ def test_off_screen_asteroid_respawns_after_update() -> None:
 
     respawned = new_state.asteroids[0]
     assert respawned is not off_screen
-    assert respawned.y >= constant.SAFE_ZONE_HEIGHT
+    assert respawned.y >= constant.SAFE_ZONE_TOP
     assert (
         respawned.y + respawned.height
-        <= constant.SCREEN_SIZE - constant.SAFE_ZONE_HEIGHT
+        <= constant.SCREEN_SIZE - constant.SAFE_ZONE_BOTTOM
     )
     assert respawned.width == constant.ASTEROID_WIDTH
     assert respawned.height == constant.ASTEROID_HEIGHT
