@@ -1,0 +1,29 @@
+{
+  "skill_name": "game-designer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Design the core gameplay loop and juiciness feedback mechanics for a retro 2D space miner arcade game.",
+      "expected_output": "A game design document detailing the core loop (Input -> Physics -> Feedback -> Outcome), HUD layout, and juiciness elements.",
+      "files": [],
+      "assertions": [
+        "Defines clear core gameplay loop (Input -> Physics Update -> Feedback -> Outcome)",
+        "Includes specific juiciness embellishments (e.g. screen shake, particle bursts, floating score popups)",
+        "Specifies transparent HUD indicators for vital state (fuel, cargo, hull integrity)",
+        "Mandates human-in-the-loop playability with responsive controls"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Balance the difficulty progression curve and control mechanics for an obstacle course drone simulation.",
+      "expected_output": "A progressive difficulty specification balancing challenge, feedback cues, and control sensitivity.",
+      "files": [],
+      "assertions": [
+        "Defines a progressive difficulty curve rather than abrupt spikes",
+        "Ensures cause-and-effect transparency between user inputs and physics response",
+        "Includes visual indicators for danger zones and proximity warnings",
+        "Structures design concepts into actionable stories for engineering backlog"
+      ]
+    }
+  ]
+}

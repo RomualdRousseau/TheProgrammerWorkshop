@@ -1,0 +1,29 @@
+{
+  "skill_name": "product-owner",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Draft a user story for implementing two-factor authentication (2FA) via SMS/authenticator app.",
+      "expected_output": "An INVEST-compliant user story with role, goal, benefit, and binary testable acceptance criteria.",
+      "files": [],
+      "assertions": [
+        "Follows the canonical 'As a / I want / So that' structure",
+        "Includes unambiguous, testable acceptance criteria formatted as a checkbox list",
+        "Satisfies the INVEST criteria (independent, valuable, testable)",
+        "Focuses strictly on user requirements and outcomes without prescribing code implementation details"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Break down a massive user management epic into small, independent user stories ready for an iteration backlog.",
+      "expected_output": "A set of 2-3 discrete, small user stories with clear boundaries and acceptance criteria.",
+      "files": [],
+      "assertions": [
+        "Splits the epic into multiple independent and small user stories",
+        "Each resulting story contains distinct acceptance criteria",
+        "Stories can be prioritized and delivered incrementally",
+        "Categorizes stories into backlog lifecycle stages"
+      ]
+    }
+  ]
+}

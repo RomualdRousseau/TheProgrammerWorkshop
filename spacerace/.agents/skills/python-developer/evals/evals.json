@@ -1,0 +1,30 @@
+{
+  "skill_name": "python-developer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Implement an iterative graph depth-first search (DFS) traversal function to discover reachable nodes from a start node, along with a GraphNode domain model.",
+      "expected_output": "A Python module containing a GraphNode dataclass with __slots__, an iterative DFS implementation with hard loop bounds, and no recursive calls.",
+      "files": [],
+      "assertions": [
+        "The graph node domain model uses @dataclass(slots=True) or explicit __slots__",
+        "The DFS algorithm is implemented iteratively using an explicit stack",
+        "The algorithm contains zero recursive function calls",
+        "The while loop has a hard maximum iteration bound to prevent infinite loops",
+        "All functions include strict Python type annotations"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Implement a payload parser that validates untrusted external dictionary input into a typed UserConfig dataclass, with property-based tests.",
+      "expected_output": "A Python module with TypeGuard boundary validation, domain exception raising, and a Hypothesis test suite.",
+      "files": [],
+      "assertions": [
+        "Uses typing.TypeGuard to validate raw dictionary structure at boundary",
+        "Raises specific domain exceptions on invalid input rather than generic Exception",
+        "Domain models use slots=True",
+        "Includes a test suite using hypothesis with strategies"
+      ]
+    }
+  ]
+}

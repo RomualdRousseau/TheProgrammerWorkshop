@@ -1,3 +1,4 @@
+```gitignore
 # ============== Python ==============
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -53,8 +54,10 @@ coverage.xml
 .hypothesis/
 
 # ============== Type Checking ==============
-# ty
-.ty_cache/
+# ty check
+.ty check_cache/
+.dty check.json
+dty check.json
 
 # pyright
 .pyright/
@@ -76,7 +79,7 @@ env/
 
 # uv
 .python-version
-# uv.lock is tracked for reproducible builds
+uv.lock
 
 # pipenv
 Pipfile.lock
@@ -197,10 +200,6 @@ secrets.yml
 secrets.json
 .secrets/
 
-# Data certificates
-data/ca-certificates/*
-!data/ca-certificates/.gitkeep
-
 # Note: .secrets.baseline is tracked (detect-secrets)
 # !.secrets.baseline
 
@@ -231,14 +230,6 @@ temp/
 *.bak
 *.backup
 
-# Terraform
-.terraform/
-*.tfstate
-*.tfstate.backup
-*.tfvars
-*.tfvars.json
-.terraform.lock.hcl
-
 # Archives
 *.tar.gz
 *.zip
@@ -265,4 +256,4 @@ playground/
 *.local.py
 *.local.yaml
 *.local.json
-Environment/dataset/
+```

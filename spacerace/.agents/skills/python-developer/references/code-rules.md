@@ -13,6 +13,17 @@ Infrastructure implements interfaces defined in applications (Dependency Inversi
 
 ---
 
+## Configuration vs. Constants
+
+To maintain the purity of the Hexagonal Core:
+
+1.  **Constants are Shared**: Use `src/shared/constant/` for all values that are immutable across environments. The application layer **may** import these directly.
+2.  **Config is Infrastructure**: Use `src/infrastructure/config/` only for values that vary by environment.
+3.  **No Config in Core**: The `application/` layer **must never** import from `infrastructure/config/`.
+4.  **Inject Environmentals**: If a business service needs an environment-specific value (e.g., a timeout), it must be passed as a parameter to the service constructor.
+
+---
+
 ## Singular vs Plural Package Names
 
 **Recommendation: Singular**
@@ -251,26 +262,15 @@ handler = getattr(self, f"handle_{action}")()  # Arbitrary method call
 
 ### 10. Test Behavior, Not Implementation
 
-Focus on *what* the simulation does, not *how* it's calculated.
+Focus on *what* the system does, not *how*. Use testing as a design tool.
 
-- **TDD for Logic**: Mandate test-first for the `core/` and `game/` layers. Write the state assertion before the math.
-- **Vanilla BDD**: Use `Given/When/Then` for MDP transitions (State + Action → New State + Reward).
-- **Engine Mocks**: Injected engines must use `spec=True` to ensure the logic interacts correctly with the renderer/audio interface without triggering hardware.
-- **Headless Only**: All logic tests must run without a GPU or Window context.
-
----
-
-## Configuration vs. Constants
-
-To maintain simulation integrity and architectural flexibility:
-
-1.  **Constants in Core**: Use `src/mygame/core/constant.py` for values like `GRAVITY` or `FRICTION`. This keeps the "Laws of Physics" local to the simulation.
-2.  **Config in Engine**: Use `src/mygame/engine/config.py` for hardware-specific values like `WINDOW_WIDTH` or `FPS`.
-3.  **No Config in Logic**: `core/physics.py` and `game/gameplay.py` **must never** import from `engine/config.py`.
-4.  **Engine Injection**: The `engine/` package is the only place allowed to import `pyray`. The rest of the app receives the engine as a dependency, allowing for a "Headless" vs "Human" rendered environment.
+- **TDD for Logic**: Mandate test-first for the `application/` layer. Write the assertion before the implementation.
+- **Vanilla BDD**: Use `Given/When/Then` structures in `pytest`. Comments or docstrings should clearly demarcate these phases.
+- **Bug Safeguards**: No bug is fixed without a reproduction test. If it was broken once, it must be tested forever.
+- **Invariants**: Use property-based testing for security and data integrity rules.
+- **Mock Integrity**: Always use `spec=True` to prevent mocks from drifting from reality.
 
 ---
-
 
 ### Quick Reference Card
 

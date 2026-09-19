@@ -1,17 +1,35 @@
 {
   "version": 1,
   "skills": {
-    "python-game-designer": {
+    "backlog-todo": {
       "source": "RomualdRousseau/Skills",
       "sourceType": "github",
-      "skillPath": "skills/python-game/python-game-designer/SKILL.md",
-      "computedHash": "de5bac134d785ad1ee759a61aae5dc8bfacc0a0dc6f5c117d94a445601107cb0"
+      "skillPath": "skills/backlog-todo/SKILL.md",
+      "computedHash": "ae16c28ff6f5b3c5d77eecfb061230388ba8fdee85d66418cd2011fd6b4819be"
     },
-    "python-game-developer": {
+    "game-designer": {
       "source": "RomualdRousseau/Skills",
       "sourceType": "github",
-      "skillPath": "skills/python-game/python-game-developer/SKILL.md",
-      "computedHash": "28842850ad20772794cd7a9be7eb07156ee320dd5267794de79bfc6abb9669fa"
+      "skillPath": "skills/game-designer/SKILL.md",
+      "computedHash": "f719688ba996070b1dfa1de6c734707f7db3329188c51ad39f66039532e188f2"
+    },
+    "product-owner": {
+      "source": "RomualdRousseau/Skills",
+      "sourceType": "github",
+      "skillPath": "skills/product-owner/SKILL.md",
+      "computedHash": "6c61df7771771ddd74f54cef007667f156c4b5184b57de27d33ffc7fbfe49b82"
+    },
+    "python-developer": {
+      "source": "RomualdRousseau/Skills",
+      "sourceType": "github",
+      "skillPath": "skills/python-developer/SKILL.md",
+      "computedHash": "9db15d3092996e710b4574c3251313462bc3a48f111e1b91b4f29a57dab41c36"
+    },
+    "python-raylib": {
+      "source": "RomualdRousseau/Skills",
+      "sourceType": "github",
+      "skillPath": "skills/python-raylib/SKILL.md",
+      "computedHash": "a397878e15f8809c895c0e8bff2ae1c10c260eedd27dfa5428171fab6abf7c62"
     }
   }
 }

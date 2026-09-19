@@ -1,0 +1,28 @@
+{
+  "skill_name": "backlog-todo",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Initialize a new TODO.md agile board file with the standard four Kanban sections and add a user story for CSV export.",
+      "expected_output": "A valid TODO.md file containing Backlog, Selected for Development, In Progress, and Done sections, with the user story placed in Backlog.",
+      "files": [],
+      "assertions": [
+        "Defines the 4 canonical Kanban headers (Backlog, Selected for Development, In Progress, Done)",
+        "Places the newly drafted user story under the Backlog section",
+        "Story adheres to As a / I want / So that format with markdown checkbox acceptance criteria",
+        "Uses clean markdown formatting"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Advance the CSV export story in TODO.md from Selected for Development to Done after checking off all acceptance criteria.",
+      "expected_output": "Updated TODO.md with checked boxes [x] for the story's criteria and the story relocated under the Done section.",
+      "files": [],
+      "assertions": [
+        "Updates acceptance criteria checkboxes to [x]",
+        "Moves the completed story block into the Done section",
+        "Removes or clears the story from the prior section"
+      ]
+    }
+  ]
+}

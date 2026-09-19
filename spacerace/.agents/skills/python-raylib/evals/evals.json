@@ -1,0 +1,30 @@
+{
+  "skill_name": "python-raylib",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Implement a 2D physics projectile simulation in Python with decoupled Renderer and Input protocols for Raylib.",
+      "expected_output": "Core physics module with slots, a Protocol-based renderer interface, and a Raylib engine implementation importing pyray as pr.",
+      "files": [],
+      "assertions": [
+        "Imports Raylib strictly as 'import pyray as pr'",
+        "Decouples simulation physics from rendering via typing.Protocol interfaces",
+        "Physics entities use __slots__ or @dataclass(slots=True)",
+        "Core update function is pure and accepts delta time (dt)",
+        "Raylib drawing functions are isolated inside the engine/renderer layer"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write automated headless pytest unit tests for character collision and movement mechanics without initializing a Raylib window.",
+      "expected_output": "A pytest test suite using NullGraphics or mock renderers and stubbed inputs to verify game state transitions.",
+      "files": [],
+      "assertions": [
+        "Executes headlessly in pytest without opening a graphical window (pr.init_window)",
+        "Uses mock/stub input implementations to test deterministic movement",
+        "Asserts state updates cleanly against expected coordinates",
+        "Tests can run in CI environments without a display server"
+      ]
+    }
+  ]
+}
