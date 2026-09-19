@@ -11,6 +11,7 @@ _Unrefined ideas or upcoming features (post-brief)._
 - [ ] **Story: Single-player mode vs bot**
   - **Goal:** As a solo player, I want to race against the computer, so that I can play alone. (Reuse the bot `InputSource` for P2.)
   - **Labels:** `priority:low`, `unrefined`
+
 - [ ] **Story: Numba-accelerated audio synthesis**
   - **Goal:** As a developer, I want the vectorized audio generation compiled with numba, so that sample synthesis runs at maximum speed with zero risk of starving the audio stream.
   - **Acceptance Criteria:**

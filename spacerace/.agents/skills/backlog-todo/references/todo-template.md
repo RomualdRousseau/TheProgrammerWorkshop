@@ -14,6 +14,12 @@ Use this template to create a new user story in `TODO.md`.
   - **Labels:** `priority:medium`, `unrefined`
 ```
 
+## 📐 Formatting Rules
+
+- Separate consecutive story blocks with exactly one blank line — it delimits the blocks and keeps the roadmap readable.
+- A story block is one `- [ ] **Story: ...**` bullet with indented sub-bullets (Goal, Acceptance Criteria, Labels); the blank line marks its end.
+- Apply the rule in every Kanban section, including the epic subsections under `✅ Done`.
+
 ## 🏗️ Kanban Section Structure
 
 Organize `TODO.md` with these headers:

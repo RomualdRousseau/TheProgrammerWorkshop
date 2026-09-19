@@ -19,32 +19,34 @@ This skill provides workflows for managing a project's agile backlog and user st
 
 All project stories and tasks are tracked in a root-level `TODO.md` organized into four Kanban status sections:
 
-1. **`## 📋 Backlog`**: Prioritized candidate stories waiting for refinement or scheduling.
-2. **`## 🎯 Selected for Development`**: Refined stories with agreed acceptance criteria ready for implementation.
-3. **`## 🚀 In Progress`**: Actively developed stories.
-4. **`## ✅ Done`**: Completed stories where all acceptance criteria and tests pass.
+1. **`## 🎯 Backlog`**: Unrefined ideas or upcoming features waiting for refinement.
+2. **`## 🏗️ Selected for Development`**: Refined stories with agreed acceptance criteria, in implementation order.
+3. **`## 🚧 In Progress`**: Actively developed stories.
+4. **`## ✅ Done`**: Completed stories where all acceptance criteria and tests pass; grouped under epic subsections.
 
 Refer to [todo-template.md](references/todo-template.md) for the complete file layout.
 
 ## 2. Managing Stories in `TODO.md`
 
 ### Adding Stories
-When a new story is drafted according to `product-owner` standards, append it to `## 📋 Backlog`:
+When a new story is drafted according to `product-owner` standards, append it to `## 🎯 Backlog`:
 
 ```markdown
-### Story: [Feature Name]
-
-**Goal:** As a [role], I want [action], so that [value].
-
-#### Acceptance Criteria
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
+- [ ] **Story: [Concise Title]**
+  - **Goal:** As a [role], I want [action], so that [value].
+  - **Acceptance Criteria:**
+    - [ ] [Criterion 1]
+    - [ ] [Criterion 2]
+  - **Labels:** `priority:medium`, `unrefined`
 ```
 
 ### Advancing State
 - Move the story block between headers as work progresses.
 - Check off individual criteria checkboxes (`- [x]`) as they are completed and verified by tests.
-- When all criteria are checked and code is committed, move the story block to `## ✅ Done`.
+- When all criteria are checked and code is committed, move the story block to `## ✅ Done`, under the correct epic subsection.
+
+### Formatting
+- Always separate story blocks with exactly one blank line (see [todo-template.md](references/todo-template.md) → Formatting Rules).
 
 ## Project Interaction
 

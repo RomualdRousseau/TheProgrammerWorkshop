@@ -101,7 +101,8 @@ just test
 ## Backlog & Documentation
 
 - Project stories and tasks are tracked in `TODO.md`.
-- Use the python-game-designer todo template for new stories.
+- Use the `backlog-todo`/`product-owner` story template for new stories.
+- Story blocks in `TODO.md` are separated by exactly one blank line.
 - When a story is completed, move it to the `✅ Done` section under the correct epic heading (Foundation, Core Gameplay, Match Flow, Arcade Presentation); create a new epic only if none of the existing ones fits.
 - Keep `README.md` up to date with usage instructions.
 - Keep `AGENTS.md` up to date when workflows, structure, or conventions change.
