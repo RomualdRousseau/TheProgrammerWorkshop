@@ -12,21 +12,27 @@ _Unrefined ideas or upcoming features (post-brief)._
   - **Goal:** As a solo player, I want to race against the computer, so that I can play alone. (Reuse the bot `InputSource` for P2.)
   - **Labels:** `priority:low`, `unrefined`
 
-- [ ] **Story: Numba-accelerated audio synthesis**
-  - **Goal:** As a developer, I want the vectorized audio generation compiled with numba, so that sample synthesis runs at maximum speed with zero risk of starving the audio stream.
-  - **Acceptance Criteria:**
-    - [ ] Depends on Story 10: the numpy-vectorized version must be completed and verified first — numba only replaces the hot synthesis path
-    - [ ] `numba` added to project dependencies; the synthesis loop JIT-compiled (`@njit`); graceful fallback to the numpy path if numba is unavailable or compilation fails
-    - [ ] First-run JIT warmup prints a console message so the user knows audio is being prepared; `cache=True` used so subsequent starts skip recompilation
-    - [ ] Measurable performance: at least 2× faster than the numpy-only version (benchmark figures recorded in the story's implementation notes)
-    - [ ] Audible output identical to the numpy version (no clicks/pops); audio stays in the engine layer; full headless suite still passes
-  - **Labels:** `priority:low`, `unrefined`
-
 ## 🏗️ Selected for Development
 
 _Refined stories with clear acceptance criteria, in implementation order._
 
-- [ ] **Story 10: Vectorized audio synthesis with numpy**
+- [ ] **Story 10: Configurable hitboxes**
+  - **Goal:** As a designer, I want spaceship and asteroid hitboxes defined by configurable sizes instead of hard-coded sprite footprints, so that collision fairness can be tuned — exact for asteroids, forgiving for ships.
+  - **Acceptance Criteria:**
+    - [ ] Asteroid hitbox equals its rendered size (2×1) — behavior unchanged
+    - [ ] Spaceship hitbox is a separate configurable size, smaller than the 16×18 sprite and centered on it
+    - [ ] Hitbox dimensions live in `core/constant.py` and are used by the collision check; headless tests verify that edge grazes on a ship no longer count as hits while real overlaps still do
+  - **Labels:** `priority:medium`
+
+- [ ] **Story 11: External configuration**
+  - **Goal:** As a designer, I want durations/speeds in a config file, so that I can tune the game without editing code.
+  - **Acceptance Criteria:**
+    - [ ] Tunables (durations, speeds, sizes) are read from a human-editable config file at startup; missing or invalid values fall back to the current built-in defaults
+    - [ ] Editing a value in the file changes the game's behavior with no code modification
+    - [ ] Headless tests cover config loading and fallback; the full suite passes
+  - **Labels:** `priority:medium`
+
+- [ ] **Story 12: Vectorized audio synthesis with numpy**
   - **Goal:** As a developer, I want the audio engine to generate waveforms with numpy vector operations instead of a per-sample Python loop, so that sample generation stays fast enough to never starve the audio stream.
   - **Acceptance Criteria:**
     - [ ] `numpy` added to project dependencies; sample buffers are built with vectorized numpy operations — no per-sample Python loop in the generation path
@@ -35,21 +41,15 @@ _Refined stories with clear acceptance criteria, in implementation order._
     - [ ] Audio remains entirely in the engine layer; `core/` and `game/` untouched; the full headless test suite still passes without audio hardware
   - **Labels:** `priority:medium`
 
-- [ ] **Story 11: Configurable hitboxes**
-  - **Goal:** As a designer, I want spaceship and asteroid hitboxes defined by configurable sizes instead of hard-coded sprite footprints, so that collision fairness can be tuned — exact for asteroids, forgiving for ships.
+- [ ] **Story 13: Numba-accelerated audio synthesis**
+  - **Goal:** As a developer, I want the vectorized audio generation compiled with numba, so that sample synthesis runs at maximum speed with zero risk of starving the audio stream.
   - **Acceptance Criteria:**
-    - [ ] Asteroid hitbox equals its rendered size (2×1) — behavior unchanged
-    - [ ] Spaceship hitbox is a separate configurable size, smaller than the 16×18 sprite and centered on it
-    - [ ] Hitbox dimensions live in `core/constant.py` and are used by the collision check; headless tests verify that edge grazes on a ship no longer count as hits while real overlaps still do
-  - **Labels:** `priority:medium`
-
-- [ ] **Story 12: External configuration**
-  - **Goal:** As a designer, I want durations/speeds in a config file, so that I can tune the game without editing code.
-  - **Acceptance Criteria:**
-    - [ ] Tunables (durations, speeds, sizes) are read from a human-editable config file at startup; missing or invalid values fall back to the current built-in defaults
-    - [ ] Editing a value in the file changes the game's behavior with no code modification
-    - [ ] Headless tests cover config loading and fallback; the full suite passes
-  - **Labels:** `priority:medium`
+    - [ ] Depends on Story 12: the numpy-vectorized version must be completed and verified first — numba only replaces the hot synthesis path
+    - [ ] `numba` added to project dependencies; the synthesis loop JIT-compiled (`@njit`); graceful fallback to the numpy path if numba is unavailable or compilation fails
+    - [ ] First-run JIT warmup prints a console message so the user knows audio is being prepared; `cache=True` used so subsequent starts skip recompilation
+    - [ ] Measurable performance: at least 2× faster than the numpy-only version (benchmark figures recorded in the story's implementation notes)
+    - [ ] Audible output identical to the numpy version (no clicks/pops); audio stays in the engine layer; full headless suite still passes
+  - **Labels:** `priority:low`
 
 ## 🚧 In Progress
 
